@@ -87,6 +87,7 @@ library
     GL.Type
     GL.Viewport
     GL.Uniform
+    Isometry.Voxel
     Linear.Exts
     Starlight.Actor
     Starlight.AI
