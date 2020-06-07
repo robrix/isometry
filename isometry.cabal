@@ -1,10 +1,10 @@
 cabal-version:       2.2
 
-name:                starlight
+name:                isometry
 version:             0.0.0.0
 -- synopsis:
 -- description:
-homepage:            https://github.com/robrix/starlight#readme
+homepage:            https://github.com/robrix/isometry#readme
 license:             BSD-3-Clause
 license-file:        LICENSE
 author:              Rob Rix
@@ -148,9 +148,9 @@ library
     Unit.Power
     Unit.Time
   other-modules:
-    Paths_starlight
+    Paths_isometry
   autogen-modules:
-    Paths_starlight
+    Paths_isometry
   build-depends:
     , adjunctions
     , base
@@ -181,15 +181,15 @@ library
     , unordered-containers
     , vector ^>= 0.12
 
-executable starlight
+executable isometry
   import: common
   hs-source-dirs: app
   main-is: Main.hs
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
     , base
-    , starlight
+    , isometry
 
 source-repository head
   type:     git
-  location: https://github.com/robrix/starlight
+  location: https://github.com/robrix/isometry

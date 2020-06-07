@@ -34,6 +34,7 @@ radar_ :: Lens' Ship Radar
 radar_ = field @"radar"
 
 
+-- | Components are parts of ships. A ship has multiple components, and can only perform actions if it has the required components to do so.
 data Component
   = Cargo
   | Engine

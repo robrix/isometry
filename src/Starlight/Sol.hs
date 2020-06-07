@@ -18,7 +18,7 @@ import qualified Data.IntMap as IntMap
 import qualified Data.Map as Map
 import           Database.SQLite3 (SQLData(..))
 import           Linear.Exts
-import           Paths_starlight
+import           Paths_isometry
 import           Starlight.Body
 import           Starlight.Faction
 import           Starlight.Identifier

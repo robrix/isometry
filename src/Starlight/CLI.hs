@@ -22,7 +22,7 @@ import           Data.Generics.Product.Fields
 import           Data.Version (showVersion)
 import           GHC.Generics (Generic)
 import           Options.Applicative
-import qualified Paths_starlight as Library (version)
+import qualified Paths_isometry as Library (version)
 
 data Options = Options
   { profile :: Flag ShouldProfile
@@ -68,7 +68,7 @@ options = foldl' (&) defaultOptions <$> sequenceA
 
 
 versionString :: String
-versionString = "starlight version " <> showVersion Library.version
+versionString = "isometry version " <> showVersion Library.version
 
 version :: Parser (a -> a)
 version = infoOption versionString (long "version" <> short 'V' <> help "Output version info.")
