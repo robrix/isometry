@@ -3,6 +3,7 @@
 module Isometry.Voxel
 ( B(..)
 , V(..)
+, M(..)
 ) where
 
 -- | The shape of binary trees.
@@ -16,3 +17,13 @@ data V s a where
   VZ :: V s a
   VL :: a -> V 'L a
   VB :: V s1 a -> V s2 a -> V ('B s1 s2) a
+
+-- | Sparse matrices.
+data M x y a where
+  MZ :: M x y a
+  ML :: a -> M 'L 'L a
+  MX :: M x1 'L a -> M x2 'L a -> M ('B x1 x2) 'L a
+  MY :: M 'L y1 a -> M 'L y2 a -> M 'L ('B y1 y2) a
+  MQ :: M x1 y1 a -> M x2 y1 a
+     -> M x1 y2 a -> M x2 y2 a
+     -> M ('B x1 x2) ('B y1 y2) a
