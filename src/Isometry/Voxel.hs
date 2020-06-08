@@ -30,7 +30,9 @@ data M x y a where
      -> M x1 y2 a -> M x2 y2 a
      -> M ('B x1 x2) ('B y1 y2) a
 
--- | Sparse volumes (mnemonic: O is for Octree).
+-- | Sparse volumes.
+--
+-- Mnemonic: O is for Octree.
 data O x y z a where
   OE :: O x y z a
   OL :: a -> O 'L 'L 'L a
