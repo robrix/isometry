@@ -22,6 +22,7 @@ data V s a where
 data M x y a where
   ME :: M x y a
   ML :: a -> M 'L 'L a
+  -- FIXME: should MX & MY hold a vector instead?
   MX :: M x1 'L a -> M x2 'L a -> M ('B x1 x2) 'L a
   MY :: M 'L y1 a -> M 'L y2 a -> M 'L ('B y1 y2) a
   MQ :: M x1 y1 a -> M x2 y1 a
