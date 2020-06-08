@@ -10,7 +10,6 @@ module Starlight.View
 ( View(..)
 , contextSize
 , lengthToWindowPixels
-, zoomForSpeed
 , withView
   -- * Transforms
 , transformToWindow
@@ -23,32 +22,26 @@ module Starlight.View
 ) where
 
 import Control.Carrier.Reader
-import Control.Effect.Lens (view)
 import Control.Effect.Lift
 import Control.Lens ((&), (.~))
-import Data.Coerce
 import Data.Functor.I
 import Data.Functor.Interval
 import Geometry.Transform
 import GL.Shader.DSL (ClipUnits(..))
 import GL.Viewport
 import Linear.Exts
-import Starlight.Actor
-import Starlight.Body
-import Starlight.Physics
-import Starlight.System
 import UI.Context as Context
 import UI.Window as Window
 import Unit.Algebra
 import Unit.Length
-import Unit.Time
+
+type Distance = Metres
 
 data View = View
   { ratio     :: I Int    -- ^ Ratio of window pixels per context pixel.
   , size      :: V2 (Window.Coords Int)
   , zoom      :: I Double
   , scale     :: (Window.Coords :/: Distance) Double
-  , shipScale :: I Double
   , focus     :: V2 (Distance Double)
   }
 
@@ -58,23 +51,8 @@ contextSize View{ ratio, size } = Context.Pixels . Window.getCoords <$> ratio .*
 lengthToWindowPixels :: View -> (Window.Coords :/: Distance) Double
 lengthToWindowPixels View{ zoom, scale } = scale .*. zoom
 
--- | Compute the zoom factor for the given velocity.
---
--- Higher values correlate to more of the scene being visible.
-zoomForSpeed :: V2 (Window.Coords Int) -> (Distance :/: Seconds) Double -> I Double
-zoomForSpeed size x
-  | distance < inf bounds = inf zoom
-  | distance > sup bounds = sup zoom
-  | otherwise             = fromUnit zoom (coerce easeInOutCubic (toUnit bounds distance))
-  where
-  hypotenuse = norm (fmap fromIntegral <$> size)
-  distance = I (convert @Distance @(Mega Metres) (x .*. Seconds 1) ./. hypotenuse) -- how much of the screen will be traversed in a second
-  zoom = 1...1/5
-  bounds = (1...(20 :: Mega Metres Double)) ^/. hypotenuse
-
 withView
   :: ( Has (Lift IO) sig m
-     , Has (Reader (System StateVectors)) sig m
      , Has (Reader Window.Window) sig m
      )
   => ReaderC View m a
@@ -83,16 +61,13 @@ withView m = do
   ratio <- Window.ratio
   size  <- Window.size
 
-  velocity <- view (player_ @StateVectors .velocity_)
-  focus    <- view (player_ @StateVectors .position_._xy)
-
-  let zoom = zoomForSpeed size (norm velocity)
+  let zoom = 1
+      focus = 0
       -- how many pixels to draw something / the radius of the sun
       scale = Window.Coords 695_500 ./. convert @(Kilo Metres) @Distance 695_500
       -- FIXME: this is really stupid; there *has* to be a better way to say “I want a 500 m ship to be 30 px long” or w/e
-      shipScale = 30
 
-  runReader View{ ratio, size, zoom, scale, shipScale, focus } m
+  runReader View{ ratio, size, zoom, scale, focus } m
 
 
 transformToWindow :: View -> Transform V4 Double Window.Coords ClipUnits
