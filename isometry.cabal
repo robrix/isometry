@@ -88,15 +88,15 @@ library
     GL.Viewport
     GL.Uniform
     Isometry.CLI
+    Isometry.Draw
+    Isometry.Game
+    Isometry.Input
     Isometry.Main
+    Isometry.Time
+    Isometry.UI
+    Isometry.View
     Isometry.Voxel
     Linear.Exts
-    Starlight.Draw
-    Starlight.Game
-    Starlight.Input
-    Starlight.Time
-    Starlight.UI
-    Starlight.View
     Stochastic.Distribution
     Stochastic.Histogram
     Stochastic.PDF

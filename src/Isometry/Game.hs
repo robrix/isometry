@@ -6,7 +6,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeOperators #-}
-module Starlight.Game
+module Isometry.Game
 ( game
 ) where
 
@@ -25,9 +25,9 @@ import           GL
 import           GL.Effect.Check
 import           Linear.Exts
 import qualified SDL
-import           Starlight.Draw
-import           Starlight.Input
-import           Starlight.UI
+import           Isometry.Draw
+import           Isometry.Input
+import           Isometry.UI
 import           Stochastic.Sample.Markov
 import           System.FilePath
 import           System.Random.SplitMix (SMGen, newSMGen)
@@ -52,7 +52,7 @@ runGame
   -> m a
 runGame
   = Window.runSDL
-  . Window.runWindow "Starlight" (V2 1024 768)
+  . Window.runWindow "Isometry" (V2 1024 768)
   . runContext
   . runGLC
   . runFinally

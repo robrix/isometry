@@ -3,7 +3,7 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeApplications #-}
-module Starlight.Draw
+module Isometry.Draw
 ( runFrame
 , frame
 ) where
@@ -18,10 +18,10 @@ import Data.Time.Clock
 import GL.Effect.Check
 import GL.Framebuffer
 import Graphics.GL.Core41
-import Starlight.Input
-import Starlight.Time
-import Starlight.UI
-import Starlight.View
+import Isometry.Input
+import Isometry.Time
+import Isometry.UI
+import Isometry.View
 import UI.Colour
 import UI.Label
 import UI.Typeface
@@ -46,7 +46,7 @@ frame
      )
   => m ()
 frame = do
-  measure "input" Starlight.Input.input
+  measure "input" Isometry.Input.input
   withView . measure "draw" . runLiftIO $ do
     UI{ target, face } <- ask
     let font = Font face 18

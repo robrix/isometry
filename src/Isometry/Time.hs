@@ -1,4 +1,4 @@
-module Starlight.Time
+module Isometry.Time
 ( now
 , since
 , timed

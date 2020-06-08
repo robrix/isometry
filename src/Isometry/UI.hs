@@ -1,4 +1,4 @@
-module Starlight.UI
+module Isometry.UI
 ( UI(..)
 ) where
 

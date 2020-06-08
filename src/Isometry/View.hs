@@ -6,7 +6,7 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
-module Starlight.View
+module Isometry.View
 ( View(..)
 , contextSize
 , lengthToWindowPixels
