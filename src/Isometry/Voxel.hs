@@ -40,7 +40,16 @@ data O x y z a where
   OX :: O x1 'L 'L a -> O x2 'L 'L a -> O ('B x1 x2) 'L 'L a
   OY :: O 'L y1 'L a -> O 'L y2 'L a -> O 'L ('B y1 y2) 'L a
   OZ :: O 'L 'L z1 a -> O 'L 'L z2 a -> O 'L 'L ('B z1 z2) a
-  -- FIXME: do we need planar constructors?
+  -- FIXME: should OXY, OYZ, & OXZ hold a matrix instead?
+  OXY :: O x1 y1 'L a -> O x2 y1 'L a
+      -> O x1 y2 'L a -> O x2 y2 'L a
+      -> O ('B x1 x2) ('B y1 y2) 'L a
+  OYZ :: O 'L y1 z1 a -> O 'L y2 z1 a
+      -> O 'L y1 z2 a -> O 'L y2 z2 a
+      -> O 'L ('B y1 y2) ('B z1 z2) a
+  OXZ :: O x1 'L z1 a -> O x2 'L z1 a
+      -> O x1 'L z2 a -> O x2 'L z2 a
+      -> O ('B x1 x2) 'L ('B z1 z2) a
   OO :: O x1 y1 z1 a -> O x2 y1 z1 a
      -> O x1 y2 z1 a -> O x2 y2 z1 a
      -> O x1 y1 z2 a -> O x2 y1 z2 a
