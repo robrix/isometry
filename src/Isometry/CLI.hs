@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE TypeApplications #-}
-module Starlight.CLI
+module Isometry.CLI
 ( Options(..)
 , ShouldProfile(..)
 , ShouldTrace(..)

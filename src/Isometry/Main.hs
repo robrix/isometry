@@ -24,7 +24,7 @@ import           Data.Kind (Constraint, Type)
 import qualified GL.Carrier.Check.Identity as NoCheck
 import qualified GL.Carrier.Check.IO as Check
 import           GL.Effect.Check
-import qualified Starlight.CLI as CLI
+import qualified Isometry.CLI as CLI
 import           Starlight.Game
 
 main :: IO ()

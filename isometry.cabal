@@ -87,6 +87,7 @@ library
     GL.Type
     GL.Viewport
     GL.Uniform
+    Isometry.CLI
     Isometry.Main
     Isometry.Voxel
     Linear.Exts
@@ -94,7 +95,6 @@ library
     Starlight.AI
     Starlight.Body
     Starlight.Character
-    Starlight.CLI
     Starlight.Controls
     Starlight.Draw
     Starlight.Draw.Body
