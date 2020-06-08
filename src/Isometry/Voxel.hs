@@ -4,6 +4,7 @@ module Isometry.Voxel
 ( B(..)
 , V(..)
 , M(..)
+, O(..)
 ) where
 
 -- | The shape of binary trees.
@@ -28,3 +29,18 @@ data M x y a where
   MQ :: M x1 y1 a -> M x2 y1 a
      -> M x1 y2 a -> M x2 y2 a
      -> M ('B x1 x2) ('B y1 y2) a
+
+-- | Sparse volumes (mnemonic: O is for Octree).
+data O x y z a where
+  OE :: O x y z a
+  OL :: a -> O 'L 'L 'L a
+  -- FIXME: should OX, OY, & OZ hold a vector instead?
+  OX :: O x1 'L 'L a -> O x2 'L 'L a -> O ('B x1 x2) 'L 'L a
+  OY :: O 'L y1 'L a -> O 'L y2 'L a -> O 'L ('B y1 y2) 'L a
+  OZ :: O 'L 'L z1 a -> O 'L 'L z2 a -> O 'L 'L ('B z1 z2) a
+  -- FIXME: do we need planar constructors?
+  OO :: O x1 y1 z1 a -> O x2 y1 z1 a
+     -> O x1 y2 z1 a -> O x2 y2 z1 a
+     -> O x1 y1 z2 a -> O x2 y1 z2 a
+     -> O x1 y2 z2 a -> O x2 y2 z2 a
+     -> O ('B x1 x2) ('B y1 y2) ('B z1 z2) a
