@@ -56,6 +56,9 @@ frame = do
 
     clipTo v
 
+    glClearColor 0 0 0 0
+    glClear GL_COLOR_BUFFER_BIT
+
     glBlendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 
     measure "setLabel" $ setLabel target font "hello"
