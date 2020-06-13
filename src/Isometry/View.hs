@@ -75,6 +75,7 @@ transformToWindow View{ size }
   -- NB: we *always* use 2/size, rather than ratio/size, because clip space always extends from -1...1, i.e. it always has diameter 2. this is true irrespective of the DPI ratio.
   = mkScale (pure 1 & _xy .~ ClipUnits 2 ./^ (fmap fromIntegral <$> size))
 
+-- fixme: shouldn’t we apply the zoom factor *after* the rest?
 transformToZoomed :: View -> Transform V4 Double Window.Coords ClipUnits
 transformToZoomed view@View{ zoom }
   =   transformToWindow view
