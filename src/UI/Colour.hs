@@ -12,6 +12,9 @@ module UI.Colour
 , red
 , green
 , blue
+, cyan
+, magenta
+, yellow
 , uniformRGB
 , _r
 , _g
@@ -52,6 +55,13 @@ green = V4 0 1 0 1
 
 blue :: Num a => Colour a
 blue = V4 0 0 1 1
+
+
+cyan, magenta, yellow :: Num a => Colour a
+
+cyan = V4 0 1 1 1
+magenta = V4 1 0 1 1
+yellow = V4 1 1 0 1
 
 
 uniformRGB :: (RealFrac a, Has Random sig m) => m (Colour a)
