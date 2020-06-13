@@ -62,12 +62,15 @@ newtype Drawable = Drawable { getDrawable :: UI.Drawable U V Frag }
 
 vertices :: [V I]
 vertices =
-  [ V (I v) (I colour) | (axis, colour) <- axes, v <- [0, unit axis] ]
+  [ V (I v) (I colour) | (axis, colour) <- axes, v <- [0, axis] ]
   where
   axes =
-    [ (_x, UI.red)
-    , (_y, UI.green)
-    , (_z, UI.blue)
+    [ ( unit _x, UI.red)
+    , ( unit _y, UI.green)
+    , ( unit _z, UI.blue)
+    , (-unit _x, UI.cyan)
+    , (-unit _y, UI.magenta)
+    , (-unit _z, UI.yellow)
     ]
 
 range :: Interval I Int
