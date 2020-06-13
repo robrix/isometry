@@ -133,8 +133,16 @@ frame = timed $ do
   turnRate = I pi ./. Seconds 1
 
 
-octree :: O 'L 'L 'L ()
-octree = OL ()
+octree1 :: O 'L 'L 'L ()
+octree1 = OL ()
+
+octree2 :: O ('B 'L 'L) ('B 'L 'L) ('B 'L 'L) ()
+octree2 = OO
+  (OL ()) (OL ())
+  (OL ()) (OL ())
+
+  (OL ()) (OL ())
+  (OL ()) (OL ())
 
 
 runDrawable
