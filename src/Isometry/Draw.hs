@@ -184,25 +184,29 @@ makeVertices o = go id (sizeO o) o
   go offset n = \case
     OE -> []
     OL _ -> map offset vertices
-    OX x1 x2 -> go offset n x1 <> go offset n x2
-    OY y1 y2 -> go offset n y1 <> go offset n y2
-    OZ z1 z2 -> go offset n z1 <> go offset n z2
+    OX x1 x2 -> go offset n' x1 <> go offset n' x2
+    OY y1 y2 -> go offset n' y1 <> go offset n' y2
+    OZ z1 z2 -> go offset n' z1 <> go offset n' z2
     OXY x1y1 x2y1
-        x1y2 x2y2 -> go offset n x1y1 <> go offset n x2y1
-                  <> go offset n x1y2 <> go offset n x2y2
+        x1y2 x2y2 -> go offset n' x1y1 <> go offset n' x2y1
+                  <> go offset n' x1y2 <> go offset n' x2y2
     OXZ x1z1 x2z1
-        x1z2 x2z2 -> go offset n x1z1 <> go offset n x2z1
-                  <> go offset n x1z2 <> go offset n x2z2
+        x1z2 x2z2 -> go offset n' x1z1 <> go offset n' x2z1
+                  <> go offset n' x1z2 <> go offset n' x2z2
     OYZ y1z1 y2z1
-        y1z2 y2z2 -> go offset n y1z1 <> go offset n y2z1
-                  <> go offset n y1z2 <> go offset n y2z2
+        y1z2 y2z2 -> go offset n' y1z1 <> go offset n' y2z1
+                  <> go offset n' y1z2 <> go offset n' y2z2
     OO x1y1z1 x2y1z1
        x1y2z1 x2y2z1
        x1y1z2 x2y1z2
-       x1y2z2 x2y2z2 -> go offset n x1y1z1 <> go offset n x2y1z1
-                     <> go offset n x1y2z1 <> go offset n x2y2z1
-                     <> go offset n x1y1z2 <> go offset n x2y1z2
-                     <> go offset n x1y2z2 <> go offset n x2y2z2
+       x1y2z2 x2y2z2 -> go offset n' x1y1z1 <> go offset n' x2y1z1
+                     <> go offset n' x1y2z1 <> go offset n' x2y2z1
+                     <> go offset n' x1y1z2 <> go offset n' x2y1z2
+                     <> go offset n' x1y2z2 <> go offset n' x2y2z2
+    where
+    n' = split <$> n
+  split 1 = 1
+  split v = v `div` 2
 
 
 newtype Drawable = Drawable { getDrawable :: UI.Drawable U V Frag }
