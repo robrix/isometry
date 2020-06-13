@@ -107,13 +107,23 @@ newtype Drawable = Drawable { getDrawable :: UI.Drawable U V Frag }
 
 vertices :: [V I]
 vertices = coerce @[V3 (Metres Float)]
-  [ V3 (-1) (-1) (-1)
+  [ -- far
+    V3 (-1) (-1) (-1)
   , V3   1  (-1) (-1)
   , V3   1    1  (-1)
 
   , V3   1    1  (-1)
   , V3 (-1)   1  (-1)
   , V3 (-1) (-1) (-1)
+
+    -- near
+  , V3 (-1) (-1)   1
+  , V3   1  (-1)   1
+  , V3   1    1    1
+
+  , V3   1    1    1
+  , V3 (-1)   1    1
+  , V3 (-1) (-1)   1
 
   ]
 
