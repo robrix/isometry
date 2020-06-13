@@ -7,6 +7,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE TypeOperators #-}
 module Isometry.Draw
 ( runFrame
 , frame
@@ -16,11 +17,12 @@ import           Control.Carrier.Empty.Church
 import           Control.Carrier.Reader
 import           Control.Carrier.State.Church
 import           Control.Effect.Finally
-import           Control.Effect.Lens ((?=))
+import           Control.Effect.Lens (use, (%=), (?=))
 import           Control.Effect.Lift
 import           Control.Effect.Profile
 import           Control.Effect.Trace
-import           Control.Lens (Lens')
+import           Control.Lens (Lens', (^.))
+import           Control.Monad (when)
 import           Control.Monad.IO.Class.Lift
 import           Data.Coerce
 import           Data.Functor.I
@@ -32,21 +34,24 @@ import           GHC.Generics (Generic)
 import           GL.Array
 import           GL.Effect.Check
 import           GL.Framebuffer
-import           GL.Shader.DSL as D hiding (get, (./.), _x, _y, _z)
+import           GL.Shader.DSL as D hiding (get, (.*.), (./.), (^.), _x, _y, _z)
 import           Graphics.GL.Core41
-import           Isometry.Input
+import           Isometry.Input as Input
 import           Isometry.Time
 import           Isometry.UI
 import           Isometry.View as View
 import           Linear.Quaternion
 import           Linear.V3
 import           Linear.Vector
+import qualified SDL
 import qualified UI.Colour as UI
 import qualified UI.Drawable as UI
 import           UI.Label
 import           UI.Typeface
 import           UI.Window as Window
+import           Unit.Angle
 import           Unit.Length
+import           Unit.Time
 
 runFrame
   :: ( Has Check sig m
@@ -55,11 +60,21 @@ runFrame
      , Has Trace sig m
      )
   => ReaderC Drawable
+    (ReaderC (Seconds Double)
     (StateC UTCTime
+    (StateC Player
     (EmptyC
-    m)) a
+    m)))) a
   -> m ()
-runFrame = evalEmpty . (\ m -> now >>= \ start -> evalState start m) . runDrawable
+runFrame = evalEmpty . evalState Player{ angle = pi/4 } . (\ m -> now >>= \ start -> evalState start m) . timed . runDrawable
+
+newtype Player = Player
+  { angle :: I Double
+  }
+  deriving (Generic)
+
+angle_ :: Lens' Player (I Double)
+angle_ = field @"angle"
 
 frame
   :: ( Has Check sig m
@@ -67,19 +82,30 @@ frame
      , Has (Lift IO) sig m
      , Has Profile sig m
      , Has (Reader Drawable) sig m
+     , Has (Reader (Seconds Double)) sig m
      , Has (Reader UI) sig m
      , Has (Reader Window.Window) sig m
      , Has (State Input) sig m
+     , Has (State Player) sig m
      )
   => m ()
 frame = do
-  measure "input" Isometry.Input.input
+  measure "input" Input.input
+
+  dt <- ask @(Seconds _)
+  input <- get @Input
+
+  when (input^.pressed_ SDL.KeycodeQ) $ angle_ %= \ angle -> wrap radians (angle +   turnRate .*. dt)
+  when (input^.pressed_ SDL.KeycodeE) $ angle_ %= \ angle -> wrap radians (angle + (-turnRate .*. dt))
+
+  angle <- use angle_
+
   withView . measure "draw" . runLiftIO $ do
     UI{ target, face } <- ask
     let font = Font face 18
     bind @Framebuffer Nothing
 
-    v@View{ angle } <- ask
+    v@View{} <- ask
 
     clipTo v
 
@@ -99,6 +125,10 @@ frame = do
 
     measure "setLabel" $ setLabel target font "hello"
     measure "drawLabel" $ drawLabel target 10 UI.white Nothing
+  where
+  turnRate :: (I :/: Seconds) Double
+  turnRate = I (2000 * pi) ./. Seconds 1
+  -- fixme: 2000 radians per second? why??
 
 
 runDrawable

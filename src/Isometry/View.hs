@@ -42,7 +42,6 @@ data View = View
   , zoom      :: I Double
   , scale     :: (Window.Coords :/: Distance) Double
   , focus     :: V2 (Distance Double)
-  , angle     :: I Double
   }
 
 contextSize :: View -> V2 (Context.Pixels Int)
@@ -63,11 +62,10 @@ withView m = do
 
   let zoom = 1
       focus = 0
-      angle = pi/4
       -- how many pixels to draw something / one metre across
       scale = Window.Coords 10 ./. Metres 1
 
-  runReader View{ ratio, size, zoom, scale, focus, angle } m
+  runReader View{ ratio, size, zoom, scale, focus } m
 
 
 transformToWindow :: View -> Transform V4 Double Window.Coords ClipUnits
