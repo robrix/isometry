@@ -32,12 +32,15 @@ import           GHC.Generics (Generic)
 import           GL.Array
 import           GL.Effect.Check
 import           GL.Framebuffer
-import           GL.Shader.DSL as D hiding (get, (./.))
+import           GL.Shader.DSL as D hiding (get, (./.), _x, _y, _z)
 import           Graphics.GL.Core41
 import           Isometry.Input
 import           Isometry.Time
 import           Isometry.UI
-import           Isometry.View
+import           Isometry.View as View
+import           Linear.Quaternion
+import           Linear.V3
+import           Linear.Vector
 import qualified UI.Colour as UI
 import qualified UI.Drawable as UI
 import           UI.Label
@@ -81,7 +84,11 @@ frame = do
     glClear GL_COLOR_BUFFER_BIT
 
     UI.using getDrawable $ do
-      matrix_ ?= tmap realToFrac (transformToSystem v)
+      matrix_ ?= tmap realToFrac
+        (   transformToSystem v
+        <<< View.mkRotation
+          ( axisAngle (unit _x) (pi/4)
+          * axisAngle (unit _y) (pi/4)))
 
       drawArrays Triangles range
 
