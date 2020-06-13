@@ -14,6 +14,9 @@ module Isometry.Voxel
 , toOX
 , toOY
 , toOZ
+, fromOX
+, fromOY
+, fromOZ
 ) where
 
 -- | The shape of binary trees.
@@ -108,6 +111,20 @@ toOZ VE       = OE
 toOZ (VL a)   = OL a
 toOZ (VB l r) = OZ (toOZ l) (toOZ r)
 
+fromOX :: O x 'L 'L a -> V x a
+fromOX OE       = VE
+fromOX (OL a)   = VL a
+fromOX (OX l r) = VB (fromOX l) (fromOX r)
+
+fromOY :: O 'L y 'L a -> V y a
+fromOY OE       = VE
+fromOY (OL a)   = VL a
+fromOY (OY l r) = VB (fromOY l) (fromOY r)
+
+fromOZ :: O 'L 'L z a -> V z a
+fromOZ OE       = VE
+fromOZ (OL a)   = VL a
+fromOZ (OZ l r) = VB (fromOZ l) (fromOZ r)
 
 
 -- FIXME: indicate which sides are present
