@@ -3,6 +3,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
@@ -11,6 +12,7 @@ module Isometry.Voxel
 ( B(..)
 , Size
 , V(..)
+, sizeV
 , M(..)
 , toMX
 , toMY
@@ -31,6 +33,7 @@ module Isometry.Voxel
 , fromOYZ
 ) where
 
+import Data.Proxy
 import GHC.TypeLits
 
 -- | The shape of (non-empty) binary trees.
@@ -65,6 +68,9 @@ instance (Applicative (V l), Applicative (V r)) => Applicative (V ('B l r)) wher
   VE       <*> _        = VE
   _        <*> VE       = VE
   VB fl fr <*> VB al ar = VB (fl <*> al) (fr <*> ar)
+
+sizeV :: forall s a . KnownNat (Size s) => V s a -> Integer
+sizeV _ = natVal (Proxy :: Proxy (Size s))
 
 
 -- fixme: should this be a 2d composition of V?
