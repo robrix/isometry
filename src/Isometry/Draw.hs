@@ -54,7 +54,10 @@ runFrame
      , Has Trace sig m
      , Has (Lift IO) sig m
      )
-  => ReaderC Drawable (StateC UTCTime (EmptyC m)) a
+  => ReaderC Drawable
+    (StateC UTCTime
+    (EmptyC
+    m)) a
   -> m ()
 runFrame = evalEmpty . (\ m -> now >>= \ start -> evalState start m) . runDrawable
 
