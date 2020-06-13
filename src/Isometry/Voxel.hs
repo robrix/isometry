@@ -4,8 +4,12 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE UndecidableInstances #-}
 module Isometry.Voxel
 ( B(..)
+, Size
 , V(..)
 , M(..)
 , toMX
@@ -27,10 +31,17 @@ module Isometry.Voxel
 , fromOYZ
 ) where
 
+import GHC.TypeLits
+
 -- | The shape of binary trees.
 data B
   = L
   | B B B
+
+type family Size (b :: B) :: Nat where
+  Size 'L       = 1
+  Size ('B l r) = Size l + Size r
+
 
 -- | Sparse vectors.
 data V s a where
