@@ -60,6 +60,7 @@ runFrame
      , Has Trace sig m
      )
   => ReaderC Drawable
+    (ReaderC Axis.Drawable
     (ReaderC (Seconds Double)
     (StateC UTCTime
     (StateC Player
@@ -100,7 +101,7 @@ frame = do
 
   angle <- use angle_
 
-  withView . measure "draw" . runLiftIO $ do
+  withView angle . measure "draw" . runLiftIO $ do
     UI{ target, face } <- ask
     let font = Font face 18
     bind @Framebuffer Nothing
