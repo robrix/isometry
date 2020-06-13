@@ -89,6 +89,7 @@ library
     GL.Uniform
     Isometry.CLI
     Isometry.Draw
+    Isometry.Draw.Axis
     Isometry.Game
     Isometry.Input
     Isometry.Main
