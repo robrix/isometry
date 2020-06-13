@@ -20,6 +20,9 @@ module Isometry.Voxel
 , toOXY
 , toOXZ
 , toOYZ
+, fromOXY
+, fromOXZ
+, fromOYZ
 ) where
 
 -- | The shape of binary trees.
@@ -149,6 +152,27 @@ toOYZ (ML a)                   = OL a
 toOYZ (MX l r)                 = OY (toOYZ l) (toOYZ r)
 toOYZ (MY l r)                 = OZ (toOYZ l) (toOYZ r)
 toOYZ (MQ x1y1 x2y1 x1y2 x2y2) = OYZ (toOYZ x1y1) (toOYZ x2y1) (toOYZ x1y2) (toOYZ x2y2)
+
+fromOXY :: O x y 'L a -> M x y a
+fromOXY OE                        = ME
+fromOXY (OL a)                    = ML a
+fromOXY (OX l r)                  = MX (fromOXY l) (fromOXY r)
+fromOXY (OY l r)                  = MY (fromOXY l) (fromOXY r)
+fromOXY (OXY x1y1 x2y1 x1y2 x2y2) = MQ (fromOXY x1y1) (fromOXY x2y1) (fromOXY x1y2) (fromOXY x2y2)
+
+fromOXZ :: O x 'L z a -> M x z a
+fromOXZ OE                        = ME
+fromOXZ (OL a)                    = ML a
+fromOXZ (OX l r)                  = MX (fromOXZ l) (fromOXZ r)
+fromOXZ (OZ l r)                  = MY (fromOXZ l) (fromOXZ r)
+fromOXZ (OXZ x1y1 x2y1 x1y2 x2y2) = MQ (fromOXZ x1y1) (fromOXZ x2y1) (fromOXZ x1y2) (fromOXZ x2y2)
+
+fromOYZ :: O 'L y z a -> M y z a
+fromOYZ OE                        = ME
+fromOYZ (OL a)                    = ML a
+fromOYZ (OY l r)                  = MX (fromOYZ l) (fromOYZ r)
+fromOYZ (OZ l r)                  = MY (fromOYZ l) (fromOYZ r)
+fromOYZ (OYZ x1y1 x2y1 x1y2 x2y2) = MQ (fromOYZ x1y1) (fromOYZ x2y1) (fromOYZ x1y2) (fromOYZ x2y2)
 
 
 -- FIXME: indicate which sides are present
