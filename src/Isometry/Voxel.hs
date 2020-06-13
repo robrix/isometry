@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveTraversable #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE StandaloneDeriving #-}
 module Isometry.Voxel
@@ -39,6 +40,12 @@ data V s a where
 deriving instance Foldable (V s)
 deriving instance Functor (V s)
 deriving instance Traversable (V s)
+
+instance Applicative (V 'L) where
+  pure = VL
+
+  VE   <*> _ = VE
+  VL f <*> a = fmap f a
 
 
 -- | Sparse matrices.
