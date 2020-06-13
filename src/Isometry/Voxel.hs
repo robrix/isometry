@@ -20,6 +20,7 @@ module Isometry.Voxel
 , fromMX
 , fromMY
 , O(..)
+, sizeO
 , toOX
 , toOY
 , toOZ
@@ -37,6 +38,7 @@ module Isometry.Voxel
 import Data.Proxy
 import GHC.TypeLits
 import Linear.V2
+import Linear.V3
 
 -- | The shape of (non-empty) binary trees.
 data B
@@ -148,6 +150,10 @@ data O x y z a where
 deriving instance Foldable (O x y z)
 deriving instance Functor (O x y z)
 deriving instance Traversable (O x y z)
+
+sizeO :: forall x y z a . (KnownNat (Size x), KnownNat (Size y), KnownNat (Size z)) => O x y z a -> V3 Integer
+sizeO _ = V3 (natVal (Proxy :: Proxy (Size x))) (natVal (Proxy :: Proxy (Size y))) (natVal (Proxy :: Proxy (Size z)))
+
 
 toOX :: V x a -> O x 'L 'L a
 toOX VE       = OE
