@@ -59,17 +59,15 @@ runFrame
      )
   => ReaderC Drawable
     (ReaderC Axis.Drawable
-    (ReaderC (Seconds Double)
     (StateC UTCTime
     (StateC Player
     (EmptyC
-    m))))) a
+    m)))) a
   -> m ()
 runFrame
   = evalEmpty
   . evalState Player{ angle = -pi/4 }
   . (\ m -> now >>= \ start -> evalState start m)
-  . timed
   . Axis.runDrawable
   . runDrawable
 
@@ -88,14 +86,14 @@ frame
      , Has Profile sig m
      , Has (Reader Axis.Drawable) sig m
      , Has (Reader Drawable) sig m
-     , Has (Reader (Seconds Double)) sig m
      , Has (Reader UI) sig m
      , Has (Reader Window.Window) sig m
      , Has (State Input) sig m
      , Has (State Player) sig m
+     , Has (State UTCTime) sig m
      )
   => m ()
-frame = do
+frame = timed $ do
   measure "input" Input.input
 
   dt <- ask @(Seconds _)
@@ -131,8 +129,7 @@ frame = do
     measure "drawLabel" $ drawLabel target 10 UI.white Nothing
   where
   turnRate :: (I :/: Seconds) Double
-  turnRate = I (2000 * pi) ./. Seconds 1
-  -- fixme: 2000 radians per second? why??
+  turnRate = I pi ./. Seconds 1
 
 
 runDrawable
