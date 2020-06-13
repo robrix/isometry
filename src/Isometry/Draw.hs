@@ -36,6 +36,7 @@ import           GL.Effect.Check
 import           GL.Framebuffer
 import           GL.Shader.DSL as D hiding (get, (.*.), (./.), (^.), _x, _y, _z)
 import           Graphics.GL.Core41
+import qualified Isometry.Draw.Axis as Axis
 import           Isometry.Input as Input
 import           Isometry.Time
 import           Isometry.UI
@@ -65,9 +66,9 @@ runFrame
     (StateC UTCTime
     (StateC Player
     (EmptyC
-    m)))) a
+    m))))) a
   -> m ()
-runFrame = evalEmpty . evalState Player{ angle = pi/4 } . (\ m -> now >>= \ start -> evalState start m) . timed . runDrawable
+runFrame = evalEmpty . evalState Player{ angle = pi/4 } . (\ m -> now >>= \ start -> evalState start m) . timed . Axis.runDrawable . runDrawable
 
 newtype Player = Player
   { angle :: I Double
@@ -82,6 +83,7 @@ frame
      , Has Empty sig m
      , Has (Lift IO) sig m
      , Has Profile sig m
+     , Has (Reader Axis.Drawable) sig m
      , Has (Reader Drawable) sig m
      , Has (Reader (Seconds Double)) sig m
      , Has (Reader UI) sig m
@@ -112,6 +114,8 @@ frame = do
 
     glClearColor 0 0 0 0
     glClear GL_COLOR_BUFFER_BIT
+
+    Axis.draw
 
     UI.using getDrawable $ do
       matrix_ ?= tmap realToFrac
