@@ -81,10 +81,13 @@ transformToZoomed view@View{ zoom }
   <<< mkScale (pure zoom)
 
 transformToSystem :: View -> Transform V4 Double Distance ClipUnits
-transformToSystem view@View{ scale, focus }
+transformToSystem view@View{ scale, focus, angle }
   =   transformToZoomed view
   <<< mkScale (pure scale)
   <<< mkTranslation (ext (negated focus) 0)
+  <<< mkRotation
+      ( axisAngle (unit _x) (pi/4)
+      * axisAngle (unit _y) angle)
 
 
 clipTo :: Has (Lift IO) sig m => View -> m ()

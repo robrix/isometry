@@ -27,7 +27,6 @@ import           GL.Array
 import           GL.Effect.Check
 import           GL.Shader.DSL as D hiding (get, (.*.), (./.), (^.), _x, _y, _z)
 import           Isometry.View as View
-import           Linear.Quaternion
 import           Linear.V3
 import           Linear.Vector
 import           UI.Colour as UI
@@ -42,12 +41,8 @@ draw
      )
   => m ()
 draw = UI.using getDrawable $ do
-  v@View{ angle } <- ask
-  matrix_ ?= tmap realToFrac
-    (   transformToSystem v
-    <<< View.mkRotation
-      ( axisAngle (unit _x) (pi/4)
-      * axisAngle (unit _y) angle))
+  v <- ask
+  matrix_ ?= tmap realToFrac (transformToSystem v)
   drawArrays Lines range
 
 

@@ -41,9 +41,6 @@ import           Isometry.Input as Input
 import           Isometry.Time
 import           Isometry.UI
 import           Isometry.View as View
-import           Linear.Quaternion
-import           Linear.V3
-import           Linear.Vector
 import qualified SDL
 import qualified UI.Colour as UI
 import qualified UI.Drawable as UI
@@ -118,11 +115,7 @@ frame = do
     Axis.draw
 
     UI.using getDrawable $ do
-      matrix_ ?= tmap realToFrac
-        (   transformToSystem v
-        <<< View.mkRotation
-          ( axisAngle (unit _x) (pi/4)
-          * axisAngle (unit _y) angle))
+      matrix_ ?= tmap realToFrac (transformToSystem v)
 
       drawArrays Triangles range
 
