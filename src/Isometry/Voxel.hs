@@ -1,5 +1,7 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DeriveFoldable #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE StandaloneDeriving #-}
 module Isometry.Voxel
 ( B(..)
 , V(..)
@@ -19,6 +21,9 @@ data V s a where
   VL :: a -> V 'L a
   VB :: V s1 a -> V s2 a -> V ('B s1 s2) a
 
+deriving instance Foldable (V s)
+
+
 -- | Sparse matrices.
 data M x y a where
   ME :: M x y a
@@ -29,6 +34,9 @@ data M x y a where
   MQ :: M x1 y1 a -> M x2 y1 a
      -> M x1 y2 a -> M x2 y2 a
      -> M ('B x1 x2) ('B y1 y2) a
+
+deriving instance Foldable (M x y)
+
 
 -- | Sparse volumes.
 --
@@ -55,5 +63,8 @@ data O x y z a where
      -> O x1 y1 z2 a -> O x2 y1 z2 a
      -> O x1 y2 z2 a -> O x2 y2 z2 a
      -> O ('B x1 x2) ('B y1 y2) ('B z1 z2) a
+
+deriving instance Foldable (O x y z)
+
 
 -- FIXME: indicate which sides are present
