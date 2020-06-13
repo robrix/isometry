@@ -11,6 +11,9 @@ module Isometry.Voxel
 , fromMX
 , fromMY
 , O(..)
+, toOX
+, toOY
+, toOZ
 ) where
 
 -- | The shape of binary trees.
@@ -89,6 +92,22 @@ data O x y z a where
      -> O ('B x1 x2) ('B y1 y2) ('B z1 z2) a
 
 deriving instance Foldable (O x y z)
+
+toOX :: V x a -> O x 'L 'L a
+toOX VE       = OE
+toOX (VL a)   = OL a
+toOX (VB l r) = OX (toOX l) (toOX r)
+
+toOY :: V y a -> O 'L y 'L a
+toOY VE       = OE
+toOY (VL a)   = OL a
+toOY (VB l r) = OY (toOY l) (toOY r)
+
+toOZ :: V z a -> O 'L 'L z a
+toOZ VE       = OE
+toOZ (VL a)   = OL a
+toOZ (VB l r) = OZ (toOZ l) (toOZ r)
+
 
 
 -- FIXME: indicate which sides are present
