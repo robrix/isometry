@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies #-}
@@ -38,7 +39,7 @@ newtype Radians a = Radians { getRadians :: a }
 instance Unit I Radians where
   suffix = K ("rad"++)
 
-radians :: Floating a => Interval Radians a
+radians :: (Floating a, Unit I f) => Interval f a
 radians = -pi...pi
 
 
