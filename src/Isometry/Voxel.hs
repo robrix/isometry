@@ -1,6 +1,5 @@
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE DeriveFoldable #-}
-{-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE StandaloneDeriving #-}
 module Isometry.Voxel
@@ -39,6 +38,7 @@ data V s a where
 
 deriving instance Foldable (V s)
 deriving instance Functor (V s)
+deriving instance Traversable (V s)
 
 
 -- | Sparse matrices.
@@ -54,6 +54,7 @@ data M x y a where
 
 deriving instance Foldable (M x y)
 deriving instance Functor (M x y)
+deriving instance Traversable (M x y)
 
 toMX :: V x a -> M x 'L a
 toMX VE       = ME
@@ -104,6 +105,7 @@ data O x y z a where
 
 deriving instance Foldable (O x y z)
 deriving instance Functor (O x y z)
+deriving instance Traversable (O x y z)
 
 toOX :: V x a -> O x 'L 'L a
 toOX VE       = OE
