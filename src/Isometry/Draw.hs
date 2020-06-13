@@ -90,8 +90,8 @@ frame = do
       matrix_ ?= tmap realToFrac
         (   transformToSystem v
         <<< View.mkRotation
-          ( axisAngle (unit _x) angle
-          * axisAngle (unit _y) (pi/4)))
+          ( axisAngle (unit _x) (pi/4)
+          * axisAngle (unit _y) angle))
 
       drawArrays Triangles range
 
