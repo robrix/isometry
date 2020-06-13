@@ -76,7 +76,7 @@ frame = do
     let font = Font face 18
     bind @Framebuffer Nothing
 
-    v@View{} <- ask
+    v@View{ angle } <- ask
 
     clipTo v
 
@@ -87,7 +87,7 @@ frame = do
       matrix_ ?= tmap realToFrac
         (   transformToSystem v
         <<< View.mkRotation
-          ( axisAngle (unit _x) (pi/4)
+          ( axisAngle (unit _x) angle
           * axisAngle (unit _y) (pi/4)))
 
       drawArrays Triangles range
