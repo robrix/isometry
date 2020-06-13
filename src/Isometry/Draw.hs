@@ -51,8 +51,8 @@ import           Unit.Length
 runFrame
   :: ( Has Check sig m
      , Has Finally sig m
-     , Has Trace sig m
      , Has (Lift IO) sig m
+     , Has Trace sig m
      )
   => ReaderC Drawable
     (StateC UTCTime
