@@ -13,7 +13,7 @@ module Isometry.View
   -- * Transforms
 , transformToWindow
 , transformToZoomed
-, transformToSystem
+, transformToWorld
   -- * Viewport
 , clipTo
   -- * Re-exports
@@ -80,8 +80,8 @@ transformToZoomed view@View{ zoom }
   =   transformToWindow view
   <<< mkScale (pure zoom)
 
-transformToSystem :: View -> Transform V4 Double Distance ClipUnits
-transformToSystem view@View{ scale, focus, angle }
+transformToWorld :: View -> Transform V4 Double Distance ClipUnits
+transformToWorld view@View{ scale, focus, angle }
   =   transformToZoomed view
   <<< mkScale (pure scale)
   <<< mkTranslation (ext (negated focus) 0)
