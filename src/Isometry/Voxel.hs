@@ -8,6 +8,8 @@ module Isometry.Voxel
 , M(..)
 , toMX
 , toMY
+, fromMX
+, fromMY
 , O(..)
 ) where
 
@@ -48,6 +50,16 @@ toMY :: V y a -> M 'L y a
 toMY VE       = ME
 toMY (VL a)   = ML a
 toMY (VB l r) = MY (toMY l) (toMY r)
+
+fromMX :: M x 'L a -> V x a
+fromMX ME       = VE
+fromMX (ML a)   = VL a
+fromMX (MX l r) = VB (fromMX l) (fromMX r)
+
+fromMY :: M 'L y a -> V y a
+fromMY ME       = VE
+fromMY (ML a)   = VL a
+fromMY (MY l r) = VB (fromMY l) (fromMY r)
 
 
 -- | Sparse volumes.
