@@ -67,7 +67,7 @@ runFrame
   -> m ()
 runFrame
   = evalEmpty
-  . evalState Player{ angle = pi/4 }
+  . evalState Player{ angle = -pi/4 }
   . (\ m -> now >>= \ start -> evalState start m)
   . timed
   . Axis.runDrawable
