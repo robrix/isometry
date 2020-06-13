@@ -8,7 +8,6 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeOperators #-}
@@ -32,11 +31,10 @@ import           Data.Coerce
 import           Data.Functor.I
 import           Data.Functor.Interval hiding (range)
 import           Data.Generics.Product.Fields
-import           Data.Proxy
 import           Data.Time.Clock
 import           Foreign.Storable (Storable)
 import           GHC.Generics (Generic)
-import           GHC.TypeLits (KnownNat, natVal)
+import           GHC.TypeLits (KnownNat)
 import           GL.Array
 import           GL.Effect.Check
 import           GL.Framebuffer
@@ -47,7 +45,7 @@ import           Isometry.Input as Input
 import           Isometry.Time
 import           Isometry.UI
 import           Isometry.View as View
-import           Isometry.Voxel (B(..), O(..), Size)
+import           Isometry.Voxel (B(..), O(..), Size, sizeO)
 import qualified SDL
 import qualified UI.Colour as UI
 import qualified UI.Drawable as UI
@@ -170,43 +168,41 @@ runDrawable
 runDrawable = UI.loadingDrawable Drawable shader (coerce (makeVertices octree1))
 
 makeVertices
-  :: forall x y z
-  .  ( KnownNat (Size x)
+  :: ( KnownNat (Size x)
      , KnownNat (Size y)
      , KnownNat (Size z)
      )
   => O x y z ()
   -> [V3 (Metres Float)]
-makeVertices = go id
+makeVertices o = go id (sizeO o) o
   where
   go
-    :: forall x y z
-    .  (V3 (Metres Float) -> V3 (Metres Float))
+    :: (V3 (Metres Float) -> V3 (Metres Float))
+    -> V3 Integer
     -> O x y z ()
     -> [V3 (Metres Float)]
-  go offset = \case
+  go offset n = \case
     OE -> []
     OL _ -> map offset vertices
-    OX x1 x2 -> go offset x1 <> go offset x2
-    OY y1 y2 -> go offset y1 <> go offset y2
-    OZ z1 z2 -> go offset z1 <> go offset z2
+    OX x1 x2 -> go offset n x1 <> go offset n x2
+    OY y1 y2 -> go offset n y1 <> go offset n y2
+    OZ z1 z2 -> go offset n z1 <> go offset n z2
     OXY x1y1 x2y1
-        x1y2 x2y2 -> go offset x1y1 <> go offset x2y1
-                  <> go offset x1y2 <> go offset x2y2
+        x1y2 x2y2 -> go offset n x1y1 <> go offset n x2y1
+                  <> go offset n x1y2 <> go offset n x2y2
     OXZ x1z1 x2z1
-        x1z2 x2z2 -> go offset x1z1 <> go offset x2z1
-                  <> go offset x1z2 <> go offset x2z2
+        x1z2 x2z2 -> go offset n x1z1 <> go offset n x2z1
+                  <> go offset n x1z2 <> go offset n x2z2
     OYZ y1z1 y2z1
-        y1z2 y2z2 -> go offset y1z1 <> go offset y2z1
-                  <> go offset y1z2 <> go offset y2z2
+        y1z2 y2z2 -> go offset n y1z1 <> go offset n y2z1
+                  <> go offset n y1z2 <> go offset n y2z2
     OO x1y1z1 x2y1z1
        x1y2z1 x2y2z1
        x1y1z2 x2y1z2
-       x1y2z2 x2y2z2 -> go offset x1y1z1 <> go offset x2y1z1
-                     <> go offset x1y2z1 <> go offset x2y2z1
-                     <> go offset x1y1z2 <> go offset x2y1z2
-                     <> go offset x1y2z2 <> go offset x2y2z2
-  n = V3 (natVal @(Size x) Proxy) (natVal @(Size y) Proxy) (natVal @(Size z) Proxy)
+       x1y2z2 x2y2z2 -> go offset n x1y1z1 <> go offset n x2y1z1
+                     <> go offset n x1y2z1 <> go offset n x2y2z1
+                     <> go offset n x1y1z2 <> go offset n x2y1z2
+                     <> go offset n x1y2z2 <> go offset n x2y2z2
 
 
 newtype Drawable = Drawable { getDrawable :: UI.Drawable U V Frag }
