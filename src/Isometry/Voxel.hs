@@ -27,8 +27,7 @@ module Isometry.Voxel
 
 -- | The shape of binary trees.
 data B
-  = E
-  | L
+  = L
   | B B B
 
 -- | Sparse vectors.
