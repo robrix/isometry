@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveTraversable #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE StandaloneDeriving #-}
@@ -46,6 +47,13 @@ instance Applicative (V 'L) where
 
   VE   <*> _ = VE
   VL f <*> a = fmap f a
+
+instance (Applicative (V l), Applicative (V r)) => Applicative (V ('B l r)) where
+  pure a = VB (pure a) (pure a)
+
+  VE       <*> _        = VE
+  _        <*> VE       = VE
+  VB fl fr <*> VB al ar = VB (fl <*> al) (fr <*> ar)
 
 
 -- | Sparse matrices.
