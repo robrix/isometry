@@ -144,6 +144,14 @@ octree2 = OO
   (OL ()) (OL ())
   (OL ()) (OL ())
 
+octree3 :: O ('B 'L 'L) ('B 'L 'L) ('B 'L 'L) ()
+octree3 = OO
+  OE      (OL ())
+  (OL ()) OE
+
+  (OL ()) OE
+  OE      (OL ())
+
 
 runDrawable
   :: ( Has Check sig m
