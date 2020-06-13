@@ -37,23 +37,19 @@ import Linear.V4
 
 type Colour = V4
 
-black :: Num a => Colour a
-black = V4 0 0 0 1
+black, white :: Num a => Colour a
 
-white :: Num a => Colour a
+black = V4 0 0 0 1
 white = V4 1 1 1 1
 
 transparent :: Num a => Colour a
 transparent = V4 0 0 0 0
 
 
-red :: Num a => Colour a
+red, green, blue :: Num a => Colour a
+
 red = V4 1 0 0 1
-
-green :: Num a => Colour a
 green = V4 0 1 0 1
-
-blue :: Num a => Colour a
 blue = V4 0 0 1 1
 
 
