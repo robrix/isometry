@@ -41,6 +41,7 @@ import           Isometry.Input as Input
 import           Isometry.Time
 import           Isometry.UI
 import           Isometry.View as View
+import           Isometry.Voxel (B(..), O(..))
 import qualified SDL
 import qualified UI.Colour as UI
 import qualified UI.Drawable as UI
@@ -130,6 +131,10 @@ frame = timed $ do
   where
   turnRate :: (I :/: Seconds) Double
   turnRate = I pi ./. Seconds 1
+
+
+octree :: O 'L 'L 'L ()
+octree = OL ()
 
 
 runDrawable
