@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveFoldable #-}
+{-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE StandaloneDeriving #-}
 module Isometry.Voxel
@@ -37,6 +38,7 @@ data V s a where
   VB :: V s1 a -> V s2 a -> V ('B s1 s2) a
 
 deriving instance Foldable (V s)
+deriving instance Functor (V s)
 
 
 -- | Sparse matrices.
@@ -51,6 +53,7 @@ data M x y a where
      -> M ('B x1 x2) ('B y1 y2) a
 
 deriving instance Foldable (M x y)
+deriving instance Functor (M x y)
 
 toMX :: V x a -> M x 'L a
 toMX VE       = ME
@@ -100,6 +103,7 @@ data O x y z a where
      -> O ('B x1 x2) ('B y1 y2) ('B z1 z2) a
 
 deriving instance Foldable (O x y z)
+deriving instance Functor (O x y z)
 
 toOX :: V x a -> O x 'L 'L a
 toOX VE       = OE
