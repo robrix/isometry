@@ -6,6 +6,8 @@ module Isometry.Voxel
 ( B(..)
 , V(..)
 , M(..)
+, toMX
+, toMY
 , O(..)
 ) where
 
@@ -36,6 +38,16 @@ data M x y a where
      -> M ('B x1 x2) ('B y1 y2) a
 
 deriving instance Foldable (M x y)
+
+toMX :: V x a -> M x 'L a
+toMX VE       = ME
+toMX (VL a)   = ML a
+toMX (VB l r) = MX (toMX l) (toMX r)
+
+toMY :: V y a -> M 'L y a
+toMY VE       = ME
+toMY (VL a)   = ML a
+toMY (VB l r) = MY (toMY l) (toMY r)
 
 
 -- | Sparse volumes.
