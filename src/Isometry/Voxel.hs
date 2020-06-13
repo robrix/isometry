@@ -56,6 +56,8 @@ instance (Applicative (V l), Applicative (V r)) => Applicative (V ('B l r)) wher
   VB fl fr <*> VB al ar = VB (fl <*> al) (fr <*> ar)
 
 
+-- fixme: should this be a 2d composition of V?
+
 -- | Sparse matrices.
 data M x y a where
   ME :: M x y a
@@ -91,6 +93,8 @@ fromMY ME       = VE
 fromMY (ML a)   = VL a
 fromMY (MY l r) = VB (fromMY l) (fromMY r)
 
+
+-- fixme: should this be a 3d composition of V?
 
 -- | Sparse volumes.
 --
