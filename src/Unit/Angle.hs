@@ -6,6 +6,7 @@
 module Unit.Angle
 ( Angle
 , Radians(..)
+, radians
 , Degrees(..)
 , module Unit
 , module Unit.Algebra
@@ -13,6 +14,7 @@ module Unit.Angle
 ) where
 
 import Data.Functor.I
+import Data.Functor.Interval
 import Data.Functor.K
 import Foreign.Storable
 import GL.Type as GL
@@ -35,6 +37,9 @@ newtype Radians a = Radians { getRadians :: a }
 
 instance Unit I Radians where
   suffix = K ("rad"++)
+
+radians :: Floating a => Interval Radians a
+radians = -pi...pi
 
 
 newtype Degrees a = Degrees { getDegrees :: a }
