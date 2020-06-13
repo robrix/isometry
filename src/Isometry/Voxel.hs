@@ -55,3 +55,5 @@ data O x y z a where
      -> O x1 y1 z2 a -> O x2 y1 z2 a
      -> O x1 y2 z2 a -> O x2 y2 z2 a
      -> O ('B x1 x2) ('B y1 y2) ('B z1 z2) a
+
+-- FIXME: indicate which sides are present
