@@ -81,7 +81,7 @@ frame = do
     glClear GL_COLOR_BUFFER_BIT
 
     UI.using getDrawable $ do
-      matrix_ ?= identity
+      matrix_ ?= tmap realToFrac (transformToSystem v)
 
       drawArrays Triangles range
 

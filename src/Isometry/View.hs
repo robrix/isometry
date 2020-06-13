@@ -63,9 +63,8 @@ withView m = do
 
   let zoom = 1
       focus = 0
-      -- how many pixels to draw something / the radius of the sun
-      scale = Window.Coords 695_500 ./. convert @(Kilo Metres) @Distance 695_500
-      -- FIXME: this is really stupid; there *has* to be a better way to say “I want a 500 m ship to be 30 px long” or w/e
+      -- how many pixels to draw something / one metre across
+      scale = Window.Coords 10 ./. Metres 1
 
   runReader View{ ratio, size, zoom, scale, focus } m
 
