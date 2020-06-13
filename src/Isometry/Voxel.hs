@@ -33,7 +33,7 @@ module Isometry.Voxel
 
 import GHC.TypeLits
 
--- | The shape of binary trees.
+-- | The shape of (non-empty) binary trees.
 data B
   = L
   | B B B
