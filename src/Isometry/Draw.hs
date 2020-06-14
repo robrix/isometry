@@ -193,7 +193,7 @@ makeVertices o = go 0 (sizeO o) o
     -> V3 Integer
     -> O x y z ()
     -> [V3 (Metres Float)]
-  go n d@(V3 dx dy dz) = \case
+  go n d = \case
     OE -> []
     OL _ ->  map ((coord <$> n) +) vertices
     OX x1 x2 -> go n d' x1 <> go (n + d') d' x2
@@ -215,8 +215,6 @@ makeVertices o = go 0 (sizeO o) o
                      <> go (n & _y +~ d'^._y) d' x1y2z1 <> go (n & _xy +~ d'^._xy) d' x2y2z1
                      <> go (n & _z +~ d'^._z) d' x1y1z2 <> go (n & _xz +~ d'^._xz) d' x2y1z2
                      <> go (n & _yz +~ d'^._yz) d' x1y2z2 <> go (n + d') d' x2y2z2
-      where
-      d' = (`div` 2) <$> V3 dx dy dz
     where
     d' = (`div` 2) <$> d
   coord n = fromIntegral (succ n * 2)
