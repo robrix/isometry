@@ -42,7 +42,7 @@ import           GL.Shader.DSL as D hiding (get, (.*.), (./.), (^.), _x, _xy, _x
 import           Graphics.GL.Core41
 import qualified Isometry.Draw.Axis as Axis
 import           Isometry.Input as Input
-import           Isometry.Octree (B(..), O(..), Size, sizeO)
+import           Isometry.Octree as Octree (B(..), O(..), Size, Finite(..))
 import           Isometry.Time
 import           Isometry.UI
 import           Isometry.View as View
@@ -140,10 +140,10 @@ frame = timed $ do
   turnRate = I pi ./. Seconds 1
 
 
-octree1 :: O 'L 'L 'L ()
+octree1 :: O 'L ()
 octree1 = OL ()
 
-octree2 :: O ('B 'L 'L) ('B 'L 'L) ('B 'L 'L) ()
+octree2 :: O ('B 'L) ()
 octree2 = OO
   (OL ()) (OL ())
   (OL ()) (OL ())
@@ -151,7 +151,7 @@ octree2 = OO
   (OL ()) (OL ())
   (OL ()) (OL ())
 
-octree3 :: O ('B 'L 'L) ('B 'L 'L) ('B 'L 'L) ()
+octree3 :: O ('B 'L) ()
 octree3 = OO
   OE      (OL ())
   (OL ()) OE
@@ -159,7 +159,7 @@ octree3 = OO
   (OL ()) OE
   OE      (OL ())
 
-octree4 :: O ('B 'L 'L) ('B 'L 'L) ('B 'L 'L) ()
+octree4 :: O ('B 'L) ()
 octree4 = OO
   OE (OL ())
   OE OE
@@ -179,45 +179,27 @@ runDrawable
 runDrawable = runReader (0...length vertices) . UI.loadingDrawable Drawable shader vertices
   where vertices = coerce (makeVertices octree3)
 
-makeVertices
-  :: ( KnownNat (Size x)
-     , KnownNat (Size y)
-     , KnownNat (Size z)
-     )
-  => O x y z ()
-  -> [V3 (Metres Float)]
+makeVertices :: KnownNat (Size s) => O s () -> [V3 (Metres Float)]
 makeVertices o = go 0 d0 o
   where
-  d0 = sizeO o
+  d0 = Octree.size o
   go
     :: V3 Integer
-    -> V3 Integer
-    -> O x y z ()
+    -> Integer
+    -> O s ()
     -> [V3 (Metres Float)]
   go n d = \case
     OE -> []
-    OL _ ->  map (((fromIntegral <$> n * 2) - (fromIntegral <$> d0) / 2) +) vertices
-    OX x1 x2 -> go n d' x1 <> go (n + d') d' x2
-    OY y1 y2 -> go n d' y1 <> go (n + d') d' y2
-    OZ z1 z2 -> go n d' z1 <> go (n + d') d' z2
-    OXY x1y1 x2y1
-        x1y2 x2y2 -> go n d' x1y1 <> go (n & _x +~ d'^._x) d' x2y1
-                  <> go (n & _y +~ d'^._y) d' x1y2 <> go (n & _xy +~ d'^._xy) d' x2y2
-    OXZ x1z1 x2z1
-        x1z2 x2z2 -> go n d' x1z1 <> go (n & _x +~ d'^._x) d' x2z1
-                  <> go (n & _z +~ d'^._z) d' x1z2 <> go (n & _xz +~ d'^._xz) d' x2z2
-    OYZ y1z1 y2z1
-        y1z2 y2z2 -> go n d' y1z1 <> go (n & _y +~ d'^._y) d' y2z1
-                  <> go (n & _z +~ d'^._z) d' y1z2 <> go (n & _yz +~ d'^._yz) d' y2z2
+    OL _ ->  map (((fromIntegral <$> n * 2) - fromIntegral d0 / 2) +) vertices
     OO x1y1z1 x2y1z1
        x1y2z1 x2y2z1
        x1y1z2 x2y1z2
-       x1y2z2 x2y2z2 -> go n d' x1y1z1 <> go (n & _x +~ d'^._x) d' x2y1z1
-                     <> go (n & _y +~ d'^._y) d' x1y2z1 <> go (n & _xy +~ d'^._xy) d' x2y2z1
-                     <> go (n & _z +~ d'^._z) d' x1y1z2 <> go (n & _xz +~ d'^._xz) d' x2y1z2
-                     <> go (n & _yz +~ d'^._yz) d' x1y2z2 <> go (n + d') d' x2y2z2
+       x1y2z2 x2y2z2 -> go n d' x1y1z1 <> go (n & _x +~ d') d' x2y1z1
+                     <> go (n & _y +~ d') d' x1y2z1 <> go (n & _xy +~ pure d') d' x2y2z1
+                     <> go (n & _z +~ d') d' x1y1z2 <> go (n & _xz +~ pure d') d' x2y1z2
+                     <> go (n & _yz +~ pure d') d' x1y2z2 <> go (n + pure d') d' x2y2z2
     where
-    d' = (`div` 2) <$> d
+    d' = d `div` 2
 
 
 newtype Drawable = Drawable { getDrawable :: UI.Drawable U V Frag }
