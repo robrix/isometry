@@ -186,8 +186,9 @@ makeVertices
      )
   => O x y z ()
   -> [V3 (Metres Float)]
-makeVertices o = go 0 (sizeO o) o
+makeVertices o = go 0 d0 o
   where
+  d0 = sizeO o
   go
     :: V3 Integer
     -> V3 Integer
@@ -195,7 +196,7 @@ makeVertices o = go 0 (sizeO o) o
     -> [V3 (Metres Float)]
   go n d = \case
     OE -> []
-    OL _ ->  map ((coord <$> n) +) vertices
+    OL _ ->  map (((fromIntegral <$> n * 2) - (fromIntegral <$> d0) / 2) +) vertices
     OX x1 x2 -> go n d' x1 <> go (n + d') d' x2
     OY y1 y2 -> go n d' y1 <> go (n + d') d' y2
     OZ z1 z2 -> go n d' z1 <> go (n + d') d' z2
@@ -217,7 +218,6 @@ makeVertices o = go 0 (sizeO o) o
                      <> go (n & _yz +~ d'^._yz) d' x1y2z2 <> go (n + d') d' x2y2z2
     where
     d' = (`div` 2) <$> d
-  coord n = fromIntegral (succ n * 2)
 
 
 newtype Drawable = Drawable { getDrawable :: UI.Drawable U V Frag }
