@@ -65,11 +65,12 @@ runFrame
      , Has Trace sig m
      )
   => ReaderC Drawable
+    (ReaderC (Interval I Int)
     (ReaderC Axis.Drawable
     (StateC UTCTime
     (StateC Player
     (EmptyC
-    m)))) a
+    m))))) a
   -> m ()
 runFrame
   = evalEmpty
@@ -93,6 +94,7 @@ frame
      , Has Profile sig m
      , Has (Reader Axis.Drawable) sig m
      , Has (Reader Drawable) sig m
+     , Has (Reader (Interval I Int)) sig m
      , Has (Reader UI) sig m
      , Has (Reader Window.Window) sig m
      , Has (State Input) sig m
@@ -128,7 +130,7 @@ frame = timed $ do
     UI.using getDrawable $ do
       matrix_ ?= tmap realToFrac (transformToWorld v)
 
-      drawArrays Triangles range
+      drawArrays Triangles =<< ask
 
     glBlendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 
@@ -173,9 +175,10 @@ runDrawable
      , Has (Lift IO) sig m
      , Has Trace sig m
      )
-  => ReaderC Drawable m a
+  => ReaderC Drawable (ReaderC (Interval I Int) m) a
   -> m a
-runDrawable = UI.loadingDrawable Drawable shader (coerce (makeVertices octree3))
+runDrawable = runReader (0...length vertices) . UI.loadingDrawable Drawable shader vertices
+  where vertices = coerce (makeVertices octree3)
 
 makeVertices
   :: ( KnownNat (Size x)
@@ -280,9 +283,6 @@ vertices =
   , V3 (-1)   1    1
   , V3 (-1)   1  (-1)
   ]
-
-range :: Interval I Int
-range = 0...length vertices
 
 
 shader :: D.Shader shader => shader U V Frag
