@@ -183,11 +183,11 @@ octree2 = pure ()
 
 octree3 :: O ('B 'L) ()
 octree3 = OO
-  OE      (OL ())
-  (OL ()) OE
+  OE      octree1
+  octree1 OE
 
-  (OL ()) OE
-  OE      (OL ())
+  octree1 OE
+  OE      octree1
 
 octree4 :: O ('B 'L) ()
 octree4 = OO
