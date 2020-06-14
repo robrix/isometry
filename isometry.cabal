@@ -97,6 +97,7 @@ library
     Isometry.Time
     Isometry.UI
     Isometry.View
+    Isometry.Voxel
     Linear.Exts
     Stochastic.Distribution
     Stochastic.Histogram
