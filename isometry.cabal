@@ -94,6 +94,7 @@ library
     Isometry.Input
     Isometry.Main
     Isometry.Octree
+    Isometry.Orthtree
     Isometry.Time
     Isometry.UI
     Isometry.View
