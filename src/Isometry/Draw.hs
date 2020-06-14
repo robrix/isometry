@@ -175,7 +175,7 @@ runDrawable
      )
   => ReaderC Drawable m a
   -> m a
-runDrawable = UI.loadingDrawable Drawable shader (coerce (makeVertices octree1))
+runDrawable = UI.loadingDrawable Drawable shader (coerce (makeVertices octree3))
 
 makeVertices
   :: ( KnownNat (Size x)
