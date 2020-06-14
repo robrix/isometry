@@ -1,2 +1,6 @@
 module Isometry.Language
-() where
+( Time(..)
+) where
+
+class Time expr where
+  time :: expr Double
