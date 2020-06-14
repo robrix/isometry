@@ -25,7 +25,7 @@ import GHC.TypeLits
 -- | The shape of (non-empty) perfectly balanced binary trees.
 data B
   = L   -- 1
-  | B B -- 2 * n
+  | B !B -- 2 * n
 
 type family Size (b :: B) :: Nat where
   Size 'L     = 1
@@ -39,8 +39,8 @@ class Finite v where
 -- | Sparse vectors.
 data V s a where
   VE :: V s a
-  VL :: a -> V 'L a
-  VB :: V s a -> V s a -> V ('B s) a
+  VL :: !a -> V 'L a
+  VB :: !(V s a) -> !(V s a) -> V ('B s) a
 
 deriving instance Foldable (V s)
 deriving instance Functor (V s)
@@ -69,9 +69,9 @@ instance KnownNat (Size s) => Finite (V s) where
 -- | Sparse square matrices.
 data M s a where
   ME :: M s a
-  ML :: a -> M 'L a
-  MQ :: M s a -> M s a
-     -> M s a -> M s a
+  ML :: !a -> M 'L a
+  MQ :: !(M s a) -> !(M s a)
+     -> !(M s a) -> !(M s a)
      -> M ('B s) a
 
 deriving instance Foldable (M s)
@@ -89,11 +89,11 @@ instance KnownNat (Size s) => Finite (M s) where
 -- Mnemonic: O is for Octree.
 data O s a where
   OE :: O s a
-  OL :: a -> O 'L a
-  OO :: O s a -> O s a
-     -> O s a -> O s a
-     -> O s a -> O s a
-     -> O s a -> O s a
+  OL :: !a -> O 'L a
+  OO :: !(O s a) -> !(O s a)
+     -> !(O s a) -> !(O s a)
+     -> !(O s a) -> !(O s a)
+     -> !(O s a) -> !(O s a)
      -> O ('B s) a
 
 deriving instance Foldable (O s)
