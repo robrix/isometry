@@ -64,7 +64,7 @@ runDrawable = runReader (0...length vertices) . UI.loadingDrawable Drawable shad
   where vertices = makeVertices octree5
 
 makeVertices :: KnownNat (Size s) => O s () -> [V I]
-makeVertices o = go (pure (-d0 `div` 2)) d0 o
+makeVertices o = go (-pure (d0 `div` 2)) d0 o
   where
   d0 = Octree.size o
   go
@@ -74,7 +74,7 @@ makeVertices o = go (pure (-d0 `div` 2)) d0 o
     -> [V I]
   go n d = \case
     OE -> []
-    OL _ ->  map (V . I . ((fmap fromIntegral n * 2) +)) vertices
+    OL _ ->  map (V . I . (fmap fromIntegral n +)) vertices
     OO x1y1z1 x2y1z1
        x1y2z1 x2y2z1
        x1y1z2 x2y1z2
@@ -90,7 +90,7 @@ newtype Drawable = Drawable { getDrawable :: UI.Drawable U V Frag }
 
 
 vertices :: [V3 (Metres Float)]
-vertices =
+vertices = map ((* 0.5) . (+ 1))
   [ -- far
     V3 (-1) (-1) (-1)
   , V3   1  (-1) (-1)
