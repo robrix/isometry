@@ -24,13 +24,14 @@ import           Control.Effect.Lens (use, (%=), (?=))
 import           Control.Effect.Lift
 import           Control.Effect.Profile
 import           Control.Effect.Trace
-import           Control.Lens (Lens', (^.))
+import           Control.Lens (Lens', (&), (+~), (^.))
 import           Control.Monad (when)
 import           Control.Monad.IO.Class.Lift
 import           Data.Coerce
 import           Data.Functor.I
 import           Data.Functor.Interval hiding (range)
 import           Data.Generics.Product.Fields
+import           Data.Ratio
 import           Data.Time.Clock
 import           Foreign.Storable (Storable)
 import           GHC.Generics (Generic)
@@ -38,7 +39,7 @@ import           GHC.TypeLits (KnownNat)
 import           GL.Array
 import           GL.Effect.Check
 import           GL.Framebuffer
-import           GL.Shader.DSL as D hiding (get, (.*.), (./.), (^.), _x, _y, _z)
+import           GL.Shader.DSL as D hiding (get, (.*.), (./.), (^.), _x, _xy, _xz, _y, _yz, _z)
 import           Graphics.GL.Core41
 import qualified Isometry.Draw.Axis as Axis
 import           Isometry.Input as Input
@@ -46,6 +47,7 @@ import           Isometry.Time
 import           Isometry.UI
 import           Isometry.View as View
 import           Isometry.Voxel (B(..), O(..), Size, sizeO)
+import           Linear.V3
 import qualified SDL
 import qualified UI.Colour as UI
 import qualified UI.Drawable as UI
@@ -182,39 +184,41 @@ makeVertices
      )
   => O x y z ()
   -> [V3 (Metres Float)]
-makeVertices o = go id (sizeO o) o
+makeVertices o = go 0 d0 o
   where
+  d0 = sizeO o
   go
-    :: (V3 (Metres Float) -> V3 (Metres Float))
+    :: V3 Integer
     -> V3 Integer
     -> O x y z ()
     -> [V3 (Metres Float)]
-  go offset n = \case
+  go n d@(V3 dx dy dz) = \case
     OE -> []
-    OL _ -> map offset vertices
-    OX x1 x2 -> go offset n' x1 <> go offset n' x2
-    OY y1 y2 -> go offset n' y1 <> go offset n' y2
-    OZ z1 z2 -> go offset n' z1 <> go offset n' z2
+    OL _ ->  map ((coord <$> n <*> d0) +) vertices
+    OX x1 x2 -> go n d' x1 <> go (n + d') d' x2
+    OY y1 y2 -> go n d' y1 <> go (n + d') d' y2
+    OZ z1 z2 -> go n d' z1 <> go (n + d') d' z2
     OXY x1y1 x2y1
-        x1y2 x2y2 -> go offset n' x1y1 <> go offset n' x2y1
-                  <> go offset n' x1y2 <> go offset n' x2y2
+        x1y2 x2y2 -> go n d' x1y1 <> go (n & _x +~ d'^._x) d' x2y1
+                  <> go (n & _y +~ d'^._y) d' x1y2 <> go (n & _xy +~ d'^._xy) d' x2y2
     OXZ x1z1 x2z1
-        x1z2 x2z2 -> go offset n' x1z1 <> go offset n' x2z1
-                  <> go offset n' x1z2 <> go offset n' x2z2
+        x1z2 x2z2 -> go n d' x1z1 <> go (n & _x +~ d'^._x) d' x2z1
+                  <> go (n & _z +~ d'^._z) d' x1z2 <> go (n & _xz +~ d'^._xz) d' x2z2
     OYZ y1z1 y2z1
-        y1z2 y2z2 -> go offset n' y1z1 <> go offset n' y2z1
-                  <> go offset n' y1z2 <> go offset n' y2z2
+        y1z2 y2z2 -> go n d' y1z1 <> go (n & _y +~ d'^._y) d' y2z1
+                  <> go (n & _z +~ d'^._z) d' y1z2 <> go (n & _yz +~ d'^._yz) d' y2z2
     OO x1y1z1 x2y1z1
        x1y2z1 x2y2z1
        x1y1z2 x2y1z2
-       x1y2z2 x2y2z2 -> go offset n' x1y1z1 <> go offset n' x2y1z1
-                     <> go offset n' x1y2z1 <> go offset n' x2y2z1
-                     <> go offset n' x1y1z2 <> go offset n' x2y1z2
-                     <> go offset n' x1y2z2 <> go offset n' x2y2z2
+       x1y2z2 x2y2z2 -> go n d' x1y1z1 <> go (n & _x +~ d'^._x) d' x2y1z1
+                     <> go (n & _y +~ d'^._y) d' x1y2z1 <> go (n & _xy +~ d'^._xy) d' x2y2z1
+                     <> go (n & _z +~ d'^._z) d' x1y1z2 <> go (n & _xz +~ d'^._xz) d' x2y1z2
+                     <> go (n & _yz +~ d'^._yz) d' x1y2z2 <> go (n + d') d' x2y2z2
+      where
+      d' = (`div` 2) <$> V3 dx dy dz
     where
-    n' = split <$> n
-  split 1 = 1
-  split v = v `div` 2
+    d' = (`div` 2) <$> d
+  coord n d = fromRational (succ n % d)
 
 
 newtype Drawable = Drawable { getDrawable :: UI.Drawable U V Frag }
