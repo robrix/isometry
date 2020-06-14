@@ -8,7 +8,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
-module Isometry.Voxel
+module Isometry.Octree
 ( B(..)
 , Size
 , V(..)
@@ -226,6 +226,3 @@ fromOYZ (OL a)                    = ML a
 fromOYZ (OY l r)                  = MX (fromOYZ l) (fromOYZ r)
 fromOYZ (OZ l r)                  = MY (fromOYZ l) (fromOYZ r)
 fromOYZ (OYZ x1y1 x2y1 x1y2 x2y2) = MQ (fromOYZ x1y1) (fromOYZ x2y1) (fromOYZ x1y2) (fromOYZ x2y2)
-
-
--- FIXME: indicate which sides are present

@@ -43,10 +43,10 @@ import           GL.Shader.DSL as D hiding (get, (.*.), (./.), (^.), _x, _xy, _x
 import           Graphics.GL.Core41
 import qualified Isometry.Draw.Axis as Axis
 import           Isometry.Input as Input
+import           Isometry.Octree (B(..), O(..), Size, sizeO)
 import           Isometry.Time
 import           Isometry.UI
 import           Isometry.View as View
-import           Isometry.Voxel (B(..), O(..), Size, sizeO)
 import           Linear.V3
 import qualified SDL
 import qualified UI.Colour as UI
