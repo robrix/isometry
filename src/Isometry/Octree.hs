@@ -113,5 +113,18 @@ deriving instance Foldable (O s)
 deriving instance Functor (O s)
 deriving instance Traversable (O s)
 
+instance Applicative (O 'L) where
+  pure = OL
+
+  OE   <*> _ = OE
+  OL f <*> a = fmap f a
+
+instance Applicative (O s) => Applicative (O ('B s)) where
+  pure a = OO (pure a) (pure a) (pure a) (pure a) (pure a) (pure a) (pure a) (pure a)
+
+  OE       <*> _        = OE
+  _        <*> OE       = OE
+  OO fx1y1z1 fx2y1z1 fx1y2z1 fx2y2z1 fx1y1z2 fx2y1z2 fx1y2z2 fx2y2z2 <*> OO ax1y1z1 ax2y1z1 ax1y2z1 ax2y2z1 ax1y1z2 ax2y1z2 ax1y2z2 ax2y2z2 = OO (fx1y1z1 <*> ax1y1z1) (fx2y1z1 <*> ax2y1z1) (fx1y2z1 <*> ax1y2z1) (fx2y2z1 <*> ax2y2z1) (fx1y1z2 <*> ax1y1z2) (fx2y1z2 <*> ax2y1z2) (fx1y2z2 <*> ax1y2z2) (fx2y2z2 <*> ax2y2z2)
+
 instance KnownNat (Size s) => Finite (O s) where
   size _ = natVal (Proxy :: Proxy (Size s))
