@@ -20,7 +20,6 @@ import           Control.Effect.Lens ((?=))
 import           Control.Effect.Lift
 import           Control.Effect.Trace
 import           Control.Lens (Lens', (&), (+~))
-import           Data.Coerce
 import           Data.Functor.I
 import           Data.Functor.Interval hiding (range)
 import           Data.Generics.Product.Fields
@@ -62,9 +61,9 @@ runDrawable
   => ReaderC Drawable (ReaderC (Interval I Int) m) a
   -> m a
 runDrawable = runReader (0...length vertices) . UI.loadingDrawable Drawable shader vertices
-  where vertices = coerce (makeVertices octree5)
+  where vertices = makeVertices octree5
 
-makeVertices :: KnownNat (Size s) => O s () -> [V3 (Metres Float)]
+makeVertices :: KnownNat (Size s) => O s () -> [V I]
 makeVertices o = go 0 d0 o
   where
   d0 = Octree.size o
@@ -72,10 +71,10 @@ makeVertices o = go 0 d0 o
     :: V3 Integer
     -> Integer
     -> O s ()
-    -> [V3 (Metres Float)]
+    -> [V I]
   go n d = \case
     OE -> []
-    OL _ ->  map (((fromIntegral <$> n * 2) - fromIntegral d0 / 2) +) vertices
+    OL _ ->  map (V . I . (((fromIntegral <$> n * 2) - fromIntegral d0 / 2) +)) vertices
     OO x1y1z1 x2y1z1
        x1y2z1 x2y2z1
        x1y1z2 x2y1z2
