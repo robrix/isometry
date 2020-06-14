@@ -90,6 +90,7 @@ library
     Isometry.CLI
     Isometry.Draw
     Isometry.Draw.Axis
+    Isometry.Draw.Voxel
     Isometry.Game
     Isometry.Input
     Isometry.Main
