@@ -93,6 +93,7 @@ library
     Isometry.Draw.Voxel
     Isometry.Game
     Isometry.Input
+    Isometry.Language
     Isometry.Main
     Isometry.Octree
     Isometry.Time
