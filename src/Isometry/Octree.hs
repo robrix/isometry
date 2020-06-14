@@ -78,6 +78,19 @@ deriving instance Foldable (M s)
 deriving instance Functor (M s)
 deriving instance Traversable (M s)
 
+instance Applicative (M 'L) where
+  pure = ML
+
+  ME   <*> _ = ME
+  ML f <*> a = fmap f a
+
+instance Applicative (M s) => Applicative (M ('B s)) where
+  pure a = MQ (pure a) (pure a) (pure a) (pure a)
+
+  ME       <*> _        = ME
+  _        <*> ME       = ME
+  MQ fx1y1 fx2y1 fx1y2 fx2y2 <*> MQ ax1y1 ax2y1 ax1y2 ax2y2 = MQ (fx1y1 <*> ax1y1) (fx2y1 <*> ax2y1) (fx1y2 <*> ax1y2) (fx2y2 <*> ax2y2)
+
 instance KnownNat (Size s) => Finite (M s) where
   size _ = natVal (Proxy :: Proxy (Size s))
 
