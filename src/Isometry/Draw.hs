@@ -107,9 +107,7 @@ frame = timed $ do
     let font = Font face 18
     bind @Framebuffer Nothing
 
-    v@View{} <- ask
-
-    clipTo v
+    clipTo =<< ask
 
     glClearColor 0 0 0 0
     glClear GL_COLOR_BUFFER_BIT
