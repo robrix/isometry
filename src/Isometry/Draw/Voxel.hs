@@ -61,7 +61,7 @@ runDrawable
   => ReaderC Drawable (ReaderC (Interval I Int) m) a
   -> m a
 runDrawable = runReader (0...length vertices) . UI.loadingDrawable Drawable shader vertices
-  where vertices = makeVertices octree5
+  where vertices = makeVertices octree6
 
 makeVertices :: KnownNat (Size s) => O s () -> [V I]
 makeVertices o = go (-pure (d0 `div` 2)) d0 o
@@ -208,3 +208,10 @@ octree5 = OO
   octree3 octree3
   octree3 octree3
   octree3 octree3
+
+octree6 :: O ('B ('B ('B 'L))) ()
+octree6 = OO
+  octree5 octree5
+  octree5 octree5
+  octree5 octree5
+  octree5 octree5
