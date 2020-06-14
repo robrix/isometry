@@ -178,9 +178,6 @@ deriving via Fields V instance Storable (V I)
 octree1 :: O 'L ()
 octree1 = pure ()
 
-octree2 :: O ('B 'L) ()
-octree2 = pure ()
-
 octree3 :: O ('B 'L) ()
 octree3 = OO
   OE      octree1
@@ -188,14 +185,6 @@ octree3 = OO
 
   octree1 OE
   OE      octree1
-
-octree4 :: O ('B 'L) ()
-octree4 = OO
-  OE (OL ())
-  OE OE
-
-  OE OE
-  OE OE
 
 octree5 :: O ('B ('B 'L)) ()
 octree5 = OO
