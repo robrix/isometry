@@ -218,7 +218,7 @@ makeVertices o = go 0 d0 o
       d' = (`div` 2) <$> V3 dx dy dz
     where
     d' = (`div` 2) <$> d
-  coord n d = fromRational (succ n % d)
+  coord n d = fromRational (succ n % d * toRational d * 2)
 
 
 newtype Drawable = Drawable { getDrawable :: UI.Drawable U V Frag }
