@@ -13,8 +13,8 @@
 module Isometry.Octree
 ( Shape(..)
 , Size
-, Finite(..)
 , B(..)
+, size
 , Bin(..)
 , Quad(..)
 , Oct(..)
@@ -31,10 +31,6 @@ data Shape
 type family Size (b :: Shape) :: Nat where
   Size 'S1      = 1
   Size ('S2x l) = 2 * Size l
-
-
-class Finite v where
-  size :: v a -> Integer
 
 
 data B s f a where
@@ -59,8 +55,8 @@ instance (Applicative f, Applicative (B s f)) => Applicative (B ('S2x s) f) wher
   _   <*> E   = E
   B f <*> B a = B ((<*>) <$> f <*> a)
 
-instance KnownNat (Size s) => Finite (B s f) where
-  size _ = natVal (Proxy :: Proxy (Size s))
+size :: forall s f a . KnownNat (Size s) => B s f a -> Integer
+size _ = natVal (Proxy :: Proxy (Size s))
 
 
 data Bin a = Bin
