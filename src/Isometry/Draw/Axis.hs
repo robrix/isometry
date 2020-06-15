@@ -98,14 +98,6 @@ matrix_ :: Lens' (U v) (v (Transform V4 Float Metres ClipUnits))
 matrix_ = field @"matrix"
 
 
-newtype IF v = IF
-  { colour2 :: v (Colour Float)
-  }
-  deriving (Generic)
-
-instance D.Vars IF
-
-
 data V v = V
   { pos    :: v (V3 (Metres Float))
   , colour :: v (Colour Float)
@@ -115,3 +107,11 @@ data V v = V
 instance D.Vars V
 
 deriving via Fields V instance Storable (V I)
+
+
+newtype IF v = IF
+  { colour2 :: v (Colour Float)
+  }
+  deriving (Generic)
+
+instance D.Vars IF
