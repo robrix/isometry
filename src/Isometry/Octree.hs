@@ -11,7 +11,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 -- | Sparse vectors, matrices, and volumes, represented as perfectly balanced binary trees.
 module Isometry.Octree
-( B(..)
+( Shape(..)
 , Size
 , Finite(..)
 , Bin(..)
@@ -25,11 +25,11 @@ import Data.Proxy
 import GHC.TypeLits
 
 -- | The shape of (non-empty) perfectly balanced binary trees.
-data B
+data Shape
   = L   -- 1
-  | B !B -- 2 * n
+  | B !Shape -- 2 * n
 
-type family Size (b :: B) :: Nat where
+type family Size (b :: Shape) :: Nat where
   Size 'L     = 1
   Size ('B l) = 2 * Size l
 

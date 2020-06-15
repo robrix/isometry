@@ -30,7 +30,7 @@ import           GHC.TypeLits
 import           GL.Array
 import           GL.Effect.Check
 import           GL.Shader.DSL as D hiding (get, (.*.), (./.), (^.), _x, _xy, _xz, _y, _yz, _z)
-import           Isometry.Octree as Octree (B(..), Finite(..), O(..), Size)
+import           Isometry.Octree as Octree (Finite(..), O(..), Shape(..), Size)
 import           Isometry.View as View
 import           Linear.V3
 import           UI.Colour as UI
