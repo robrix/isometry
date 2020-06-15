@@ -55,6 +55,13 @@ instance Functor f => Applicative (B 'S1 f) where
   E   <*> _ = E
   L f <*> a = fmap f a
 
+instance (Applicative f, Applicative (B s f)) => Applicative (B ('S2x s) f) where
+  pure a = B (pure (pure a))
+
+  E   <*> _   = E
+  _   <*> E   = E
+  B f <*> B a = B ((<*>) <$> f <*> a)
+
 instance KnownNat (Size s) => Finite (B s f) where
   size _ = natVal (Proxy :: Proxy (Size s))
 
