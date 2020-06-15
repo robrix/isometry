@@ -49,7 +49,12 @@ instance Applicative Bin where
   Bin f1 f2 <*> Bin a1 a2 = Bin (f1 a1) (f2 a2)
 
 
-data Quad a = Quad !a !a !a !a
+data Quad a = Quad
+  { x1y1 :: !a
+  , x2y1 :: !a
+  , x1y2 :: !a
+  , x2y2 :: !a
+  }
   deriving (Foldable, Functor, Traversable)
 
 instance Applicative Quad where
