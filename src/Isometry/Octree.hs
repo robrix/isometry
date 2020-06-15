@@ -54,6 +54,14 @@ instance Applicative Quad where
   Quad f1 f2 f3 f4 <*> Quad a1 a2 a3 a4 = Quad (f1 a1) (f2 a2) (f3 a3) (f4 a4)
 
 
+data Oct a = Oct !a !a !a !a !a !a !a !a
+  deriving (Foldable, Functor, Traversable)
+
+instance Applicative Oct where
+  pure a = Oct a a a a a a a a
+  Oct f1 f2 f3 f4 f5 f6 f7 f8 <*> Oct a1 a2 a3 a4 a5 a6 a7 a8 = Oct (f1 a1) (f2 a2) (f3 a3) (f4 a4) (f5 a5) (f6 a6) (f7 a7) (f8 a8)
+
+
 -- | Sparse vectors.
 data V s a where
   VE :: V s a
