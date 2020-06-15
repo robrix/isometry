@@ -49,6 +49,12 @@ deriving instance Foldable f => Foldable (B s f)
 deriving instance Functor f => Functor (B s f)
 deriving instance Traversable f => Traversable (B s f)
 
+instance Functor f => Applicative (B 'S1 f) where
+  pure = L
+
+  E   <*> _ = E
+  L f <*> a = fmap f a
+
 instance KnownNat (Size s) => Finite (B s f) where
   size _ = natVal (Proxy :: Proxy (Size s))
 
