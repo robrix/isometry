@@ -175,10 +175,10 @@ instance D.Vars V
 deriving via Fields V instance Storable (V I)
 
 
-octree1 :: O 'L ()
+octree1 :: O 'S1 ()
 octree1 = pure ()
 
-octree3 :: O ('B 'L) ()
+octree3 :: O ('S2x 'S1) ()
 octree3 = OO
   OE      octree1
   octree1 OE
@@ -186,14 +186,14 @@ octree3 = OO
   octree1 OE
   OE      octree1
 
-octree5 :: O ('B ('B 'L)) ()
+octree5 :: O ('S2x ('S2x 'S1)) ()
 octree5 = OO
   octree3 octree3
   octree3 octree3
   octree3 octree3
   octree3 octree3
 
-octree6 :: O ('B ('B ('B 'L))) ()
+octree6 :: O ('S2x ('S2x ('S2x 'S1))) ()
 octree6 = OO
   octree5 octree5
   octree5 octree5
