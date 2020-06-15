@@ -6,3 +6,6 @@
 - evolve the world over time
 
 - generate worlds
+
+- represent walls/floors/ceilings
+  - backfaces
