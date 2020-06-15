@@ -35,8 +35,8 @@ type family Size (b :: Shape) :: Nat where
 
 data B s f a where
   E :: B s f a
-  L :: a -> B 'S1 f a
-  B :: f (B s f a) -> B ('S2x s) f a
+  L :: !a -> B 'S1 f a
+  B :: !(f (B s f a)) -> B ('S2x s) f a
 
 deriving instance Foldable f => Foldable (B s f)
 deriving instance Functor f => Functor (B s f)
