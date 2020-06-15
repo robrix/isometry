@@ -112,10 +112,10 @@ frame = timed $ do
     glClearColor 0 0 0 0
     glClear GL_COLOR_BUFFER_BIT
 
+    glBlendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+
     Axis.draw
     Voxel.draw
-
-    glBlendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 
     measure "setLabel" $ setLabel target font "hello"
     measure "drawLabel" $ drawLabel target 10 UI.white Nothing
