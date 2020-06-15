@@ -14,6 +14,7 @@ module Isometry.Octree
 ( B(..)
 , Size
 , Finite(..)
+, Bin(..)
 , V(..)
 , M(..)
 , O(..)
@@ -34,6 +35,14 @@ type family Size (b :: B) :: Nat where
 
 class Finite v where
   size :: v a -> Integer
+
+
+data Bin a = Bin !a !a
+  deriving (Foldable, Functor, Traversable)
+
+instance Applicative Bin where
+  pure a = Bin a a
+  Bin f1 f2 <*> Bin a1 a2 = Bin (f1 a1) (f2 a2)
 
 
 -- | Sparse vectors.
