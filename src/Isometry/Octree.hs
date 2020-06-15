@@ -38,7 +38,10 @@ class Finite v where
   size :: v a -> Integer
 
 
-data Bin a = Bin !a !a
+data Bin a = Bin
+  { x1 :: !a
+  , x2 :: !a
+  }
   deriving (Foldable, Functor, Traversable)
 
 instance Applicative Bin where
