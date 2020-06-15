@@ -149,11 +149,12 @@ vertices = map ((* 0.5) . (+ 1))
 
 shader :: D.Shader shader => shader U V Frag
 shader
-  =   vertex (\ U{ matrix } V{ pos } None -> main $
-    gl_Position .= matrix D.>* ext4 pos 1)
+  =   vertex (\ U{ matrix } V{ pos, colour } IF{ colour2 } -> main $ do
+    gl_Position .= matrix D.>* ext4 pos 1
+    colour2 .= colour)
 
-  >>> fragment (\ _ None Frag{ fragColour } -> main $
-    fragColour .= v4 UI.white)
+  >>> fragment (\ _ IF{ colour2 } Frag{ fragColour } -> main $
+    fragColour .= colour2)
 
 
 newtype U v = U
@@ -176,6 +177,14 @@ data V v = V
 instance D.Vars V
 
 deriving via Fields V instance Storable (V I)
+
+
+newtype IF v = IF
+  { colour2 :: v (Colour Float)
+  }
+  deriving (Generic)
+
+instance D.Vars IF
 
 
 octree1 :: B 'S1 Oct ()
