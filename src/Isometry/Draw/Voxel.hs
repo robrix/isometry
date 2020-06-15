@@ -30,7 +30,7 @@ import           GHC.TypeLits
 import           GL.Array
 import           GL.Effect.Check
 import           GL.Shader.DSL as D hiding (get, (.*.), (./.), (^.), _x, _xy, _xz, _y, _yz, _z)
-import           Isometry.Octree as Octree (Finite(..), O(..), Shape(..), Size)
+import           Isometry.Octree as Octree (B(..), Finite(..), Oct(..), Shape(..), Size)
 import           Isometry.View as View
 import           Linear.V3
 import           UI.Colour as UI
@@ -63,25 +63,25 @@ runDrawable
 runDrawable = runReader (0...length vertices) . UI.loadingDrawable Drawable shader vertices
   where vertices = makeVertices octree6
 
-makeVertices :: KnownNat (Size s) => O s () -> [V I]
+makeVertices :: KnownNat (Size s) => B s Oct () -> [V I]
 makeVertices o = go (-pure (d0 `div` 2)) d0 o
   where
   d0 = Octree.size o
   go
     :: V3 Integer
     -> Integer
-    -> O s ()
+    -> B s Oct ()
     -> [V I]
   go n d = \case
-    OE -> []
-    OL _ ->  map (V . I . (fmap fromIntegral n +)) vertices
-    OO x1y1z1 x2y1z1
-       x1y2z1 x2y2z1
-       x1y1z2 x2y1z2
-       x1y2z2 x2y2z2 -> go n d' x1y1z1 <> go (n & _x +~ d') d' x2y1z1
-                     <> go (n & _y +~ d') d' x1y2z1 <> go (n & _xy +~ pure d') d' x2y2z1
-                     <> go (n & _z +~ d') d' x1y1z2 <> go (n & _xz +~ pure d') d' x2y1z2
-                     <> go (n & _yz +~ pure d') d' x1y2z2 <> go (n + pure d') d' x2y2z2
+    E -> []
+    L _ ->  map (V . I . (fmap fromIntegral n +)) vertices
+    B (Oct x1y1z1 x2y1z1
+           x1y2z1 x2y2z1
+           x1y1z2 x2y1z2
+           x1y2z2 x2y2z2) -> go n d' x1y1z1 <> go (n & _x +~ d') d' x2y1z1
+                          <> go (n & _y +~ d') d' x1y2z1 <> go (n & _xy +~ pure d') d' x2y2z1
+                          <> go (n & _z +~ d') d' x1y1z2 <> go (n & _xz +~ pure d') d' x2y1z2
+                          <> go (n & _yz +~ pure d') d' x1y2z2 <> go (n + pure d') d' x2y2z2
     where
     d' = d `div` 2
 
@@ -175,26 +175,26 @@ instance D.Vars V
 deriving via Fields V instance Storable (V I)
 
 
-octree1 :: O 'S1 ()
+octree1 :: B 'S1 Oct ()
 octree1 = pure ()
 
-octree3 :: O ('S2x 'S1) ()
-octree3 = OO
-  OE      octree1
-  octree1 OE
+octree3 :: B ('S2x 'S1) Oct ()
+octree3 = B $ Oct
+  E       octree1
+  octree1 E
 
-  octree1 OE
-  OE      octree1
+  octree1 E
+  E       octree1
 
-octree5 :: O ('S2x ('S2x 'S1)) ()
-octree5 = OO
+octree5 :: B ('S2x ('S2x 'S1)) Oct ()
+octree5 = B $ Oct
   octree3 octree3
   octree3 octree3
   octree3 octree3
   octree3 octree3
 
-octree6 :: O ('S2x ('S2x ('S2x 'S1))) ()
-octree6 = OO
+octree6 :: B ('S2x ('S2x ('S2x 'S1))) Oct ()
+octree6 = B $ Oct
   octree5 octree5
   octree5 octree5
   octree5 octree5
