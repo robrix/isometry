@@ -16,6 +16,7 @@ module Isometry.Octree
 , Finite(..)
 , Bin(..)
 , Quad(..)
+, Oct(..)
 , V(..)
 , M(..)
 , O(..)
