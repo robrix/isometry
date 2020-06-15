@@ -187,16 +187,13 @@ newtype IF v = IF
 instance D.Vars IF
 
 
-octree1 :: B 'S1 Oct (UI.Colour Float)
-octree1 = pure UI.white
-
 octree3 :: B ('S2x 'S1) Oct (UI.Colour Float)
 octree3 = B $ Oct
-  E       octree1
-  octree1 E
+  E       (pure red)
+  (pure green) E
 
-  octree1 E
-  E       octree1
+  (pure blue) E
+  E       (pure white)
 
 octree5 :: B ('S2x ('S2x 'S1)) Oct (UI.Colour Float)
 octree5 = B $ Oct
