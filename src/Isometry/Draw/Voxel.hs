@@ -63,18 +63,18 @@ runDrawable
 runDrawable = runReader (0...length vertices) . UI.loadingDrawable Drawable shader vertices
   where vertices = makeVertices octree6
 
-makeVertices :: KnownNat (Size s) => B s Oct () -> [V I]
+makeVertices :: KnownNat (Size s) => B s Oct (UI.Colour Float) -> [V I]
 makeVertices o = go (-pure (d0 `div` 2)) d0 o
   where
   d0 = Octree.size o
   go
     :: V3 Integer
     -> Integer
-    -> B s Oct ()
+    -> B s Oct (UI.Colour Float)
     -> [V I]
   go n d = \case
     E -> []
-    L _ ->  map (\ v -> V (I (fmap fromIntegral n + v)) (I UI.white)) vertices
+    L c ->  map (\ v -> V (I (fmap fromIntegral n + v)) (I c)) vertices
     B (Oct x1y1z1 x2y1z1
            x1y2z1 x2y2z1
            x1y1z2 x2y1z2
@@ -187,10 +187,10 @@ newtype IF v = IF
 instance D.Vars IF
 
 
-octree1 :: B 'S1 Oct ()
-octree1 = pure ()
+octree1 :: B 'S1 Oct (UI.Colour Float)
+octree1 = pure UI.white
 
-octree3 :: B ('S2x 'S1) Oct ()
+octree3 :: B ('S2x 'S1) Oct (UI.Colour Float)
 octree3 = B $ Oct
   E       octree1
   octree1 E
@@ -198,14 +198,14 @@ octree3 = B $ Oct
   octree1 E
   E       octree1
 
-octree5 :: B ('S2x ('S2x 'S1)) Oct ()
+octree5 :: B ('S2x ('S2x 'S1)) Oct (UI.Colour Float)
 octree5 = B $ Oct
   octree3 octree3
   octree3 octree3
   octree3 octree3
   octree3 octree3
 
-octree6 :: B ('S2x ('S2x ('S2x 'S1))) Oct ()
+octree6 :: B ('S2x ('S2x ('S2x 'S1))) Oct (UI.Colour Float)
 octree6 = B $ Oct
   octree5 octree5
   octree5 octree5
