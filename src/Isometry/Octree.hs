@@ -15,6 +15,7 @@ module Isometry.Octree
 , Size
 , Finite(..)
 , Bin(..)
+, Quad(..)
 , V(..)
 , M(..)
 , O(..)
@@ -43,6 +44,14 @@ data Bin a = Bin !a !a
 instance Applicative Bin where
   pure a = Bin a a
   Bin f1 f2 <*> Bin a1 a2 = Bin (f1 a1) (f2 a2)
+
+
+data Quad a = Quad !a !a !a !a
+  deriving (Foldable, Functor, Traversable)
+
+instance Applicative Quad where
+  pure a = Quad a a a a
+  Quad f1 f2 f3 f4 <*> Quad a1 a2 a3 a4 = Quad (f1 a1) (f2 a2) (f3 a3) (f4 a4)
 
 
 -- | Sparse vectors.
