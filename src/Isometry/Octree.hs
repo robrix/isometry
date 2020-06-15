@@ -14,6 +14,7 @@ module Isometry.Octree
 ( Shape(..)
 , Size
 , Finite(..)
+, B(..)
 , Bin(..)
 , Quad(..)
 , Oct(..)
@@ -37,6 +38,12 @@ type family Size (b :: Shape) :: Nat where
 
 class Finite v where
   size :: v a -> Integer
+
+
+data B s f a where
+  E :: B s f a
+  L :: a -> B 'S1 f a
+  B :: f (B s f a) -> B ('S2x s) f a
 
 
 data Bin a = Bin
