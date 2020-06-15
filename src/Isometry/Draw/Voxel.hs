@@ -74,7 +74,7 @@ makeVertices o = go (-pure (d0 `div` 2)) d0 o
     -> [V I]
   go n d = \case
     E -> []
-    L _ ->  map (V . I . (fmap fromIntegral n +)) vertices
+    L _ ->  map (\ v -> V (I (fmap fromIntegral n + v)) (I UI.white)) vertices
     B (Oct x1y1z1 x2y1z1
            x1y2z1 x2y2z1
            x1y1z2 x2y1z2
@@ -167,7 +167,10 @@ matrix_ :: Lens' (U v) (v (Transform V4 Float Metres ClipUnits))
 matrix_ = field @"matrix"
 
 
-newtype V v = V { pos :: v (V3 (Metres Float)) }
+data V v = V
+  { pos    :: v (V3 (Metres Float))
+  , colour :: v (UI.Colour Float)
+  }
   deriving (Generic)
 
 instance D.Vars V
