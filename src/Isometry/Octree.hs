@@ -63,7 +63,16 @@ instance Applicative Quad where
   Quad f1 f2 f3 f4 <*> Quad a1 a2 a3 a4 = Quad (f1 a1) (f2 a2) (f3 a3) (f4 a4)
 
 
-data Oct a = Oct !a !a !a !a !a !a !a !a
+data Oct a = Oct
+  { x1y1z1 :: !a
+  , x2y1z1 :: !a
+  , x1y2z1 :: !a
+  , x2y2z1 :: !a
+  , x1y1z2 :: !a
+  , x2y1z2 :: !a
+  , x1y2z2 :: !a
+  , x2y2z2 :: !a
+  }
   deriving (Foldable, Functor, Traversable)
 
 instance Applicative Oct where
