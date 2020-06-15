@@ -49,6 +49,9 @@ deriving instance Foldable f => Foldable (B s f)
 deriving instance Functor f => Functor (B s f)
 deriving instance Traversable f => Traversable (B s f)
 
+instance KnownNat (Size s) => Finite (B s f) where
+  size _ = natVal (Proxy :: Proxy (Size s))
+
 
 data Bin a = Bin
   { x1 :: !a
