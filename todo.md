@@ -9,3 +9,5 @@
 
 - represent walls/floors/ceilings
   - backfaces
+
+- propagate light through the octree
