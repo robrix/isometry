@@ -197,10 +197,10 @@ octree3 = B $ Oct
 
 octree5 :: B ('S2x ('S2x 'S1)) Oct (UI.Colour Float)
 octree5 = B $ Oct
-  octree3 octree3
-  octree3 octree3
-  octree3 octree3
-  octree3 octree3
+  E       octree3
+  octree3 E
+  octree3 E
+  E       octree3
 
 octree6 :: B ('S2x ('S2x ('S2x 'S1))) Oct (UI.Colour Float)
 octree6 = B $ Oct
