@@ -6,6 +6,7 @@
 {-# LANGUAGE NoStarIsType #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
@@ -15,6 +16,7 @@ module Isometry.Octree
 , Size
 , B(..)
 , size
+, capacity
 , Bin(..)
 , Quad(..)
 , Oct(..)
@@ -56,7 +58,10 @@ instance (Applicative f, Applicative (B s f)) => Applicative (B ('S2x s) f) wher
   B f <*> B a = B ((<*>) <$> f <*> a)
 
 size :: forall s f a . KnownNat (Size s) => B s f a -> Integer
-size _ = natVal (Proxy :: Proxy (Size s))
+size _ = natVal (Proxy @(Size s))
+
+capacity :: forall s f a . (Foldable f, Applicative f, KnownNat (Size s)) => B s f a -> Integer
+capacity b = fromIntegral (length (pure @f ())) * size b
 
 
 data Bin a = Bin
