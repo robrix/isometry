@@ -115,3 +115,8 @@ data Oct a = Oct
 instance Applicative Oct where
   pure a = Oct a a a a a a a a
   Oct f1 f2 f3 f4 f5 f6 f7 f8 <*> Oct a1 a2 a3 a4 a5 a6 a7 a8 = Oct (f1 a1) (f2 a2) (f3 a3) (f4 a4) (f5 a5) (f6 a6) (f7 a7) (f8 a8)
+
+instance Linear.Finite Oct where
+  type Size Oct = 8
+
+  fromV (Linear.V v) = Oct (v ! 0) (v ! 1) (v ! 2) (v ! 3) (v ! 4) (v ! 5) (v ! 6) (v ! 7)
