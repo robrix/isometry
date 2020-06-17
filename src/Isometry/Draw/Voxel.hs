@@ -51,7 +51,7 @@ draw = UI.using getDrawable $ do
   drawArrays Triangles =<< ask
 
 
-
+-- fixme: run with some initial size & draw with an octree from a Reader var
 runDrawable
   :: ( Has Check sig m
      , Has Finally sig m
