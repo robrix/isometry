@@ -23,6 +23,7 @@ module Isometry.Octree
 ) where
 
 import           Data.Proxy
+import           Data.Vector ((!))
 import           GHC.TypeLits
 import qualified Linear.V as Linear
 
@@ -74,6 +75,11 @@ data Bin a = Bin
 instance Applicative Bin where
   pure a = Bin a a
   Bin f1 f2 <*> Bin a1 a2 = Bin (f1 a1) (f2 a2)
+
+instance Linear.Finite Bin where
+  type Size Bin = 2
+
+  fromV (Linear.V v) = Bin (v ! 0) (v ! 1)
 
 
 data Quad a = Quad
