@@ -22,8 +22,9 @@ module Isometry.Octree
 , Oct(..)
 ) where
 
-import Data.Proxy
-import GHC.TypeLits
+import           Data.Proxy
+import           GHC.TypeLits
+import qualified Linear.V as Linear
 
 -- | The shape of (non-empty) perfectly balanced binary trees.
 data Shape
@@ -60,8 +61,8 @@ instance (Applicative f, Applicative (B s f)) => Applicative (B ('S2x s) f) wher
 size :: forall s f a . KnownNat (Size s) => B s f a -> Integer
 size _ = natVal (Proxy @(Size s))
 
-capacity :: forall s f a . (Foldable f, Applicative f, KnownNat (Size s)) => B s f a -> Integer
-capacity b = fromIntegral (length (pure @f ())) * size b
+capacity :: forall s f a . (KnownNat (Linear.Size f), KnownNat (Size s)) => B s f a -> Integer
+capacity b = natVal (Proxy @(Linear.Size f)) * size b
 
 
 data Bin a = Bin
