@@ -34,6 +34,7 @@ import           Data.Ratio ((%))
 import           Data.Vector ((!))
 import           GHC.TypeLits
 import qualified Linear.V as Linear
+import           Linear.V2
 
 -- | The shape of (non-empty) perfectly balanced binary trees.
 data Shape
@@ -137,6 +138,11 @@ data Quad a = Quad
   , tr :: !a
   }
   deriving (Foldable, Functor, Traversable)
+
+instance FoldableWithIndex (V2 (Index ('S2x 'S1))) Quad
+instance FunctorWithIndex (V2 (Index ('S2x 'S1))) Quad
+instance TraversableWithIndex (V2 (Index ('S2x 'S1))) Quad where
+  itraverse f (Quad bl br tl tr) = Quad <$> f (V2 (IL II) (IL II)) bl <*> f (V2 (IR II) (IL II)) br <*> f (V2 (IL II) (IR II)) tl <*> f (V2 (IR II) (IR II)) tr
 
 instance Applicative Quad where
   pure a = Quad a a a a
