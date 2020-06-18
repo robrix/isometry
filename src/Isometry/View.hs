@@ -63,7 +63,7 @@ withView angle m = do
 
   let zoom = 1
       focus = 0
-      -- how many pixels to draw something / one metre across
+      -- how many pixels to draw something / one semimetre across
       scale = Window.Coords 10 ./. Semi (Metres 1)
 
   runReader View{ ratio, size, zoom, scale, focus, angle } m
