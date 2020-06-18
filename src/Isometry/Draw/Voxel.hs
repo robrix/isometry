@@ -18,6 +18,7 @@ import           Control.Carrier.Reader
 import           Control.Effect.Finally
 import           Control.Effect.Lens ((?=))
 import           Control.Effect.Lift
+import qualified Control.Effect.Reader.Labelled as Labelled
 import           Control.Effect.Trace
 import           Control.Lens (Lens', (&), (+~))
 import           Data.Functor.I
@@ -30,8 +31,9 @@ import           GHC.TypeLits
 import           GL.Array
 import           GL.Effect.Check
 import           GL.Shader.DSL as D hiding (get, (.*.), (./.), (^.), _x, _xy, _xz, _y, _yz, _z)
-import           Isometry.Octree as Octree (B(..), Oct(..), Shape(..), Size, size)
+import           Isometry.Octree as Octree (B(..), Oct(..), Size, size)
 import           Isometry.View as View
+import           Isometry.World
 import           Linear.V3
 import           UI.Colour as UI
 import qualified UI.Drawable as UI
@@ -57,11 +59,15 @@ runDrawable
      , Has Finally sig m
      , Has (Lift IO) sig m
      , Has Trace sig m
+     , Labelled.HasLabelled World (Reader (B s Oct (UI.Colour Float))) sig m
+     , KnownNat (Size s)
      )
   => ReaderC Drawable (ReaderC (Interval I Int) m) a
   -> m a
-runDrawable = runReader (0...length vertices) . UI.loadingDrawable Drawable shader vertices
-  where vertices = makeVertices octree6
+runDrawable m = do
+  world <- Labelled.ask @World
+  let vertices = makeVertices world
+  runReader (0...length vertices) . UI.loadingDrawable Drawable shader vertices $ m
 
 makeVertices :: KnownNat (Size s) => B s Oct (UI.Colour Float) -> [V I]
 makeVertices o = go (-pure (d0 `div` 2)) d0 o
@@ -185,26 +191,3 @@ newtype IF v = IF
   deriving (Generic)
 
 instance D.Vars IF
-
-
-octree3 :: B ('S2x 'S1) Oct (UI.Colour Float)
-octree3 = B $ Oct
-  E            (pure red)
-  (pure green) E
-
-  (pure blue)  E
-  E            (pure white)
-
-octree5 :: B ('S2x ('S2x 'S1)) Oct (UI.Colour Float)
-octree5 = B $ Oct
-  E       octree3
-  octree3 E
-  octree3 E
-  E       octree3
-
-octree6 :: B ('S2x ('S2x ('S2x 'S1))) Oct (UI.Colour Float)
-octree6 = B $ Oct
-  E       octree5
-  octree5 E
-  octree5 E
-  E       octree5

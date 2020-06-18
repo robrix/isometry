@@ -18,6 +18,7 @@ import           Control.Carrier.Empty.Church
 import           Control.Carrier.Reader
 import           Control.Carrier.State.Church
 import           Control.Effect.Finally
+import           Control.Effect.Labelled
 import           Control.Effect.Lens (use, (%=))
 import           Control.Effect.Lift
 import           Control.Effect.Profile
@@ -36,9 +37,11 @@ import           Graphics.GL.Core41
 import qualified Isometry.Draw.Axis as Axis
 import qualified Isometry.Draw.Voxel as Voxel
 import           Isometry.Input as Input
+import           Isometry.Octree as Octree (B(..), Oct(..), Shape(..))
 import           Isometry.Time
 import           Isometry.UI
 import           Isometry.View as View
+import           Isometry.World
 import qualified SDL
 import qualified UI.Colour as UI
 import           UI.Label
@@ -56,17 +59,42 @@ runFrame
   => ReaderC Voxel.Drawable
     (ReaderC (Interval I Int)
     (ReaderC Axis.Drawable
+    (Labelled World (ReaderC (B ('S2x ('S2x ('S2x 'S1))) Oct (UI.Colour Float)))
     (StateC UTCTime
     (StateC Player
     (EmptyC
-    m))))) a
+    m)))))) a
   -> m ()
 runFrame
   = evalEmpty
   . evalState Player{ angle = -pi/4 }
   . (\ m -> now >>= \ start -> evalState start m)
+  . runReader octree6
+  . runLabelled
   . Axis.runDrawable
   . Voxel.runDrawable
+
+octree3 :: B ('S2x 'S1) Oct (UI.Colour Float)
+octree3 = B $ Oct
+  E               (pure UI.red)
+  (pure UI.green) E
+
+  (pure UI.blue)  E
+  E               (pure UI.white)
+
+octree5 :: B ('S2x ('S2x 'S1)) Oct (UI.Colour Float)
+octree5 = B $ Oct
+  E       octree3
+  octree3 E
+  octree3 E
+  E       octree3
+
+octree6 :: B ('S2x ('S2x ('S2x 'S1))) Oct (UI.Colour Float)
+octree6 = B $ Oct
+  E       octree5
+  octree5 E
+  octree5 E
+  E       octree5
 
 newtype Player = Player
   { angle :: I Double
