@@ -4,6 +4,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE NoStarIsType #-}
+{-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeApplications #-}
@@ -58,6 +59,12 @@ instance (Applicative f, Applicative (B s f)) => Applicative (B ('S2x s) f) wher
   E   <*> _   = E
   _   <*> E   = E
   B f <*> B a = B ((<*>) <$> f <*> a)
+
+instance (Semigroup a, forall x . Semigroup x => Semigroup (f x)) => Semigroup (B s f a) where
+  E   <> b   = b
+  a   <> E   = a
+  L a <> L b = L (a <> b)
+  B a <> B b = B (a <> b)
 
 size :: forall s f a . KnownNat (Size s) => B s f a -> Integer
 size _ = natVal (Proxy @(Size s))
