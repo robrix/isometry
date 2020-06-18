@@ -285,6 +285,17 @@ instance UnfoldableWithIndex (V3 Bit) Oct where
     <*> f (V3 I0 I1 I1)
     <*> f (V3 I1 I1 I1)
 
+instance Indexed (V3 Bit) Oct where
+  o ! i = case i of
+    V3 I0 I0 I0 -> bln o
+    V3 I1 I0 I0 -> brn o
+    V3 I0 I1 I0 -> tln o
+    V3 I1 I1 I0 -> trn o
+    V3 I0 I0 I1 -> blf o
+    V3 I1 I0 I1 -> brf o
+    V3 I0 I1 I1 -> tlf o
+    V3 I1 I1 I1 -> trf o
+
 instance Applicative Oct where
   pure a = Oct a a a a a a a a
   Oct f1 f2 f3 f4 f5 f6 f7 f8 <*> Oct a1 a2 a3 a4 a5 a6 a7 a8 = Oct (f1 a1) (f2 a2) (f3 a3) (f4 a4) (f5 a5) (f6 a6) (f7 a7) (f8 a8)
