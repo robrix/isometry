@@ -62,7 +62,7 @@ runFrame
   => ReaderC Voxel.Drawable
     (ReaderC (Interval I Int)
     (ReaderC Axis.Drawable
-    (Labelled World (ReaderC (Octree ('S2x ('S2x ('S2x 'S1))) Voxel))
+    (Labelled World (ReaderC (Octree ('S2x ('S2x ('S2x ('S2x ('S2x ('S2x ('S2x 'S1))))))) Voxel))
     (StateC UTCTime
     (StateC Player
     (EmptyC
