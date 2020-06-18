@@ -76,6 +76,9 @@ capacity :: forall s f a . (KnownNat (Linear.Size f), KnownNat (Size s)) => B s 
 capacity b = natVal (Proxy @(Linear.Size f)) * size b
 
 
+-- | Binary nodes.
+--
+-- Mnemonic for fields: left/right.
 data Bin a = Bin
   { l :: !a
   , r :: !a
@@ -98,6 +101,9 @@ instance Monoid a => Monoid (Bin a) where
   mempty = Bin mempty mempty
 
 
+-- | Quaternary nodes.
+--
+-- Mnemonic for fields: bottom/top, left/right.
 data Quad a = Quad
   { bl :: !a
   , br :: !a
@@ -122,6 +128,9 @@ instance Monoid a => Monoid (Quad a) where
   mempty = Quad mempty mempty mempty mempty
 
 
+-- | Octonary nodes.
+--
+-- Mnemonic for fields: bottom/top, left/right, near/far.
 data Oct a = Oct
   { bln :: !a
   , brn :: !a
