@@ -34,10 +34,13 @@ module Isometry.Octree
 , UnfoldableWithIndex(..)
 , SparseUnfoldableWithIndex(..)
 , iunfold
+-- * Indexing
+, Indexed(..)
+, SparseIndexed(..)
 ) where
 
 import           Control.Carrier.State.Church
-import           Control.Lens.Indexed
+import           Control.Lens.Indexed hiding (Indexed(..))
 import           Data.Proxy
 import           Data.Ratio ((%))
 import qualified Data.Vector as V
@@ -309,3 +312,10 @@ iunfold f a = run . evalState a . iunfoldA $ state . f
 -- | Unfolding of finite sparse structures with an index.
 class UnfoldableWithIndex i f => SparseUnfoldableWithIndex i f where
   iunfoldSparseA :: Applicative m => (i -> m (Maybe b)) -> m (f b)
+
+
+class Indexed i f | f -> i where
+  (!) :: f a -> i -> a
+
+class SparseIndexed i f | f -> i where
+  (!?) :: f a -> i -> Maybe a
