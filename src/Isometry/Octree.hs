@@ -17,6 +17,7 @@ module Isometry.Octree
 ( Shape(..)
 , Size
 , Bit(..)
+, toIndex
 , Index(..)
 , toFraction
 , B(..)
@@ -53,6 +54,10 @@ data Bit
   = I0
   | I1
   deriving (Enum, Eq, Ord, Show)
+
+toIndex :: Bit -> Index i -> Index ('S2x i)
+toIndex I0 = IL
+toIndex I1 = IR
 
 data Index i where
   II :: Index 'S1
