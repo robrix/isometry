@@ -72,6 +72,10 @@ data Index i where
   IL :: Index s -> Index ('S2x s)
   IR :: Index s -> Index ('S2x s)
 
+deriving instance Eq   (Index i)
+deriving instance Ord  (Index i)
+deriving instance Show (Index i)
+
 toFraction :: Index i -> Rational
 toFraction = uncurry (%) . go
   where
