@@ -41,6 +41,7 @@ import           Isometry.Octree as Octree (B(..), Oct(..), Shape(..), Tetra(..)
 import           Isometry.Time
 import           Isometry.UI
 import           Isometry.View as View
+import           Isometry.Voxel as Voxel
 import           Isometry.World
 import qualified SDL
 import qualified UI.Colour as UI
@@ -59,7 +60,7 @@ runFrame
   => ReaderC Voxel.Drawable
     (ReaderC (Interval I Int)
     (ReaderC Axis.Drawable
-    (Labelled World (ReaderC (B ('S2x ('S2x ('S2x 'S1))) Oct (UI.Colour Float)))
+    (Labelled World (ReaderC (B ('S2x ('S2x ('S2x 'S1))) Oct Voxel))
     (StateC UTCTime
     (StateC Player
     (EmptyC
@@ -69,7 +70,7 @@ runFrame
   = evalEmpty
   . evalState Player{ angle = -pi/4 }
   . (\ m -> now >>= \ start -> evalState start m)
-  . runReader (UI.red <$ tetra)
+  . runReader (Voxel UI.red <$ tetra)
   . runLabelled
   . Axis.runDrawable
   . Voxel.runDrawable

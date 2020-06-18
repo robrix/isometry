@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE DisambiguateRecordFields #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
@@ -33,6 +34,7 @@ import           GL.Effect.Check
 import           GL.Shader.DSL as D hiding (get, (.*.), (./.), (^.), _x, _xy, _xz, _y, _yz, _z)
 import           Isometry.Octree as Octree (B(..), Oct(..), Size, size)
 import           Isometry.View as View
+import           Isometry.Voxel as Voxel
 import           Isometry.World
 import           Linear.V3
 import           UI.Colour as UI
@@ -59,7 +61,7 @@ runDrawable
      , Has Finally sig m
      , Has (Lift IO) sig m
      , Has Trace sig m
-     , Labelled.HasLabelled World (Reader (B s Oct (UI.Colour Float))) sig m
+     , Labelled.HasLabelled World (Reader (B s Oct Voxel.Voxel)) sig m
      , KnownNat (Size s)
      )
   => ReaderC Drawable (ReaderC (Interval I Int) m) a
@@ -69,18 +71,18 @@ runDrawable m = do
   let vertices = makeVertices world
   runReader (0...length vertices) . UI.loadingDrawable Drawable shader vertices $ m
 
-makeVertices :: KnownNat (Size s) => B s Oct (UI.Colour Float) -> [V I]
+makeVertices :: KnownNat (Size s) => B s Oct Voxel.Voxel -> [V I]
 makeVertices o = go (-pure (d0 `div` 2)) d0 o
   where
   d0 = Octree.size o
   go
     :: V3 Integer
     -> Integer
-    -> B s Oct (UI.Colour Float)
+    -> B s Oct Voxel.Voxel
     -> [V I]
   go n d = \case
     E -> []
-    L c ->  map (\ v -> V (I (fmap fromIntegral n + v)) (I c)) vertices
+    L c ->  map (\ v -> V (I (fmap fromIntegral n + v)) (I (Voxel.colour c))) vertices
     B (Oct bln ry1n
            tln ry2n
            blf ry1f
