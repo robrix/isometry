@@ -51,7 +51,7 @@ draw
   => m ()
 draw = UI.using getDrawable $ do
   v <- ask
-  matrix_ ?= tmap realToFrac (transformToWorld v)
+  matrix_ ?= tmap realToFrac (transformToZoomed v)
   drawArrays Triangles =<< ask
 
 
