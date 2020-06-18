@@ -37,7 +37,7 @@ import           Graphics.GL.Core41
 import qualified Isometry.Draw.Axis as Axis
 import qualified Isometry.Draw.Voxel as Voxel
 import           Isometry.Input as Input
-import           Isometry.Octree as Octree (B(..), Oct(..), Shape(..), Tetra(..))
+import           Isometry.Octree as Octree (Shape(..), Tetra(..))
 import           Isometry.Time
 import           Isometry.UI
 import           Isometry.View as View
@@ -60,7 +60,7 @@ runFrame
   => ReaderC Voxel.Drawable
     (ReaderC (Interval I Int)
     (ReaderC Axis.Drawable
-    (Labelled World (ReaderC (B ('S2x ('S2x ('S2x 'S1))) Oct Voxel))
+    (Labelled World (ReaderC (Octree ('S2x ('S2x ('S2x 'S1))) Voxel))
     (StateC UTCTime
     (StateC Player
     (EmptyC
@@ -70,7 +70,7 @@ runFrame
   = evalEmpty
   . evalState Player{ angle = -pi/4 }
   . (\ m -> now >>= \ start -> evalState start m)
-  . runReader (Voxel UI.red <$ tetra)
+  . runReader (Octree (Voxel UI.red <$ tetra))
   . runLabelled
   . Axis.runDrawable
   . Voxel.runDrawable
