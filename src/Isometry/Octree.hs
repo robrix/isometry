@@ -67,8 +67,8 @@ capacity b = natVal (Proxy @(Linear.Size f)) * size b
 
 
 data Bin a = Bin
-  { x1 :: !a
-  , x2 :: !a
+  { l :: !a
+  , r :: !a
   }
   deriving (Foldable, Functor, Traversable)
 
@@ -89,10 +89,10 @@ instance Monoid a => Monoid (Bin a) where
 
 
 data Quad a = Quad
-  { x1y1 :: !a
-  , x2y1 :: !a
-  , x1y2 :: !a
-  , x2y2 :: !a
+  { bl :: !a
+  , br :: !a
+  , tl :: !a
+  , tr :: !a
   }
   deriving (Foldable, Functor, Traversable)
 
@@ -107,14 +107,14 @@ instance Linear.Finite Quad where
 
 
 data Oct a = Oct
-  { x1y1z1 :: !a
-  , x2y1z1 :: !a
-  , x1y2z1 :: !a
-  , x2y2z1 :: !a
-  , x1y1z2 :: !a
-  , x2y1z2 :: !a
-  , x1y2z2 :: !a
-  , x2y2z2 :: !a
+  { bln :: !a
+  , brn :: !a
+  , tln :: !a
+  , trn :: !a
+  , blf :: !a
+  , brf :: !a
+  , tlf :: !a
+  , trf :: !a
   }
   deriving (Foldable, Functor, Traversable)
 
