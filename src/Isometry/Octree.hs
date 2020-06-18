@@ -179,6 +179,14 @@ instance FunctorWithIndex (V2 Bit) Quad
 instance TraversableWithIndex (V2 Bit) Quad where
   itraverse f (Quad bl br tl tr) = Quad <$> f (V2 I0 I0) bl <*> f (V2 I1 I0) br <*> f (V2 I0 I1) tl <*> f (V2 I1 I1) tr
 
+instance UnfoldableWithIndex (V2 Bit) Quad where
+  iunfoldr f a0 = Quad bl br tl tr
+    where
+    (bl, a1) = f (V2 I0 I0) a0
+    (br, a2) = f (V2 I1 I0) a1
+    (tl, a3) = f (V2 I0 I1) a2
+    (tr, _)  = f (V2 I1 I1) a3
+
 instance Applicative Quad where
   pure a = Quad a a a a
   Quad f1 f2 f3 f4 <*> Quad a1 a2 a3 a4 = Quad (f1 a1) (f2 a2) (f3 a3) (f4 a4)
