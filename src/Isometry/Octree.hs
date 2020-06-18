@@ -16,6 +16,7 @@ module Isometry.Octree
 ( Shape(..)
 , Size
 , Index(..)
+, toFraction
 , B(..)
 , size
 , capacity
@@ -27,6 +28,7 @@ module Isometry.Octree
 ) where
 
 import           Data.Proxy
+import           Data.Ratio ((%))
 import           Data.Vector ((!))
 import           GHC.TypeLits
 import qualified Linear.V as Linear
@@ -45,6 +47,14 @@ data Index i where
   II :: Index 'S1
   IL :: Index s -> Index ('S2x s)
   IR :: Index s -> Index ('S2x s)
+
+toFraction :: Index i -> Rational
+toFraction = uncurry (%) . go
+  where
+  go :: Index i -> (Integer, Integer)
+  go II     = (0, 1)
+  go (IL i) = let (n, d) = go i in (n, d * 2)
+  go (IR i) = let (n, d) = go i in (n + d, d * 2)
 
 
 data B s f a where
