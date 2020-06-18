@@ -29,6 +29,7 @@ module Isometry.Octree
   -- * Tree generation
 , Tetra(..)
 , UnfoldableWithIndex(..)
+, SparseUnfoldableWithIndex(..)
 , iunfold
 ) where
 
@@ -285,3 +286,7 @@ class UnfoldableWithIndex i f | f -> i where
 
 iunfold :: UnfoldableWithIndex i f => (i -> s -> (s, b)) -> s -> f b
 iunfold f a = run . evalState a . iunfoldA $ state . f
+
+-- | Unfolding of finite sparse structures with an index.
+class UnfoldableWithIndex i f => SparseUnfoldableWithIndex i f where
+  iunfoldSparseA :: Applicative m => (i -> m (Maybe b)) -> m (f b)
