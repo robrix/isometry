@@ -154,7 +154,7 @@ instance (Foldable f, UnfoldableWithIndex (v Bit) f, Applicative v, SparseUnfold
 instance (Indexed (v Bit) f, Functor v) => SparseIndexed (v (Index s)) (B s f) where
   E   !? _ = Nothing
   L a !? _ = Just a
-  B b !? v = let v' = fromIndex <$> v in b ! fmap fst v' !? fmap snd v'
+  B b !? v = b ! fmap (fst . fromIndex) v !? fmap (snd . fromIndex) v
 
 instance MutableIndexed (v Bit) f => MutableIndexed (v (Index 'S1)) (B 'S1 f) where
   insert _ a _ = L a
