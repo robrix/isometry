@@ -11,3 +11,6 @@
   - backfaces
 
 - propagate light through the octree
+
+- clamp rotation to 45° increments
+  - free rotation while keys are pressed, smooth animate final rotation to 45° increments on release
