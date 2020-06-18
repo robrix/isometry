@@ -144,10 +144,9 @@ instance TraversableWithIndex (V1 Bit) Bin where
   itraverse f (Bin l r) = Bin <$> f (V1 I0) l <*> f (V1 I1) r
 
 instance UnfoldableWithIndex (V1 Bit) Bin where
-  iunfoldr f a0 = Bin l r
-    where
-    (l, a1) = f (V1 I0) a0
-    (r, _)  = f (V1 I1) a1
+  iunfoldA f = Bin
+    <$> f (V1 I0)
+    <*> f (V1 I1)
 
 instance Applicative Bin where
   pure a = Bin a a
@@ -182,12 +181,11 @@ instance TraversableWithIndex (V2 Bit) Quad where
   itraverse f (Quad bl br tl tr) = Quad <$> f (V2 I0 I0) bl <*> f (V2 I1 I0) br <*> f (V2 I0 I1) tl <*> f (V2 I1 I1) tr
 
 instance UnfoldableWithIndex (V2 Bit) Quad where
-  iunfoldr f a0 = Quad bl br tl tr
-    where
-    (bl, a1) = f (V2 I0 I0) a0
-    (br, a2) = f (V2 I1 I0) a1
-    (tl, a3) = f (V2 I0 I1) a2
-    (tr, _)  = f (V2 I1 I1) a3
+  iunfoldA f = Quad
+    <$> f (V2 I0 I0)
+    <*> f (V2 I1 I0)
+    <*> f (V2 I0 I1)
+    <*> f (V2 I1 I1)
 
 instance Applicative Quad where
   pure a = Quad a a a a
@@ -230,16 +228,15 @@ instance TraversableWithIndex (V3 Bit) Oct where
     <*> f (V3 I0 I1 I1) tlf <*> f (V3 I1 I1 I1) trf
 
 instance UnfoldableWithIndex (V3 Bit) Oct where
-  iunfoldr f a0 = Oct bln brn tln trn blf brf tlf trf
-    where
-    (bln, a1) = f (V3 I0 I0 I0) a0
-    (brn, a2) = f (V3 I1 I0 I0) a1
-    (tln, a3) = f (V3 I0 I1 I0) a2
-    (trn, a4) = f (V3 I1 I1 I0) a3
-    (blf, a5) = f (V3 I0 I0 I1) a4
-    (brf, a6) = f (V3 I1 I0 I1) a5
-    (tlf, a7) = f (V3 I0 I1 I1) a6
-    (trf, _)  = f (V3 I1 I1 I1) a7
+  iunfoldA f = Oct
+    <$> f (V3 I0 I0 I0)
+    <*> f (V3 I1 I0 I0)
+    <*> f (V3 I0 I1 I0)
+    <*> f (V3 I1 I1 I0)
+    <*> f (V3 I0 I0 I1)
+    <*> f (V3 I1 I0 I1)
+    <*> f (V3 I0 I1 I1)
+    <*> f (V3 I1 I1 I1)
 
 instance Applicative Oct where
   pure a = Oct a a a a a a a a
@@ -274,4 +271,4 @@ instance Tetra s => Tetra ('S2x s) where
 
 -- | Unfolding of finite structures with an index.
 class UnfoldableWithIndex i f | f -> i where
-  iunfoldr :: (i -> a -> (b, a)) -> a -> f b
+  iunfoldA :: Applicative m => (i -> m b) -> m (f b)
