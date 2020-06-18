@@ -81,6 +81,9 @@ instance Linear.Finite Bin where
 
   fromV (Linear.V v) = Bin (v ! 0) (v ! 1)
 
+instance Semigroup a => Semigroup (Bin a) where
+  Bin l1 r1 <> Bin l2 r2 = Bin (l1 <> l2) (r1 <> r2)
+
 
 data Quad a = Quad
   { x1y1 :: !a
