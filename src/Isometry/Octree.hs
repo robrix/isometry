@@ -339,6 +339,8 @@ class UnfoldableWithIndex i f => SparseUnfoldableWithIndex i f where
 
 class Indexed i f | f -> i where
   (!) :: f a -> i -> a
+  infixl 9 !
 
 class SparseIndexed i f | f -> i where
   (!?) :: f a -> i -> Maybe a
+  infixl 9 !?
