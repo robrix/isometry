@@ -132,3 +132,6 @@ instance Linear.Finite Oct where
   type Size Oct = 8
 
   fromV (Linear.V v) = Oct (v ! 0) (v ! 1) (v ! 2) (v ! 3) (v ! 4) (v ! 5) (v ! 6) (v ! 7)
+
+instance Semigroup a => Semigroup (Oct a) where
+  Oct bln1 brn1 tln1 trn1 blf1 brf1 tlf1 trf1 <> Oct bln2 brn2 tln2 trn2 blf2 brf2 tlf2 trf2 = Oct (bln1 <> bln2) (brn1 <> brn2) (tln1 <> tln2) (trn1 <> trn2) (blf1 <> blf2) (brf1 <> brf2) (tlf1 <> tlf2) (trf1 <> trf2)
