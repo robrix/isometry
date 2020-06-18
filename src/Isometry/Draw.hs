@@ -69,32 +69,10 @@ runFrame
   = evalEmpty
   . evalState Player{ angle = -pi/4 }
   . (\ m -> now >>= \ start -> evalState start m)
-  . runReader octree6
+  . runReader (UI.red <$ tetra)
   . runLabelled
   . Axis.runDrawable
   . Voxel.runDrawable
-
-octree3 :: B ('S2x 'S1) Oct (UI.Colour Float)
-octree3 = B $ Oct
-  E               (pure UI.red)
-  (pure UI.green) E
-
-  (pure UI.blue)  E
-  E               (pure UI.white)
-
-octree5 :: B ('S2x ('S2x 'S1)) Oct (UI.Colour Float)
-octree5 = B $ Oct
-  E       octree3
-  octree3 E
-  octree3 E
-  E       octree3
-
-octree6 :: B ('S2x ('S2x ('S2x 'S1))) Oct (UI.Colour Float)
-octree6 = B $ Oct
-  E       octree5
-  octree5 E
-  octree5 E
-  E       octree5
 
 class Tetra s where
   tetra :: B s Oct ()
