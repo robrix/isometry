@@ -227,6 +227,18 @@ instance TraversableWithIndex (V3 Bit) Oct where
     <*> f (V3 I0 I0 I1) blf <*> f (V3 I1 I0 I1) brf
     <*> f (V3 I0 I1 I1) tlf <*> f (V3 I1 I1 I1) trf
 
+instance UnfoldableWithIndex (V3 Bit) Oct where
+  iunfoldr f a0 = Oct bln brn tln trn blf brf tlf trf
+    where
+    (bln, a1) = f (V3 I0 I0 I0) a0
+    (brn, a2) = f (V3 I1 I0 I0) a1
+    (tln, a3) = f (V3 I0 I1 I0) a2
+    (trn, a4) = f (V3 I1 I1 I0) a3
+    (blf, a5) = f (V3 I0 I0 I1) a4
+    (brf, a6) = f (V3 I1 I0 I1) a5
+    (tlf, a7) = f (V3 I0 I1 I1) a6
+    (trf, _)  = f (V3 I1 I1 I1) a7
+
 instance Applicative Oct where
   pure a = Oct a a a a a a a a
   Oct f1 f2 f3 f4 f5 f6 f7 f8 <*> Oct a1 a2 a3 a4 a5 a6 a7 a8 = Oct (f1 a1) (f2 a2) (f3 a3) (f4 a4) (f5 a5) (f6 a6) (f7 a7) (f8 a8)
