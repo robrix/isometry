@@ -111,6 +111,9 @@ instance (UnfoldableWithIndex (v Bit) f, Applicative v) => UnfoldableWithIndex (
 instance (UnfoldableWithIndex (v Bit) f, Applicative v, UnfoldableWithIndex (v (Index s)) (B s f)) => UnfoldableWithIndex (v (Index ('S2x s))) (B ('S2x s) f) where
   iunfoldA f = B <$> iunfoldA (\ i -> iunfoldA (\ j -> f (toIndex <$> i <*> j)))
 
+instance (UnfoldableWithIndex (v Bit) f, Applicative v) => SparseUnfoldableWithIndex (v (Index 'S1)) (B 'S1 f) where
+  iunfoldSparseA f = maybe E L <$> f (pure II)
+
 instance Functor f => Applicative (B 'S1 f) where
   pure = L
 
