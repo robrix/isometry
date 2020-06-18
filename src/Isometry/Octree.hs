@@ -35,6 +35,7 @@ import           Data.Vector ((!))
 import           GHC.TypeLits
 import qualified Linear.V as Linear
 import           Linear.V2
+import           Linear.V3
 
 -- | The shape of (non-empty) perfectly balanced binary trees.
 data Shape
@@ -174,6 +175,15 @@ data Oct a = Oct
   , trf :: !a
   }
   deriving (Foldable, Functor, Traversable)
+
+instance FoldableWithIndex (V3 (Index ('S2x 'S1))) Oct
+instance FunctorWithIndex (V3 (Index ('S2x 'S1))) Oct
+instance TraversableWithIndex (V3 (Index ('S2x 'S1))) Oct where
+  itraverse f (Oct bln brn tln trn blf brf tlf trf) = Oct
+    <$> f (V3 (IL II) (IL II) (IL II)) bln <*> f (V3 (IR II) (IL II) (IL II)) brn
+    <*> f (V3 (IL II) (IR II) (IL II)) tln <*> f (V3 (IR II) (IR II) (IL II)) trn
+    <*> f (V3 (IL II) (IL II) (IR II)) blf <*> f (V3 (IR II) (IL II) (IR II)) brf
+    <*> f (V3 (IL II) (IR II) (IR II)) tlf <*> f (V3 (IR II) (IR II) (IR II)) trf
 
 instance Applicative Oct where
   pure a = Oct a a a a a a a a
