@@ -38,6 +38,14 @@ module Isometry.Octree
 , tl_
 , tr_
 , Oct(..)
+, bln_
+, brn_
+, tln_
+, trn_
+, blf_
+, brf_
+, tlf_
+, trf_
   -- * Tree generation
 , tetra
 , UnfoldableWithIndex(..)
@@ -354,6 +362,30 @@ instance Semigroup a => Semigroup (Oct a) where
 
 instance Monoid a => Monoid (Oct a) where
   mempty = Oct mempty mempty mempty mempty mempty mempty mempty mempty
+
+bln_ :: Lens' (Oct a) a
+bln_ = field @"bln"
+
+brn_ :: Lens' (Oct a) a
+brn_ = field @"brn"
+
+tln_ :: Lens' (Oct a) a
+tln_ = field @"tln"
+
+trn_ :: Lens' (Oct a) a
+trn_ = field @"trn"
+
+blf_ :: Lens' (Oct a) a
+blf_ = field @"blf"
+
+brf_ :: Lens' (Oct a) a
+brf_ = field @"brf"
+
+tlf_ :: Lens' (Oct a) a
+tlf_ = field @"tlf"
+
+trf_ :: Lens' (Oct a) a
+trf_ = field @"trf"
 
 
 tetra :: SparseUnfoldableWithIndex (V3 (Index s)) (B s Oct) => B s Oct ()
