@@ -189,11 +189,11 @@ instance D.Vars IF
 
 octree3 :: B ('S2x 'S1) Oct (UI.Colour Float)
 octree3 = B $ Oct
-  E       (pure red)
+  E            (pure red)
   (pure green) E
 
-  (pure blue) E
-  E       (pure white)
+  (pure blue)  E
+  E            (pure white)
 
 octree5 :: B ('S2x ('S2x 'S1)) Oct (UI.Colour Float)
 octree5 = B $ Oct
