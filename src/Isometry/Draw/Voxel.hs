@@ -61,7 +61,7 @@ runDrawable
      , Has Finally sig m
      , Has (Lift IO) sig m
      , Has Trace sig m
-     , Labelled.HasLabelled World (Reader (B s Oct Voxel.Voxel)) sig m
+     , Labelled.HasLabelled World (Reader (B s Oct Voxel)) sig m
      , KnownNat (Size s)
      )
   => ReaderC Drawable (ReaderC (Interval I Int) m) a
@@ -71,14 +71,14 @@ runDrawable m = do
   let vertices = makeVertices world
   runReader (0...length vertices) . UI.loadingDrawable Drawable shader vertices $ m
 
-makeVertices :: KnownNat (Size s) => B s Oct Voxel.Voxel -> [V I]
+makeVertices :: KnownNat (Size s) => B s Oct Voxel -> [V I]
 makeVertices o = go (-pure (d0 `div` 2)) d0 o
   where
   d0 = Octree.size o
   go
     :: V3 Integer
     -> Integer
-    -> B s Oct Voxel.Voxel
+    -> B s Oct Voxel
     -> [V I]
   go n d = \case
     E -> []
