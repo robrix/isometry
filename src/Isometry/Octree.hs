@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
@@ -47,6 +48,7 @@ import           Control.Lens.Indexed hiding (Indexed(..))
 import           Data.Proxy
 import           Data.Ratio ((%))
 import qualified Data.Vector as V
+import           GHC.Generics (Generic, Generic1)
 import           GHC.TypeLits
 import qualified Linear.V as Linear
 import           Linear.V1
@@ -183,7 +185,7 @@ data Bin a = Bin
   { l :: !a
   , r :: !a
   }
-  deriving (Foldable, Functor, Traversable)
+  deriving (Foldable, Functor, Generic, Generic1, Traversable)
 
 instance FoldableWithIndex (V1 Bit) Bin
 instance FunctorWithIndex (V1 Bit) Bin
@@ -229,7 +231,7 @@ data Quad a = Quad
   , tl :: !a
   , tr :: !a
   }
-  deriving (Foldable, Functor, Traversable)
+  deriving (Foldable, Functor, Generic, Generic1, Traversable)
 
 instance FoldableWithIndex (V2 Bit) Quad
 instance FunctorWithIndex (V2 Bit) Quad
@@ -279,7 +281,7 @@ data Oct a = Oct
   , tlf :: !a
   , trf :: !a
   }
-  deriving (Foldable, Functor, Traversable)
+  deriving (Foldable, Functor, Generic, Generic1, Traversable)
 
 instance FoldableWithIndex (V3 Bit) Oct
 instance FunctorWithIndex (V3 Bit) Oct
