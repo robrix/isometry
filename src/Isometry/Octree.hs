@@ -353,6 +353,16 @@ instance Indexed (V3 Bit) Oct where
     V3 I0 I1 I1 -> tlf o
     V3 I1 I1 I1 -> trf o
 
+instance MutableIndexed (V3 Bit) Oct where
+  insert (V3 I0 I0 I0) = set bln_
+  insert (V3 I1 I0 I0) = set brn_
+  insert (V3 I0 I1 I0) = set tln_
+  insert (V3 I1 I1 I0) = set trn_
+  insert (V3 I0 I0 I1) = set blf_
+  insert (V3 I1 I0 I1) = set brf_
+  insert (V3 I0 I1 I1) = set tlf_
+  insert (V3 I1 I1 I1) = set trf_
+
 instance Applicative Oct where
   pure a = Oct a a a a a a a a
   Oct f1 f2 f3 f4 f5 f6 f7 f8 <*> Oct a1 a2 a3 a4 a5 a6 a7 a8 = Oct (f1 a1) (f2 a2) (f3 a3) (f4 a4) (f5 a5) (f6 a6) (f7 a7) (f8 a8)
