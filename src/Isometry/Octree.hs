@@ -279,7 +279,7 @@ instance Tetra s => Tetra ('S2x s) where
     E     tetra
 
 
--- | Unfolding of finite structures with an index.
+-- | Unfolding of finite dense structures with an index.
 class UnfoldableWithIndex i f | f -> i where
   iunfoldA :: Applicative m => (i -> m b) -> m (f b)
 
