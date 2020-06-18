@@ -4,6 +4,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NoStarIsType #-}
 {-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -29,7 +30,7 @@ module Isometry.Octree
 , Quad(..)
 , Oct(..)
   -- * Tree generation
-, Tetra(..)
+, tetra
 , UnfoldableWithIndex(..)
 , SparseUnfoldableWithIndex(..)
 , iunfold
@@ -285,19 +286,17 @@ instance Monoid a => Monoid (Oct a) where
   mempty = Oct mempty mempty mempty mempty mempty mempty mempty mempty
 
 
--- | Tree generation.
-class Tetra s where
-  tetra :: B s Oct ()
-
-instance Tetra 'S1 where
-  tetra = L ()
-
-instance Tetra s => Tetra ('S2x s) where
-  tetra = B $ Oct
-    E     tetra
-    tetra E
-    tetra E
-    E     tetra
+tetra :: SparseUnfoldableWithIndex (V3 (Index s)) (B s Oct) => B s Oct ()
+tetra = run . iunfoldSparseA $ pure . \case
+  V3 II II II -> Just ()
+  V3 (IL _) (IL _) (IL _) -> Nothing
+  V3 (IR _) (IL _) (IL _) -> Just ()
+  V3 (IL _) (IR _) (IL _) -> Just ()
+  V3 (IR _) (IR _) (IL _) -> Nothing
+  V3 (IL _) (IL _) (IR _) -> Just ()
+  V3 (IR _) (IL _) (IR _) -> Nothing
+  V3 (IL _) (IR _) (IR _) -> Nothing
+  V3 (IR _) (IR _) (IR _) -> Just ()
 
 
 -- | Unfolding of finite dense structures with an index.

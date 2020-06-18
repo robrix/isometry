@@ -37,7 +37,7 @@ import           Graphics.GL.Core41
 import qualified Isometry.Draw.Axis as Axis
 import qualified Isometry.Draw.Voxel as Voxel
 import           Isometry.Input as Input
-import           Isometry.Octree as Octree (Shape(..), Tetra(..))
+import           Isometry.Octree as Octree (Shape(..), tetra)
 import           Isometry.Time
 import           Isometry.UI
 import           Isometry.View as View
