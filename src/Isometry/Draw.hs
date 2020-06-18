@@ -37,7 +37,7 @@ import           Graphics.GL.Core41
 import qualified Isometry.Draw.Axis as Axis
 import qualified Isometry.Draw.Voxel as Voxel
 import           Isometry.Input as Input
-import           Isometry.Octree as Octree (B(..), Oct(..), Shape(..))
+import           Isometry.Octree as Octree (B(..), Oct(..), Shape(..), Tetra(..))
 import           Isometry.Time
 import           Isometry.UI
 import           Isometry.View as View
@@ -73,19 +73,6 @@ runFrame
   . runLabelled
   . Axis.runDrawable
   . Voxel.runDrawable
-
-class Tetra s where
-  tetra :: B s Oct ()
-
-instance Tetra 'S1 where
-  tetra = Octree.L ()
-
-instance Tetra s => Tetra ('S2x s) where
-  tetra = B $ Oct
-    E     tetra
-    tetra E
-    tetra E
-    E     tetra
 
 newtype Player = Player
   { angle :: I Double

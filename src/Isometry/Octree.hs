@@ -21,6 +21,8 @@ module Isometry.Octree
 , Bin(..)
 , Quad(..)
 , Oct(..)
+  -- * Tree generation
+, Tetra(..)
 ) where
 
 import           Data.Proxy
@@ -157,3 +159,18 @@ instance Semigroup a => Semigroup (Oct a) where
 
 instance Monoid a => Monoid (Oct a) where
   mempty = Oct mempty mempty mempty mempty mempty mempty mempty mempty
+
+
+-- | Tree generation.
+class Tetra s where
+  tetra :: B s Oct ()
+
+instance Tetra 'S1 where
+  tetra = L ()
+
+instance Tetra s => Tetra ('S2x s) where
+  tetra = B $ Oct
+    E     tetra
+    tetra E
+    tetra E
+    E     tetra
