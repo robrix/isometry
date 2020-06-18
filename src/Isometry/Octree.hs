@@ -15,6 +15,7 @@
 module Isometry.Octree
 ( Shape(..)
 , Size
+, Index(..)
 , B(..)
 , size
 , capacity
@@ -38,6 +39,12 @@ data Shape
 type family Size (b :: Shape) :: Nat where
   Size 'S1      = 1
   Size ('S2x l) = 2 * Size l
+
+
+data Index i where
+  II :: Index 'S1
+  IL :: Index s -> Index ('S2x s)
+  IR :: Index s -> Index ('S2x s)
 
 
 data B s f a where
