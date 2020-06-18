@@ -38,6 +38,7 @@ module Isometry.Octree
 -- * Indexing
 , Indexed(..)
 , SparseIndexed(..)
+, MutableIndexed(..)
 ) where
 
 import           Control.Carrier.State.Church
@@ -354,3 +355,6 @@ class Indexed i f | f -> i where
 class SparseIndexed i f | f -> i where
   (!?) :: f a -> i -> Maybe a
   infixl 9 !?
+
+class MutableIndexed i f | f -> i where
+  insert :: i -> a -> f a -> f a
