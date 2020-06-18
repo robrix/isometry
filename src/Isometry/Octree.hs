@@ -183,6 +183,11 @@ instance UnfoldableWithIndex (V1 Bit) Bin where
     <$> f (V1 I0)
     <*> f (V1 I1)
 
+instance Indexed (V1 Bit) Bin where
+  b ! i = case i of
+    V1 I0 -> l b
+    V1 I1 -> r b
+
 instance Applicative Bin where
   pure a = Bin a a
   Bin f1 f2 <*> Bin a1 a2 = Bin (f1 a1) (f2 a2)
