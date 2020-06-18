@@ -82,6 +82,11 @@ deriving instance Foldable f => Foldable (B s f)
 deriving instance Functor f => Functor (B s f)
 deriving instance Traversable f => Traversable (B s f)
 
+instance (FoldableWithIndex (v Bit) f, Applicative v) => FoldableWithIndex (v (Index s)) (B s f) where
+  ifoldMap _ E     = mempty
+  ifoldMap f (L a) = f (pure II) a
+  ifoldMap f (B b) = ifoldMap (\ i -> ifoldMap (\ j -> f (toIndex <$> i <*> j))) b
+
 instance Functor f => Applicative (B 'S1 f) where
   pure = L
 
