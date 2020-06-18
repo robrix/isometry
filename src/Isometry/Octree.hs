@@ -160,9 +160,9 @@ instance MutableIndexed (v Bit) f => MutableIndexed (v (Index 'S1)) (B 'S1 f) wh
   insert _ a _ = L a
 
 instance (MutableIndexed (v Bit) f, Applicative f, Functor v, MutableIndexed (v (Index s)) (B s f), Indexed (v Bit) f) => MutableIndexed (v (Index ('S2x s))) (B ('S2x s) f) where
-  insert i a = \case
-    E   -> B (insert ihead (insert itail a E) (pure E))
-    B f -> B (insert ihead (insert itail a (f ! ihead)) f)
+  insert i a = B . \case
+    E   -> insert ihead (insert itail a E) (pure E)
+    B f -> insert ihead (insert itail a (f ! ihead)) f
     where
     i' = fromIndex <$> i
     ihead = fst <$> i'
