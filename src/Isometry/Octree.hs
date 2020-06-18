@@ -42,6 +42,8 @@ import           Linear.V2
 import           Linear.V3
 
 -- | The shape of (non-empty) perfectly balanced binary trees.
+--
+-- This represents shapes of size 2ⁿ.
 data Shape
   = S1         -- 1
   | S2x !Shape -- 2 * n
