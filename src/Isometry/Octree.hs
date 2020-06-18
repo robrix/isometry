@@ -115,10 +115,10 @@ data Bin a = Bin
   }
   deriving (Foldable, Functor, Traversable)
 
-instance FoldableWithIndex (V1 (Index ('S2x 'S1))) Bin
-instance FunctorWithIndex (V1 (Index ('S2x 'S1))) Bin
-instance TraversableWithIndex (V1 (Index ('S2x 'S1))) Bin where
-  itraverse f (Bin l r) = Bin <$> f (V1 (IL II)) l <*> f (V1 (IR II)) r
+instance FoldableWithIndex (V1 Bit) Bin
+instance FunctorWithIndex (V1 Bit) Bin
+instance TraversableWithIndex (V1 Bit) Bin where
+  itraverse f (Bin l r) = Bin <$> f (V1 I0) l <*> f (V1 I1) r
 
 instance Applicative Bin where
   pure a = Bin a a
@@ -147,10 +147,10 @@ data Quad a = Quad
   }
   deriving (Foldable, Functor, Traversable)
 
-instance FoldableWithIndex (V2 (Index ('S2x 'S1))) Quad
-instance FunctorWithIndex (V2 (Index ('S2x 'S1))) Quad
-instance TraversableWithIndex (V2 (Index ('S2x 'S1))) Quad where
-  itraverse f (Quad bl br tl tr) = Quad <$> f (V2 (IL II) (IL II)) bl <*> f (V2 (IR II) (IL II)) br <*> f (V2 (IL II) (IR II)) tl <*> f (V2 (IR II) (IR II)) tr
+instance FoldableWithIndex (V2 Bit) Quad
+instance FunctorWithIndex (V2 Bit) Quad
+instance TraversableWithIndex (V2 Bit) Quad where
+  itraverse f (Quad bl br tl tr) = Quad <$> f (V2 I0 I0) bl <*> f (V2 I1 I0) br <*> f (V2 I0 I1) tl <*> f (V2 I1 I1) tr
 
 instance Applicative Quad where
   pure a = Quad a a a a
@@ -183,14 +183,14 @@ data Oct a = Oct
   }
   deriving (Foldable, Functor, Traversable)
 
-instance FoldableWithIndex (V3 (Index ('S2x 'S1))) Oct
-instance FunctorWithIndex (V3 (Index ('S2x 'S1))) Oct
-instance TraversableWithIndex (V3 (Index ('S2x 'S1))) Oct where
+instance FoldableWithIndex (V3 Bit) Oct
+instance FunctorWithIndex (V3 Bit) Oct
+instance TraversableWithIndex (V3 Bit) Oct where
   itraverse f (Oct bln brn tln trn blf brf tlf trf) = Oct
-    <$> f (V3 (IL II) (IL II) (IL II)) bln <*> f (V3 (IR II) (IL II) (IL II)) brn
-    <*> f (V3 (IL II) (IR II) (IL II)) tln <*> f (V3 (IR II) (IR II) (IL II)) trn
-    <*> f (V3 (IL II) (IL II) (IR II)) blf <*> f (V3 (IR II) (IL II) (IR II)) brf
-    <*> f (V3 (IL II) (IR II) (IR II)) tlf <*> f (V3 (IR II) (IR II) (IR II)) trf
+    <$> f (V3 I0 I0 I0) bln <*> f (V3 I1 I0 I0) brn
+    <*> f (V3 I0 I1 I0) tln <*> f (V3 I1 I1 I0) trn
+    <*> f (V3 I0 I0 I1) blf <*> f (V3 I1 I0 I1) brf
+    <*> f (V3 I0 I1 I1) tlf <*> f (V3 I1 I1 I1) trf
 
 instance Applicative Oct where
   pure a = Oct a a a a a a a a
