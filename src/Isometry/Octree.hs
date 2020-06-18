@@ -34,6 +34,7 @@ import           Data.Ratio ((%))
 import           Data.Vector ((!))
 import           GHC.TypeLits
 import qualified Linear.V as Linear
+import           Linear.V1
 import           Linear.V2
 import           Linear.V3
 
@@ -108,10 +109,10 @@ data Bin a = Bin
   }
   deriving (Foldable, Functor, Traversable)
 
-instance FoldableWithIndex (Index ('S2x 'S1)) Bin
-instance FunctorWithIndex (Index ('S2x 'S1)) Bin
-instance TraversableWithIndex (Index ('S2x 'S1)) Bin where
-  itraverse f (Bin l r) = Bin <$> f (IL II) l <*> f (IR II) r
+instance FoldableWithIndex (V1 (Index ('S2x 'S1))) Bin
+instance FunctorWithIndex (V1 (Index ('S2x 'S1))) Bin
+instance TraversableWithIndex (V1 (Index ('S2x 'S1))) Bin where
+  itraverse f (Bin l r) = Bin <$> f (V1 (IL II)) l <*> f (V1 (IR II)) r
 
 instance Applicative Bin where
   pure a = Bin a a
