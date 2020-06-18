@@ -2,8 +2,8 @@
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE GADTs #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NoStarIsType #-}
 {-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -28,6 +28,7 @@ module Isometry.Octree
 , Oct(..)
   -- * Tree generation
 , Tetra(..)
+, UnfoldableWithIndex(..)
 ) where
 
 import           Control.Lens.Indexed
@@ -241,3 +242,8 @@ instance Tetra s => Tetra ('S2x s) where
     tetra E
     tetra E
     E     tetra
+
+
+-- | Unfolding of finite structures with an index.
+class UnfoldableWithIndex i f | f -> i where
+  iunfoldr :: (i -> a -> (b, a)) -> a -> f b
