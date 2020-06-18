@@ -17,6 +17,7 @@ module Unit.Multiple
 , Nano(..)
 , Micro(..)
 , Milli(..)
+, Semi(..)
   -- ** Multiples
 , Kilo(..)
 , Mega(..)
@@ -67,6 +68,10 @@ newtype Micro u a = Micro { getMicro :: u a }
 newtype Milli u a = Milli { getMilli :: u a }
   deriving (Additive, Applicative, Column, Conjugate, Epsilon, Eq, Foldable, Floating, Fractional, Functor, Metric, Monad, Num, Ord, Random, Real, RealFloat, RealFrac, Row, Show, Storable, Traversable, GL.Type, Uniform)
   deriving (Unit d) via Mult 1 1_000 "m" u
+
+newtype Semi u a = Semi { getSemi :: u a }
+  deriving (Additive, Applicative, Column, Conjugate, Epsilon, Eq, Foldable, Floating, Fractional, Functor, Metric, Monad, Num, Ord, Random, Real, RealFloat, RealFrac, Row, Show, Storable, Traversable, GL.Type, Uniform)
+  deriving (Unit d) via Mult 1 2 "semi" u
 
 
 -- ** Multiples
