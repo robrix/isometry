@@ -89,4 +89,5 @@ runWindow name size = E.bracket
   glConfig = defaultOpenGL
     { glProfile        = Core Normal 4 1
     , glColorPrecision = V4 8 8 8 8
+    , glDepthPrecision = 32
     }
