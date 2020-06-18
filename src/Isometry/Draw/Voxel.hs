@@ -75,13 +75,13 @@ makeVertices o = go (-pure (d0 `div` 2)) d0 o
   go n d = \case
     E -> []
     L c ->  map (\ v -> V (I (fmap fromIntegral n + v)) (I c)) vertices
-    B (Oct x1y1z1 x2y1z1
-           x1y2z1 x2y2z1
-           x1y1z2 x2y1z2
-           x1y2z2 x2y2z2) -> go n d' x1y1z1 <> go (n & _x +~ d') d' x2y1z1
-                          <> go (n & _y +~ d') d' x1y2z1 <> go (n & _xy +~ pure d') d' x2y2z1
-                          <> go (n & _z +~ d') d' x1y1z2 <> go (n & _xz +~ pure d') d' x2y1z2
-                          <> go (n & _yz +~ pure d') d' x1y2z2 <> go (n + pure d') d' x2y2z2
+    B (Oct bln ry1n
+           tln ry2n
+           blf ry1f
+           tlf ry2f) -> go n d' bln <> go (n & _x +~ d') d' ry1n
+                     <> go (n & _y +~ d') d' tln <> go (n & _xy +~ pure d') d' ry2n
+                     <> go (n & _z +~ d') d' blf <> go (n & _xz +~ pure d') d' ry1f
+                     <> go (n & _yz +~ pure d') d' tlf <> go (n + pure d') d' ry2f
     where
     d' = d `div` 2
 
