@@ -81,7 +81,7 @@ range = 0...length vertices
 shader :: D.Shader shader => shader U V Frag
 shader
   =   vertex (\ U{ matrix } V{ pos, colour } IF{ colour2 } -> main $ do
-    gl_Position .= matrix D.>* ext4 (pos * 10) 1
+    gl_Position .= matrix D.>* ext4 (pos * 100) 1
     colour2 .= colour)
 
   >>> fragment (\ _ IF{ colour2 } Frag{ fragColour } -> main $
