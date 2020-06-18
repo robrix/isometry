@@ -16,6 +16,7 @@
 module Isometry.Octree
 ( Shape(..)
 , Size
+, Bit(..)
 , Index(..)
 , toFraction
 , B(..)
@@ -47,6 +48,11 @@ type family Size (b :: Shape) :: Nat where
   Size 'S1      = 1
   Size ('S2x l) = 2 * Size l
 
+
+data Bit
+  = I0
+  | I1
+  deriving (Enum, Eq, Ord, Show)
 
 data Index i where
   II :: Index 'S1
