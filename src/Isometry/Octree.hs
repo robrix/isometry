@@ -105,6 +105,9 @@ instance Linear.Finite Quad where
 
   fromV (Linear.V v) = Quad (v ! 0) (v ! 1) (v ! 2) (v ! 3)
 
+instance Semigroup a => Semigroup (Quad a) where
+  Quad bl1 br1 tl1 tr1 <> Quad bl2 br2 tl2 tr2 = Quad (bl1 <> bl2) (br1 <> br2) (tl1 <> tl2) (tr1 <> tr2)
+
 
 data Oct a = Oct
   { bln :: !a
