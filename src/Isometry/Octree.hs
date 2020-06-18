@@ -84,6 +84,9 @@ instance Linear.Finite Bin where
 instance Semigroup a => Semigroup (Bin a) where
   Bin l1 r1 <> Bin l2 r2 = Bin (l1 <> l2) (r1 <> r2)
 
+instance Monoid a => Monoid (Bin a) where
+  mempty = Bin mempty mempty
+
 
 data Quad a = Quad
   { x1y1 :: !a
