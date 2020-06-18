@@ -37,12 +37,13 @@ import           Graphics.GL.Core41
 import qualified Isometry.Draw.Axis as Axis
 import qualified Isometry.Draw.Voxel as Voxel
 import           Isometry.Input as Input
-import           Isometry.Octree as Octree (Shape(..), tetra)
+import           Isometry.Octree as Octree (Shape(..), tetra, toFraction)
 import           Isometry.Time
 import           Isometry.UI
 import           Isometry.View as View
 import           Isometry.Voxel as Voxel
 import           Isometry.World
+import           Linear.Exts
 import qualified SDL
 import qualified UI.Colour as UI
 import           UI.Label
@@ -70,7 +71,7 @@ runFrame
   = evalEmpty
   . evalState Player{ angle = -pi/4 }
   . (\ m -> now >>= \ start -> evalState start m)
-  . runReader (Octree (tetra (const (Voxel UI.red))))
+  . runReader (Octree (tetra (\ v -> Voxel (ext (fromRational . toFraction <$> v) 1))))
   . runLabelled
   . Axis.runDrawable
   . Voxel.runDrawable
