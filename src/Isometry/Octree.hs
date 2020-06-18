@@ -102,6 +102,12 @@ instance (FoldableWithIndex (v Bit) f, FunctorWithIndex (v Bit) f, TraversableWi
   itraverse f (L a) = L <$> f (pure II) a
   itraverse f (B b) = B <$> itraverse (\ i -> itraverse (\ j -> f (toIndex <$> i <*> j))) b
 
+instance (UnfoldableWithIndex (v Bit) f, Applicative v) => UnfoldableWithIndex (v (Index 'S1)) (B 'S1 f) where
+  iunfoldA f = L <$> f (pure II)
+
+instance (UnfoldableWithIndex (v Bit) f, Applicative v, UnfoldableWithIndex (v (Index s)) (B s f)) => UnfoldableWithIndex (v (Index ('S2x s))) (B ('S2x s) f) where
+  iunfoldA f = B <$> iunfoldA (\ i -> iunfoldA (\ j -> f (toIndex <$> i <*> j)))
+
 instance Functor f => Applicative (B 'S1 f) where
   pure = L
 
