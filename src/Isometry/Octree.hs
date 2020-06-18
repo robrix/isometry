@@ -30,6 +30,8 @@ module Isometry.Octree
 , size
 , capacity
 , Bin(..)
+, l_
+, r_
 , Quad(..)
 , Oct(..)
   -- * Tree generation
@@ -44,7 +46,9 @@ module Isometry.Octree
 ) where
 
 import           Control.Carrier.State.Church
+import           Control.Lens (Lens')
 import           Control.Lens.Indexed hiding (Indexed(..))
+import           Data.Generics.Product.Fields
 import           Data.Proxy
 import           Data.Ratio ((%))
 import qualified Data.Vector as V
@@ -220,6 +224,12 @@ instance Semigroup a => Semigroup (Bin a) where
 
 instance Monoid a => Monoid (Bin a) where
   mempty = Bin mempty mempty
+
+l_ :: Lens' (Bin a) a
+l_ = field @"l"
+
+r_ :: Lens' (Bin a) a
+r_ = field @"r"
 
 
 -- | Quaternary nodes.
