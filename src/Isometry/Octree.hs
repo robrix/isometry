@@ -164,9 +164,8 @@ instance (MutableIndexed (v Bit) f, Applicative f, Functor v, MutableIndexed (v 
     E   -> (E, pure E)
     B f -> (f ! ihead, f)
     where
-    i' = fromIndex <$> i
-    ihead = fst <$> i'
-    itail = snd <$> i'
+    ihead = fst . fromIndex <$> i
+    itail = snd . fromIndex <$> i
 
 instance Functor f => Applicative (B 'S1 f) where
   pure = L
