@@ -6,7 +6,6 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE NoStarIsType #-}
 {-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -58,7 +57,7 @@ module Isometry.Octree
 ) where
 
 import           Control.Carrier.State.Church
-import           Control.Lens (Lens')
+import           Control.Lens (Lens', set)
 import           Control.Lens.Indexed hiding (Indexed(..))
 import           Data.Generics.Product.Fields
 import           Data.Proxy
@@ -219,8 +218,8 @@ instance Indexed (V1 Bit) Bin where
     V1 I1 -> r b
 
 instance MutableIndexed (V1 Bit) Bin where
-  insert (V1 I0) l b = b{ l }
-  insert (V1 I1) r b = b{ r }
+  insert (V1 I0) = set l_
+  insert (V1 I1) = set r_
 
 instance Applicative Bin where
   pure a = Bin a a
