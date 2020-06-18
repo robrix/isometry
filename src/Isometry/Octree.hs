@@ -19,6 +19,7 @@ module Isometry.Octree
 , Size
 , Bit(..)
 , toIndex
+, fromIndex
 , Index(..)
 , toFraction
 , B(..)
@@ -70,6 +71,10 @@ data Bit
 toIndex :: Bit -> Index i -> Index ('S2x i)
 toIndex I0 = IL
 toIndex I1 = IR
+
+fromIndex :: Index ('S2x i) -> (Bit, Index i)
+fromIndex (IL i) = (I0, i)
+fromIndex (IR i) = (I1, i)
 
 data Index i where
   II :: Index 'S1
