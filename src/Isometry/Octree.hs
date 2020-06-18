@@ -40,7 +40,7 @@ import           Control.Carrier.State.Church
 import           Control.Lens.Indexed
 import           Data.Proxy
 import           Data.Ratio ((%))
-import           Data.Vector ((!))
+import qualified Data.Vector as V
 import           GHC.TypeLits
 import qualified Linear.V as Linear
 import           Linear.V1
@@ -187,7 +187,7 @@ instance Applicative Bin where
 instance Linear.Finite Bin where
   type Size Bin = 2
 
-  fromV (Linear.V v) = Bin (v ! 0) (v ! 1)
+  fromV (Linear.V v) = Bin (v V.! 0) (v V.! 1)
 
 instance Semigroup a => Semigroup (Bin a) where
   Bin l1 r1 <> Bin l2 r2 = Bin (l1 <> l2) (r1 <> r2)
@@ -226,7 +226,7 @@ instance Applicative Quad where
 instance Linear.Finite Quad where
   type Size Quad = 4
 
-  fromV (Linear.V v) = Quad (v ! 0) (v ! 1) (v ! 2) (v ! 3)
+  fromV (Linear.V v) = Quad (v V.! 0) (v V.! 1) (v V.! 2) (v V.! 3)
 
 instance Semigroup a => Semigroup (Quad a) where
   Quad bl1 br1 tl1 tr1 <> Quad bl2 br2 tl2 tr2 = Quad (bl1 <> bl2) (br1 <> br2) (tl1 <> tl2) (tr1 <> tr2)
@@ -277,7 +277,7 @@ instance Applicative Oct where
 instance Linear.Finite Oct where
   type Size Oct = 8
 
-  fromV (Linear.V v) = Oct (v ! 0) (v ! 1) (v ! 2) (v ! 3) (v ! 4) (v ! 5) (v ! 6) (v ! 7)
+  fromV (Linear.V v) = Oct (v V.! 0) (v V.! 1) (v V.! 2) (v V.! 3) (v V.! 4) (v V.! 5) (v V.! 6) (v V.! 7)
 
 instance Semigroup a => Semigroup (Oct a) where
   Oct bln1 brn1 tln1 trn1 blf1 brf1 tlf1 trf1 <> Oct bln2 brn2 tln2 trn2 blf2 brf2 tlf2 trf2 = Oct (bln1 <> bln2) (brn1 <> brn2) (tln1 <> tln2) (trn1 <> trn2) (blf1 <> blf2) (brf1 <> brf2) (tlf1 <> tlf2) (trf1 <> trf2)
