@@ -141,6 +141,12 @@ instance FunctorWithIndex (V1 Bit) Bin
 instance TraversableWithIndex (V1 Bit) Bin where
   itraverse f (Bin l r) = Bin <$> f (V1 I0) l <*> f (V1 I1) r
 
+instance UnfoldableWithIndex (V1 Bit) Bin where
+  iunfoldr f a0 = Bin l r
+    where
+    (l, a1) = f (V1 I0) a0
+    (r, _)  = f (V1 I1) a1
+
 instance Applicative Bin where
   pure a = Bin a a
   Bin f1 f2 <*> Bin a1 a2 = Bin (f1 a1) (f2 a2)
