@@ -488,7 +488,7 @@ class ( Ref ref
 
   atan2' :: expr a -> expr a -> expr a
 
-  texture :: expr TextureUnit -> expr (v Float) -> expr (v Float)
+  texture :: expr TextureUnit -> expr (u Float) -> expr (v Float)
 
   fract :: expr a -> expr a
 
