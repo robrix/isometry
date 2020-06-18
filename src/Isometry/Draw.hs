@@ -96,6 +96,19 @@ octree6 = B $ Oct
   octree5 E
   E       octree5
 
+class Tetra s where
+  tetra :: B s Oct ()
+
+instance Tetra 'S1 where
+  tetra = Octree.L ()
+
+instance Tetra s => Tetra ('S2x s) where
+  tetra = B $ Oct
+    E     tetra
+    tetra E
+    tetra E
+    E     tetra
+
 newtype Player = Player
   { angle :: I Double
   }
