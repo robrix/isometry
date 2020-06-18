@@ -3,6 +3,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NoStarIsType #-}
 {-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -27,6 +28,7 @@ module Isometry.Octree
 , Tetra(..)
 ) where
 
+import           Control.Lens.Indexed
 import           Data.Proxy
 import           Data.Ratio ((%))
 import           Data.Vector ((!))
@@ -103,6 +105,11 @@ data Bin a = Bin
   , r :: !a
   }
   deriving (Foldable, Functor, Traversable)
+
+instance FoldableWithIndex (Index ('S2x 'S1)) Bin
+instance FunctorWithIndex (Index ('S2x 'S1)) Bin
+instance TraversableWithIndex (Index ('S2x 'S1)) Bin where
+  itraverse f (Bin l r) = Bin <$> f (IL II) l <*> f (IR II) r
 
 instance Applicative Bin where
   pure a = Bin a a
