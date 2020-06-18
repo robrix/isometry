@@ -1,2 +1,5 @@
 module Isometry.World
-() where
+( World
+) where
+
+data World
