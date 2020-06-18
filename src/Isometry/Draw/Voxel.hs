@@ -97,7 +97,7 @@ makeVertices (Octree o) = go (-pure (d0 `div` 2)) d0 o
 newtype Drawable = Drawable { getDrawable :: UI.Drawable U V Frag }
 
 
-vertices :: [V3 (Metres Float)]
+vertices :: [V3 (Distance Float)]
 vertices = map ((* 0.5) . (+ 1))
   [ -- far
     V3 (-1) (-1) (-1)
@@ -166,18 +166,18 @@ shader
 
 
 newtype U v = U
-  { matrix :: v (Transform V4 Float Metres ClipUnits)
+  { matrix :: v (Transform V4 Float Distance ClipUnits)
   }
   deriving (Generic)
 
 instance D.Vars U
 
-matrix_ :: Lens' (U v) (v (Transform V4 Float Metres ClipUnits))
+matrix_ :: Lens' (U v) (v (Transform V4 Float Distance ClipUnits))
 matrix_ = field @"matrix"
 
 
 data V v = V
-  { pos    :: v (V3 (Metres Float))
+  { pos    :: v (V3 (Distance Float))
   , colour :: v (UI.Colour Float)
   }
   deriving (Generic)

@@ -27,6 +27,7 @@ import           GL.Array
 import           GL.Effect.Check
 import           GL.Shader.DSL as D hiding (get, (.*.), (./.), (^.), _x, _y, _z)
 import           Isometry.View as View
+import           Isometry.World
 import           Linear.V3
 import           Linear.Vector
 import           UI.Colour as UI
@@ -88,18 +89,18 @@ shader
 
 
 newtype U v = U
-  { matrix :: v (Transform V4 Float Metres ClipUnits)
+  { matrix :: v (Transform V4 Float Distance ClipUnits)
   }
   deriving (Generic)
 
 instance D.Vars U
 
-matrix_ :: Lens' (U v) (v (Transform V4 Float Metres ClipUnits))
+matrix_ :: Lens' (U v) (v (Transform V4 Float Distance ClipUnits))
 matrix_ = field @"matrix"
 
 
 data V v = V
-  { pos    :: v (V3 (Metres Float))
+  { pos    :: v (V3 (Distance Float))
   , colour :: v (Colour Float)
   }
   deriving (Generic)

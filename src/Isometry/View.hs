@@ -28,13 +28,12 @@ import Data.Functor.Interval
 import Geometry.Transform
 import GL.Shader.DSL (ClipUnits(..))
 import GL.Viewport
+import Isometry.World
 import Linear.Exts
 import UI.Context as Context
 import UI.Window as Window
 import Unit.Algebra
 import Unit.Length
-
-type Distance = Metres
 
 data View = View
   { ratio :: I Int    -- ^ Ratio of window pixels per context pixel.
@@ -65,7 +64,7 @@ withView angle m = do
   let zoom = 1
       focus = 0
       -- how many pixels to draw something / one metre across
-      scale = Window.Coords 10 ./. Metres 1
+      scale = Window.Coords 10 ./. Semi (Metres 1)
 
   runReader View{ ratio, size, zoom, scale, focus, angle } m
 
