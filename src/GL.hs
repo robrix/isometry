@@ -29,7 +29,7 @@ data Capability
   -- ColourLogicOp              -- ^ GL_COLOR_LOGIC_OP
   -- CullFace                   -- ^ GL_CULL_FACE
   | DepthClamp                 -- ^ GL_DEPTH_CLAMP
-  -- DepthTest                  -- ^ GL_DEPTH_TEST
+  | DepthTest                  -- ^ GL_DEPTH_TEST
   -- Dither                     -- ^ GL_DITHER
   -- FramebufferSRGB            -- ^ GL_FRAMEBUFFER_SRGB
   | LineSmooth                 -- ^ GL_LINE_SMOOTH
@@ -57,7 +57,7 @@ instance GL.Enum Capability where
     -- ColourLogicOp              -> GL_COLOR_LOGIC_OP
     -- CullFace                   -> GL_CULL_FACE
     DepthClamp                 -> GL_DEPTH_CLAMP
-    -- DepthTest                  -> GL_DEPTH_TEST
+    DepthTest                  -> GL_DEPTH_TEST
     -- Dither                     -> GL_DITHER
     -- FramebufferSRGB            -> GL_FRAMEBUFFER_SRGB
     LineSmooth                 -> GL_LINE_SMOOTH

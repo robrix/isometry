@@ -78,6 +78,7 @@ game = runGame $ do
 
   enabled_ Blend            .= True
   enabled_ DepthClamp       .= True
+  enabled_ DepthTest        .= True
   enabled_ LineSmooth       .= True
   enabled_ ProgramPointSize .= True
   enabled_ ScissorTest      .= True

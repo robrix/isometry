@@ -26,6 +26,7 @@ import           Control.Effect.Trace
 import           Control.Lens (Lens', (^.))
 import           Control.Monad (when)
 import           Control.Monad.IO.Class.Lift
+import           Data.Bits ((.|.))
 import           Data.Functor.I
 import           Data.Functor.Interval hiding (range)
 import           Data.Generics.Product.Fields
@@ -118,7 +119,7 @@ frame = timed $ do
     clipTo =<< ask
 
     glClearColor 0 0 0 0
-    glClear GL_COLOR_BUFFER_BIT
+    glClear $ GL_COLOR_BUFFER_BIT .|. GL_DEPTH_BUFFER_BIT
 
     glBlendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 
