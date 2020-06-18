@@ -24,7 +24,7 @@ module Isometry.Octree
 , Index(..)
 , toFraction
 , B(..)
-, isSparse
+, isEmpty
 , b
 , size
 , capacity
@@ -189,13 +189,13 @@ instance (Semigroup a, forall x . Semigroup x => Semigroup (f x)) => Semigroup (
 instance (Semigroup a, forall x . Semigroup x => Semigroup (f x)) => Monoid (B s f a) where
   mempty = E
 
-isSparse :: B s f a -> Bool
-isSparse E = True
-isSparse _ = False
+isEmpty :: B s f a -> Bool
+isEmpty E = True
+isEmpty _ = False
 
 b :: Foldable f => f (B s f a) -> B ('S2x s) f a
-b f | all isSparse f = E
-    | otherwise      = B f
+b f | all isEmpty f = E
+    | otherwise     = B f
 
 size :: forall s f a . KnownNat (Size s) => B s f a -> Integer
 size _ = natVal (Proxy @(Size s))
