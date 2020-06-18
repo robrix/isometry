@@ -135,3 +135,6 @@ instance Linear.Finite Oct where
 
 instance Semigroup a => Semigroup (Oct a) where
   Oct bln1 brn1 tln1 trn1 blf1 brf1 tlf1 trf1 <> Oct bln2 brn2 tln2 trn2 blf2 brf2 tlf2 trf2 = Oct (bln1 <> bln2) (brn1 <> brn2) (tln1 <> tln2) (trn1 <> trn2) (blf1 <> blf2) (brf1 <> brf2) (tlf1 <> tlf2) (trf1 <> trf2)
+
+instance Monoid a => Monoid (Oct a) where
+  mempty = Oct mempty mempty mempty mempty mempty mempty mempty mempty
