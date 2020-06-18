@@ -40,7 +40,7 @@ data View = View
   , size  :: V2 (Window.Coords Int)
   , zoom  :: I Double
   , scale :: (Window.Coords :/: Distance) Double
-  , focus :: V2 (Distance Double)
+  , focus :: V3 (Distance Double)
   , angle :: I Double
   }
 
@@ -84,7 +84,7 @@ transformToWorld :: View -> Transform V4 Double Distance ClipUnits
 transformToWorld view@View{ scale, focus, angle }
   =   transformToZoomed view
   <<< mkScale (pure scale)
-  <<< mkTranslation (ext (negated focus) 0)
+  <<< mkTranslation (negated focus)
   <<< mkRotation
       ( axisAngle (unit _x) (pi/4)
       * axisAngle (unit _y) angle)
