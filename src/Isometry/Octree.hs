@@ -92,6 +92,11 @@ instance (FunctorWithIndex (v Bit) f, Applicative v) => FunctorWithIndex (v (Ind
   imap f (L a) = L (f (pure II) a)
   imap f (B b) = B (imap (\ i -> imap (\ j -> f (toIndex <$> i <*> j))) b)
 
+instance (FoldableWithIndex (v Bit) f, FunctorWithIndex (v Bit) f, TraversableWithIndex (v Bit) f, Applicative v) => TraversableWithIndex (v (Index s)) (B s f) where
+  itraverse _ E     = pure E
+  itraverse f (L a) = L <$> f (pure II) a
+  itraverse f (B b) = B <$> itraverse (\ i -> itraverse (\ j -> f (toIndex <$> i <*> j))) b
+
 instance Functor f => Applicative (B 'S1 f) where
   pure = L
 
