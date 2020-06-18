@@ -5,6 +5,7 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE NoStarIsType #-}
 {-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -198,6 +199,10 @@ instance Indexed (V1 Bit) Bin where
   b ! i = case i of
     V1 I0 -> l b
     V1 I1 -> r b
+
+instance MutableIndexed (V1 Bit) Bin where
+  insert (V1 I0) l b = b{ l }
+  insert (V1 I1) r b = b{ r }
 
 instance Applicative Bin where
   pure a = Bin a a
