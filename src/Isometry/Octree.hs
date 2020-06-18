@@ -66,6 +66,9 @@ instance (Semigroup a, forall x . Semigroup x => Semigroup (f x)) => Semigroup (
   L a <> L b = L (a <> b)
   B a <> B b = B (a <> b)
 
+instance (Semigroup a, forall x . Semigroup x => Semigroup (f x)) => Monoid (B s f a) where
+  mempty = E
+
 size :: forall s f a . KnownNat (Size s) => B s f a -> Integer
 size _ = natVal (Proxy @(Size s))
 
