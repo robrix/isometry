@@ -87,6 +87,11 @@ instance (FoldableWithIndex (v Bit) f, Applicative v) => FoldableWithIndex (v (I
   ifoldMap f (L a) = f (pure II) a
   ifoldMap f (B b) = ifoldMap (\ i -> ifoldMap (\ j -> f (toIndex <$> i <*> j))) b
 
+instance (FunctorWithIndex (v Bit) f, Applicative v) => FunctorWithIndex (v (Index s)) (B s f) where
+  imap _ E     = E
+  imap f (L a) = L (f (pure II) a)
+  imap f (B b) = B (imap (\ i -> imap (\ j -> f (toIndex <$> i <*> j))) b)
+
 instance Functor f => Applicative (B 'S1 f) where
   pure = L
 
