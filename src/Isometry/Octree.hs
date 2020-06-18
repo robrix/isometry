@@ -33,6 +33,10 @@ module Isometry.Octree
 , l_
 , r_
 , Quad(..)
+, bl_
+, br_
+, tl_
+, tr_
 , Oct(..)
   -- * Tree generation
 , tetra
@@ -276,6 +280,18 @@ instance Semigroup a => Semigroup (Quad a) where
 
 instance Monoid a => Monoid (Quad a) where
   mempty = Quad mempty mempty mempty mempty
+
+bl_ :: Lens' (Quad a) a
+bl_ = field @"bl"
+
+br_ :: Lens' (Quad a) a
+br_ = field @"br"
+
+tl_ :: Lens' (Quad a) a
+tl_ = field @"tl"
+
+tr_ :: Lens' (Quad a) a
+tr_ = field @"tr"
 
 
 -- | Octonary nodes.
