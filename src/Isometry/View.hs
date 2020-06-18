@@ -37,12 +37,12 @@ import Unit.Length
 type Distance = Metres
 
 data View = View
-  { ratio     :: I Int    -- ^ Ratio of window pixels per context pixel.
-  , size      :: V2 (Window.Coords Int)
-  , zoom      :: I Double
-  , scale     :: (Window.Coords :/: Distance) Double
-  , focus     :: V2 (Distance Double)
-  , angle     :: I Double
+  { ratio :: I Int    -- ^ Ratio of window pixels per context pixel.
+  , size  :: V2 (Window.Coords Int)
+  , zoom  :: I Double
+  , scale :: (Window.Coords :/: Distance) Double
+  , focus :: V2 (Distance Double)
+  , angle :: I Double
   }
 
 contextSize :: View -> V2 (Context.Pixels Int)
