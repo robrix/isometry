@@ -227,6 +227,13 @@ instance UnfoldableWithIndex (V2 Bit) Quad where
     <*> f (V2 I0 I1)
     <*> f (V2 I1 I1)
 
+instance Indexed (V2 Bit) Quad where
+  q ! i = case i of
+    V2 I0 I0 -> bl q
+    V2 I1 I0 -> br q
+    V2 I0 I1 -> tl q
+    V2 I1 I1 -> tr q
+
 instance Applicative Quad where
   pure a = Quad a a a a
   Quad f1 f2 f3 f4 <*> Quad a1 a2 a3 a4 = Quad (f1 a1) (f2 a2) (f3 a3) (f4 a4)
