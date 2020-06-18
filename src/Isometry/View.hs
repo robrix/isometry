@@ -12,8 +12,8 @@ module Isometry.View
 , withView
   -- * Transforms
 , transformToWindow
-, transformToZoomed
 , transformToWorld
+, transformToZoomed
   -- * Viewport
 , clipTo
   -- * Re-exports
@@ -74,21 +74,19 @@ transformToWindow View{ size }
   -- NB: we *always* use 2/size, rather than ratio/size, because clip space always extends from -1...1, i.e. it always has diameter 2. this is true irrespective of the DPI ratio.
   = mkScale (pure 1 & _xy .~ ClipUnits 2 ./^ (fmap fromIntegral <$> size) & _z .~ -1/100)
 
--- fixme: shouldn’t we apply the zoom factor *after* the rest?
-transformToZoomed :: View -> Transform V4 Double Window.Coords ClipUnits
-transformToZoomed view@View{ zoom }
-  =   transformToWindow view
-  <<< mkScale (pure zoom)
-
 transformToWorld :: View -> Transform V4 Double Distance ClipUnits
 transformToWorld view@View{ scale, focus, angle }
-  =   transformToZoomed view
+  =   transformToWindow view
   <<< mkScale (pure scale)
   <<< mkTranslation (negated focus)
   <<< mkRotation
       ( axisAngle (unit _x) (pi/4)
       * axisAngle (unit _y) angle)
 
+transformToZoomed :: View -> Transform V4 Double Distance ClipUnits
+transformToZoomed view@View{ zoom }
+  =   transformToWorld view
+  <<< mkScale (pure zoom)
 
 clipTo :: Has (Lift IO) sig m => View -> m ()
 clipTo view = do
