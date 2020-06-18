@@ -273,6 +273,12 @@ instance Indexed (V2 Bit) Quad where
     V2 I0 I1 -> tl q
     V2 I1 I1 -> tr q
 
+instance MutableIndexed (V2 Bit) Quad where
+  insert (V2 I0 I0) = set bl_
+  insert (V2 I1 I0) = set br_
+  insert (V2 I0 I1) = set tl_
+  insert (V2 I1 I1) = set tr_
+
 instance Applicative Quad where
   pure a = Quad a a a a
   Quad f1 f2 f3 f4 <*> Quad a1 a2 a3 a4 = Quad (f1 a1) (f2 a2) (f3 a3) (f4 a4)
