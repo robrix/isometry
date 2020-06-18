@@ -414,16 +414,16 @@ trf_ :: Lens' (Oct a) a
 trf_ = field @"trf"
 
 
-tetra :: SparseUnfoldableWithIndex (V3 (Index s)) (B s Oct) => B s Oct ()
-tetra = run . iunfoldSparseA $ pure . go
+tetra :: SparseUnfoldableWithIndex (V3 (Index s)) (B s Oct) => (V3 (Index s) -> a) -> B s Oct a
+tetra f = run . iunfoldSparseA $ pure . (go . f <*> id)
   where
-  go :: V3 (Index s) -> Maybe ()
-  go = \case
-    V3 II II II             -> Just ()
-    V3 (IR x) (IL y) (IL z) -> go (V3 x y z)
-    V3 (IL x) (IR y) (IL z) -> go (V3 x y z)
-    V3 (IL x) (IL y) (IR z) -> go (V3 x y z)
-    V3 (IR x) (IR y) (IR z) -> go (V3 x y z)
+  go :: a -> V3 (Index s) -> Maybe a
+  go a = \case
+    V3 II II II             -> Just a
+    V3 (IR x) (IL y) (IL z) -> go a (V3 x y z)
+    V3 (IL x) (IR y) (IL z) -> go a (V3 x y z)
+    V3 (IL x) (IL y) (IR z) -> go a (V3 x y z)
+    V3 (IR x) (IR y) (IR z) -> go a (V3 x y z)
     _                       -> Nothing
 
 
