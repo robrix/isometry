@@ -29,8 +29,10 @@ module Isometry.Octree
   -- * Tree generation
 , Tetra(..)
 , UnfoldableWithIndex(..)
+, iunfold
 ) where
 
+import           Control.Carrier.State.Church
 import           Control.Lens.Indexed
 import           Data.Proxy
 import           Data.Ratio ((%))
@@ -272,3 +274,6 @@ instance Tetra s => Tetra ('S2x s) where
 -- | Unfolding of finite structures with an index.
 class UnfoldableWithIndex i f | f -> i where
   iunfoldA :: Applicative m => (i -> m b) -> m (f b)
+
+iunfold :: UnfoldableWithIndex i f => (i -> s -> (s, b)) -> s -> f b
+iunfold f a = run . evalState a . iunfoldA $ state . f
