@@ -87,17 +87,14 @@ data Bit
   deriving (Enum, Eq, Ord, Show)
 
 toIndex :: Bit -> Index i -> Index ('S2x i)
-toIndex I0 = IL
-toIndex I1 = IR
+toIndex = IB
 
 fromIndex :: Index ('S2x i) -> (Bit, Index i)
-fromIndex (IL i) = (I0, i)
-fromIndex (IR i) = (I1, i)
+fromIndex (IB b i) = (b, i)
 
 data Index i where
   II :: Index 'S1
-  IL :: Index s -> Index ('S2x s)
-  IR :: Index s -> Index ('S2x s)
+  IB :: Bit -> Index i -> Index ('S2x i)
 
 deriving instance Eq   (Index i)
 deriving instance Ord  (Index i)
@@ -107,9 +104,10 @@ toFraction :: Index i -> (Integer, Integer)
 toFraction = go
   where
   go :: Index i -> (Integer, Integer)
-  go II     = (0, 1)
-  go (IL i) = let (n, d) = go i in (n, d * 2)
-  go (IR i) = let (n, d) = go i in (n + d, d * 2)
+  go II       = (0, 1)
+  go (IB b i) = let (n, d) = go i in case b of
+    I0 -> (n, d * 2)
+    I1 -> (n + d, d * 2)
 
 
 data B s f a where
@@ -418,12 +416,12 @@ tetra f = run . iunfoldSparseA $ pure . (go . f <*> id)
   where
   go :: a -> V3 (Index s) -> Maybe a
   go a = \case
-    V3 II II II             -> Just a
-    V3 (IR x) (IL y) (IL z) -> go a (V3 x y z)
-    V3 (IL x) (IR y) (IL z) -> go a (V3 x y z)
-    V3 (IL x) (IL y) (IR z) -> go a (V3 x y z)
-    V3 (IR x) (IR y) (IR z) -> go a (V3 x y z)
-    _                       -> Nothing
+    V3 II II II                      -> Just a
+    V3 (IB I1 x) (IB I0 y) (IB I0 z) -> go a (V3 x y z)
+    V3 (IB I0 x) (IB I1 y) (IB I0 z) -> go a (V3 x y z)
+    V3 (IB I0 x) (IB I0 y) (IB I1 z) -> go a (V3 x y z)
+    V3 (IB I1 x) (IB I1 y) (IB I1 z) -> go a (V3 x y z)
+    _                                -> Nothing
 
 
 -- | Unfolding of finite dense structures with an index.
