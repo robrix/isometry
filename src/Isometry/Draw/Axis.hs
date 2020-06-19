@@ -2,9 +2,11 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE UndecidableInstances #-}
 module Isometry.Draw.Axis
 ( draw
 , runDrawable
@@ -41,7 +43,7 @@ draw
      , Has (Reader View) sig m
      )
   => m ()
-draw = UI.using getDrawable $ do
+draw = UI.using @Drawable id $ do
   v <- ask
   matrix_ ?= tmap realToFrac (transformToZoomed v)
   drawArrays Lines range
@@ -58,7 +60,8 @@ runDrawable
 runDrawable = UI.loadingDrawable Drawable shader vertices
 
 
-newtype Drawable = Drawable { getDrawable :: UI.Drawable U V Frag }
+newtype Drawable = Drawable (UI.Drawable U V Frag)
+  deriving (UI.Usable)
 
 
 vertices :: [V I]
