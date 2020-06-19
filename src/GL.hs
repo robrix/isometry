@@ -27,7 +27,7 @@ import           Graphics.GL.Core41
 data Capability
   = Blend                      -- ^ GL_BLEND
   -- ColourLogicOp              -- ^ GL_COLOR_LOGIC_OP
-  -- CullFace                   -- ^ GL_CULL_FACE
+  | CullFace                   -- ^ GL_CULL_FACE
   | DepthClamp                 -- ^ GL_DEPTH_CLAMP
   | DepthTest                  -- ^ GL_DEPTH_TEST
   -- Dither                     -- ^ GL_DITHER
@@ -55,7 +55,7 @@ instance GL.Enum Capability where
   glEnum = \case
     Blend                      -> GL_BLEND
     -- ColourLogicOp              -> GL_COLOR_LOGIC_OP
-    -- CullFace                   -> GL_CULL_FACE
+    CullFace                   -> GL_CULL_FACE
     DepthClamp                 -> GL_DEPTH_CLAMP
     DepthTest                  -> GL_DEPTH_TEST
     -- Dither                     -> GL_DITHER
