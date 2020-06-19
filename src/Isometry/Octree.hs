@@ -20,6 +20,7 @@ module Isometry.Octree
 , Size
 , Bit(..)
 , toBit
+, fromBit
 , fromIndex
 , Index(..)
 , toFraction
@@ -89,6 +90,9 @@ data Bit
 
 toBit :: Bool -> Bit
 toBit = bool I0 I1
+
+fromBit :: Bit -> Bool
+fromBit = (== I1)
 
 fromIndex :: Index ('S2x i) -> (Bit, Index i)
 fromIndex (IB b i) = (b, i)
