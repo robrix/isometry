@@ -55,6 +55,7 @@ copy offset vertices = askBuffer @ty >> A.withArray vertices
 data Type
   = Array
   | ElementArray
+  | Texture
   deriving (Eq, Ord, Show)
 
 class KnownType (ty :: Type) where
@@ -66,10 +67,14 @@ instance KnownType 'Array where
 instance KnownType 'ElementArray where
   typeVal = ElementArray
 
+instance KnownType 'Texture where
+  typeVal = Texture
+
 instance GL.Enum Type where
   glEnum = \case
     Array        -> GL_ARRAY_BUFFER
     ElementArray -> GL_ELEMENT_ARRAY_BUFFER
+    Texture      -> GL_TEXTURE_BUFFER
 
 
 data Update
