@@ -19,7 +19,6 @@ module Isometry.Octree
 ( Shape(..)
 , Size
 , Bit(..)
-, toIndex
 , fromIndex
 , Index(..)
 , toFraction
@@ -86,9 +85,6 @@ data Bit
   | I1
   deriving (Enum, Eq, Ord, Show)
 
-toIndex :: Bit -> Index i -> Index ('S2x i)
-toIndex = IB
-
 fromIndex :: Index ('S2x i) -> (Bit, Index i)
 fromIndex (IB b i) = (b, i)
 
@@ -122,17 +118,17 @@ deriving instance Traversable f => Traversable (B s f)
 instance (FoldableWithIndex (v Bit) f, Applicative v) => FoldableWithIndex (v (Index s)) (B s f) where
   ifoldMap _ E     = mempty
   ifoldMap f (L a) = f (pure IL) a
-  ifoldMap f (B b) = ifoldMap (\ i -> ifoldMap (\ j -> f (toIndex <$> i <*> j))) b
+  ifoldMap f (B b) = ifoldMap (\ i -> ifoldMap (\ j -> f (IB <$> i <*> j))) b
 
 instance (FunctorWithIndex (v Bit) f, Applicative v) => FunctorWithIndex (v (Index s)) (B s f) where
   imap _ E     = E
   imap f (L a) = L (f (pure IL) a)
-  imap f (B b) = B (imap (\ i -> imap (\ j -> f (toIndex <$> i <*> j))) b)
+  imap f (B b) = B (imap (\ i -> imap (\ j -> f (IB <$> i <*> j))) b)
 
 instance (FoldableWithIndex (v Bit) f, FunctorWithIndex (v Bit) f, TraversableWithIndex (v Bit) f, Applicative v) => TraversableWithIndex (v (Index s)) (B s f) where
   itraverse _ E     = pure E
   itraverse f (L a) = L <$> f (pure IL) a
-  itraverse f (B b) = B <$> itraverse (\ i -> itraverse (\ j -> f (toIndex <$> i <*> j))) b
+  itraverse f (B b) = B <$> itraverse (\ i -> itraverse (\ j -> f (IB <$> i <*> j))) b
 
 -- | Note that this instance can only express dense unfoldings.
 instance (UnfoldableWithIndex (v Bit) f, Applicative v) => UnfoldableWithIndex (v (Index 'S1)) (B 'S1 f) where
@@ -140,13 +136,13 @@ instance (UnfoldableWithIndex (v Bit) f, Applicative v) => UnfoldableWithIndex (
 
 -- | Note that this instance can only express dense unfoldings.
 instance (UnfoldableWithIndex (v Bit) f, Applicative v, UnfoldableWithIndex (v (Index s)) (B s f)) => UnfoldableWithIndex (v (Index ('S2x s))) (B ('S2x s) f) where
-  iunfoldA f = B <$> iunfoldA (\ i -> iunfoldA (\ j -> f (toIndex <$> i <*> j)))
+  iunfoldA f = B <$> iunfoldA (\ i -> iunfoldA (\ j -> f (IB <$> i <*> j)))
 
 instance (UnfoldableWithIndex (v Bit) f, Applicative v) => SparseUnfoldableWithIndex (v (Index 'S1)) (B 'S1 f) where
   iunfoldSparseA f = maybe E L <$> f (pure IL)
 
 instance (Foldable f, UnfoldableWithIndex (v Bit) f, Applicative v, SparseUnfoldableWithIndex (v (Index s)) (B s f)) => SparseUnfoldableWithIndex (v (Index ('S2x s))) (B ('S2x s) f) where
-  iunfoldSparseA f = b <$> iunfoldA (\ i -> iunfoldSparseA (\ j -> f (toIndex <$> i <*> j)))
+  iunfoldSparseA f = b <$> iunfoldA (\ i -> iunfoldSparseA (\ j -> f (IB <$> i <*> j)))
 
 instance (Indexed (v Bit) f, Functor v) => SparseIndexed (v (Index s)) (B s f) where
   E   !? _ = Nothing
