@@ -1,10 +1,12 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
 module GL.TextureUnit
 ( TextureUnit(..)
+, Index(..)
 , setActiveTexture
 ) where
 
@@ -40,6 +42,13 @@ instance Sampler V2 where
 
 instance Sampler V3 where
   glslSamplerType = "sampler3D"
+
+
+newtype Index a = Index { getIndex :: a }
+  deriving (Functor)
+
+instance Sampler Index where
+  glslSamplerType = "samplerBuffer"
 
 
 setActiveTexture :: Has (Lift IO) sig m => TextureUnit u v -> m ()
