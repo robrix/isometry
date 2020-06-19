@@ -50,7 +50,7 @@ module Isometry.Octree
 , tetra
 , UnfoldableWithIndex(..)
 , SparseUnfoldableWithIndex(..)
-, iunfold
+, iunfoldr
 -- * Indexing
 , Indexed(..)
 , SparseIndexed(..)
@@ -471,8 +471,8 @@ tetra f = run . iunfoldSparseA $ pure . (go . f <*> id)
 class UnfoldableWithIndex i f | f -> i where
   iunfoldA :: Applicative m => (i -> m b) -> m (f b)
 
-iunfold :: UnfoldableWithIndex i f => (i -> s -> (s, b)) -> s -> f b
-iunfold f a = run . evalState a . iunfoldA $ state . f
+iunfoldr :: UnfoldableWithIndex i f => (i -> s -> (s, b)) -> s -> f b
+iunfoldr f a = run . evalState a . iunfoldA $ state . f
 
 -- | Unfolding of finite sparse structures with an index.
 class UnfoldableWithIndex i f => SparseUnfoldableWithIndex i f where
