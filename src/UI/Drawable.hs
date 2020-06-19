@@ -8,17 +8,17 @@ module UI.Drawable
 , Usable(..)
 ) where
 
-import           Control.Carrier.Reader
-import           Control.Effect.Finally
-import           Control.Effect.Lift
-import           Control.Effect.Trace
-import           Data.Functor.I
-import           Data.Kind (Type)
-import           Foreign.Storable (Storable)
-import           GL.Array hiding (Type)
-import           GL.Effect.Check
-import           GL.Program
-import           GL.Shader.DSL (RShader, Vars)
+import Control.Carrier.Reader
+import Control.Effect.Finally
+import Control.Effect.Lift
+import Control.Effect.Trace
+import Data.Functor.I
+import Data.Kind (Type)
+import Foreign.Storable (Storable)
+import GL.Array hiding (Type)
+import GL.Effect.Check
+import GL.Program
+import GL.Shader.DSL (RShader, Vars)
 
 data Drawable u v o = Drawable
   { program :: Program u v o
