@@ -6,7 +6,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
-{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeApplications #-}
@@ -22,9 +21,10 @@ import           Control.Effect.Lens ((?=))
 import           Control.Effect.Lift
 import qualified Control.Effect.Reader.Labelled as Labelled
 import           Control.Effect.Trace
-import           Control.Lens (Lens', (&), (+~))
+import           Control.Lens (Lens', ifoldMap)
 import           Control.Monad.IO.Class.Lift
 import           Data.Coerce
+import           Data.Monoid (Endo(..))
 import           Data.Functor.I
 import           Data.Functor.Interval hiding (range)
 import           Data.Generics.Product.Fields
@@ -42,11 +42,10 @@ import qualified GL.Shader.DSL as D
 import           GL.Texture
 import           GL.TextureUnit
 import           Graphics.GL.Core41
-import           Isometry.Octree as Octree (B(..), Oct(..), Size, size)
+import           Isometry.Octree as Octree (Size, size, toFraction)
 import           Isometry.View as View
 import           Isometry.Voxel as Voxel
 import           Isometry.World
-import           Linear.V3
 import           UI.Colour as UI
 import qualified UI.Drawable as UI
 import           Unit.Length
@@ -115,26 +114,9 @@ runDrawable m = do
   UI.loadingDrawable (\ drawable -> Drawable{ originsT, originsB, coloursT, coloursB, drawable }) shader (coerce vertices) m
 
 makeVoxels :: KnownNat (Size s) => Octree s Voxel -> [(V3 (Distance Float), UI.Colour Float)]
-makeVoxels (Octree o) = go (-pure (d0 `div` 2)) d0 o
+makeVoxels (Octree o) = appEndo (ifoldMap (\ n (Voxel c) -> Endo ((fromIntegral . (+ offset) . fst . toFraction <$> n, c):)) o) []
   where
-  d0 = Octree.size o
-  go
-    :: V3 Integer
-    -> Integer
-    -> B s Oct Voxel
-    -> [(V3 (Distance Float), UI.Colour Float)]
-  go n d = \case
-    E -> []
-    L c -> [(fromIntegral <$> n, Voxel.colour c)]
-    B (Oct bln ry1n
-           tln ry2n
-           blf ry1f
-           tlf ry2f) -> go n d' bln <> go (n & _x +~ d') d' ry1n
-                     <> go (n & _y +~ d') d' tln <> go (n & _xy +~ pure d') d' ry2n
-                     <> go (n & _z +~ d') d' blf <> go (n & _xz +~ pure d') d' ry1f
-                     <> go (n & _yz +~ pure d') d' tlf <> go (n + pure d') d' ry2f
-    where
-    d' = d `div` 2
+  offset = negate (Octree.size o `div` 2)
 
 
 data Drawable = Drawable
