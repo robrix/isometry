@@ -28,6 +28,7 @@ import           Data.Functor.I
 import           Data.Functor.Interval hiding (range)
 import           Data.Generics.Product.Fields
 import           Data.Monoid (Endo(..))
+import           Data.Word
 import           Foreign.Storable
 import           Geometry.Transform
 import           GHC.Generics
@@ -60,7 +61,7 @@ draw
      )
   => m ()
 draw = UI.using drawable $ do
-  Drawable { originsT, coloursT } <- ask
+  Drawable { originsT, coloursT, indicesB } <- ask
   v <- ask
   world <- Labelled.ask @World
 
@@ -73,7 +74,8 @@ draw = UI.using drawable $ do
   matrix_ ?= tmap realToFrac (transformToZoomed v)
   origins_ ?= originsU
   colours_ ?= coloursU
-  drawArraysInstanced Triangles (0...length vertices) (length world)
+  bindBuffer indicesB $
+    drawElementsInstanced Triangles (0...length indices) (length world)
 
 
 runDrawable
@@ -92,6 +94,7 @@ runDrawable m = do
   coloursT <- gen1 @(Texture 'TextureBuffer)
   originsB <- gen1 @(Buffer 'Buffer.Texture (V4 (Distance Float)))
   coloursB <- gen1 @(Buffer 'Buffer.Texture (UI.Colour Float))
+  indicesB <- gen1 @(Buffer 'ElementArray Word32)
 
   (origins, colours) <- Labelled.asks @World (unzip . makeVoxels)
 
@@ -103,6 +106,10 @@ runDrawable m = do
     realloc @'Buffer.Texture (length colours) Static Read
     copy @'Buffer.Texture 0 colours
 
+  bindBuffer indicesB $ do
+    realloc @'Buffer.ElementArray (length indices) Static Read
+    copy @'Buffer.ElementArray 0 indices
+
   setActiveTexture originsU
   bind (Just originsT)
   runLiftIO $ glTexBuffer GL_TEXTURE_BUFFER GL_RGBA32F (unBuffer originsB)
@@ -111,7 +118,7 @@ runDrawable m = do
   bind (Just coloursT)
   runLiftIO $ glTexBuffer GL_TEXTURE_BUFFER GL_RGBA32F (unBuffer coloursB)
 
-  UI.loadingDrawable (\ drawable -> Drawable{ originsT, originsB, coloursT, coloursB, drawable }) shader (coerce vertices) m
+  UI.loadingDrawable (\ drawable -> Drawable{ originsT, originsB, coloursT, coloursB, indicesB, drawable }) shader (coerce corners) m
 
 makeVoxels :: KnownNat (Size s) => Octree s Voxel -> [(V3 (Distance Float), UI.Colour Float)]
 makeVoxels (Octree o) = appEndo (ifoldMap (\ n (Voxel c) -> Endo ((fromIntegral . (+ offset) . fst . toFraction <$> n, c):)) o) []
@@ -124,6 +131,7 @@ data Drawable = Drawable
   , originsB :: Buffer 'Buffer.Texture (V4 (Distance Float))
   , coloursT :: Texture 'TextureBuffer
   , coloursB :: Buffer 'Buffer.Texture (UI.Colour Float)
+  , indicesB :: Buffer 'ElementArray Word32
   , drawable :: UI.Drawable U V Frag
   }
 
@@ -133,8 +141,58 @@ originsU = TextureUnit 0
 coloursU :: TextureUnit Index (UI.Colour Float)
 coloursU = TextureUnit 1
 
-vertices :: [V3 (Distance Float)]
-vertices = map ((* 0.5) . (+ 1))
+corners :: [V3 (Distance Float)]
+corners = map ((* 0.5) . (+ 1)) $ V3 <$> [-1, 1] <*> [-1, 1] <*> [-1, 1]
+
+indices :: [Word32]
+indices =
+  [ -- far
+    0
+  , 4
+  , 6
+  , 6
+  , 2
+  , 0
+    -- near
+  , 1
+  , 5
+  , 7
+  , 7
+  , 3
+  , 1
+    -- left
+  , 0
+  , 2
+  , 3
+  , 3
+  , 1
+  , 0
+    -- right
+  , 4
+  , 6
+  , 7
+  , 7
+  , 5
+  , 4
+    -- bottom
+  , 0
+  , 4
+  , 5
+  , 5
+  , 1
+  , 0
+    -- top
+  , 2
+  , 6
+  , 7
+  , 7
+  , 3
+  , 2
+  ]
+
+
+_vertices :: [V3 (Distance Float)]
+_vertices = map ((* 0.5) . (+ 1))
   [ -- far
     V3 (-1) (-1) (-1)
   , V3   1  (-1) (-1)
