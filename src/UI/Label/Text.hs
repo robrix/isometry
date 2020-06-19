@@ -21,6 +21,7 @@ import Data.Generics.Product.Fields
 import Foreign.Storable (Storable)
 import GHC.Generics (Generic)
 import GL.Shader.DSL
+import UI.Colour as UI (Colour)
 
 shader :: Shader shader => shader U V Frag
 shader
@@ -54,14 +55,14 @@ shader
 
 
 data U v = U
-  { sampler :: v (TextureUnit V2 V3)
+  { sampler :: v (TextureUnit V2 (UI.Colour Float))
   , colour  :: v (Colour Float)
   }
   deriving (Generic)
 
 instance Vars U
 
-sampler_ :: Lens' (U v) (v (TextureUnit V2 V3))
+sampler_ :: Lens' (U v) (v (TextureUnit V2 (UI.Colour Float)))
 sampler_ = field @"sampler"
 
 colour_  :: Lens' (U v) (v (Colour Float))

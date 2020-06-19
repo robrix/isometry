@@ -19,7 +19,7 @@ import           Linear.V1
 import           Linear.V2
 import           Linear.V3
 
-newtype TextureUnit (u :: Type -> Type) (v :: Type -> Type) = TextureUnit { unTextureUnit :: GLint }
+newtype TextureUnit (u :: Type -> Type) v = TextureUnit { unTextureUnit :: GLint }
   deriving (Storable)
 
 instance GL.Type (TextureUnit u v) where

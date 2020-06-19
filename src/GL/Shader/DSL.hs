@@ -488,8 +488,8 @@ class ( Ref ref
 
   atan2' :: expr a -> expr a -> expr a
 
-  texture :: expr (TextureUnit u v) -> expr (u Float) -> expr (v Float)
-  texelFetch :: expr (TextureUnit u v) -> expr (u Int) -> expr (v Float)
+  texture :: expr (TextureUnit u v) -> expr (u Float) -> expr v
+  texelFetch :: expr (TextureUnit u v) -> expr (u Int) -> expr v
 
   fract :: expr a -> expr a
 
