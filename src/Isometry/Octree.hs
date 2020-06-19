@@ -128,6 +128,11 @@ instance Bits Bit where
   popCount I0 = 0
   popCount I1 = 1
 
+instance FiniteBits Bit where
+  finiteBitSize _ = 1
+  countTrailingZeros = countTrailingZeros . fromBit
+  countLeadingZeros = countLeadingZeros . fromBit
+
 fromIndex :: Index ('S2x i) -> (Bit, Index i)
 fromIndex (IB b i) = (b, i)
 
