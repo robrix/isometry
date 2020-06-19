@@ -79,6 +79,7 @@ data Shape
   = S1         -- 1
   | S2x !Shape -- 2 * n
 
+
 type family Size (b :: Shape) :: Nat where
   Size 'S1      = 1
   Size ('S2x l) = 2 * Size l
