@@ -45,7 +45,7 @@ instance Sampler V3 where
 
 
 newtype Index a = Index { getIndex :: a }
-  deriving (Functor)
+  deriving (Functor, Storable, GL.Type, Uniform)
 
 instance Sampler Index where
   glslSamplerType = "samplerBuffer"
