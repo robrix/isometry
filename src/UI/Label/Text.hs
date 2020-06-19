@@ -54,14 +54,14 @@ shader
 
 
 data U v = U
-  { sampler :: v TextureUnit
+  { sampler :: v (TextureUnit V2 V3)
   , colour  :: v (Colour Float)
   }
   deriving (Generic)
 
 instance Vars U
 
-sampler_ :: Lens' (U v) (v TextureUnit)
+sampler_ :: Lens' (U v) (v (TextureUnit V2 V3))
 sampler_ = field @"sampler"
 
 colour_  :: Lens' (U v) (v (Colour Float))
