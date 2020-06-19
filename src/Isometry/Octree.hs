@@ -462,10 +462,8 @@ tetra f = run . iunfoldSparseA $ pure . (go . f <*> id)
   go :: a -> V3 (Index s) -> Maybe a
   go a = \case
     V3 IL IL IL                      -> Just a
-    V3 (IB I1 x) (IB I0 y) (IB I0 z) -> go a (V3 x y z)
-    V3 (IB I0 x) (IB I1 y) (IB I0 z) -> go a (V3 x y z)
-    V3 (IB I0 x) (IB I0 y) (IB I1 z) -> go a (V3 x y z)
-    V3 (IB I1 x) (IB I1 y) (IB I1 z) -> go a (V3 x y z)
+    V3 (IB ix x) (IB iy y) (IB iz z)
+      | I1 <- ix `xor` iy `xor` iz   -> go a (V3 x y z)
     _                                -> Nothing
 
 
