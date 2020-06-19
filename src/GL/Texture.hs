@@ -42,6 +42,7 @@ instance KnownType ty => Bind (Texture ty) where
 
 data Type
   = Texture2D
+  | TextureBuffer
   deriving (Eq, Ord, Show)
 
 class KnownType (ty :: Type) where
@@ -50,9 +51,13 @@ class KnownType (ty :: Type) where
 instance KnownType 'Texture2D where
   typeVal _ = Texture2D
 
+instance KnownType 'TextureBuffer where
+  typeVal _ = TextureBuffer
+
 instance GL.Enum Type where
   glEnum = \case
-    Texture2D -> GL_TEXTURE_2D
+    Texture2D     -> GL_TEXTURE_2D
+    TextureBuffer -> GL_TEXTURE_BUFFER
 
 
 data InternalFormat
