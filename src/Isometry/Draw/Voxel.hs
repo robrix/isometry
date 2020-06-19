@@ -31,7 +31,9 @@ import           GHC.Generics
 import           GHC.TypeLits
 import           GL.Array
 import           GL.Effect.Check
+import           GL.Object
 import           GL.Shader.DSL as D hiding (get, (.*.), (./.), (^.), _x, _xy, _xz, _y, _yz, _z)
+import           GL.Texture
 import           Isometry.Octree as Octree (B(..), Oct(..), Size, size)
 import           Isometry.View as View
 import           Isometry.Voxel as Voxel
@@ -49,7 +51,7 @@ draw
      , Has (Reader View) sig m
      )
   => m ()
-draw = UI.using getDrawable $ do
+draw = UI.using drawable $ do
   v <- ask
   matrix_ ?= tmap realToFrac (transformToZoomed v)
   drawArrays Triangles =<< ask
@@ -69,7 +71,9 @@ runDrawable
 runDrawable m = do
   world <- Labelled.ask @World
   let vertices = makeVertices world
-  runReader (0...length vertices) . UI.loadingDrawable Drawable shader vertices $ m
+  offsets <- gen1 @(Texture 'TextureBuffer)
+  colours <- gen1 @(Texture 'TextureBuffer)
+  runReader (0...length vertices) . UI.loadingDrawable (Drawable offsets colours) shader vertices $ m
 
 makeVertices :: KnownNat (Size s) => Octree s Voxel -> [V I]
 makeVertices (Octree o) = go (-pure (d0 `div` 2)) d0 o
@@ -94,7 +98,11 @@ makeVertices (Octree o) = go (-pure (d0 `div` 2)) d0 o
     d' = d `div` 2
 
 
-newtype Drawable = Drawable { getDrawable :: UI.Drawable U V Frag }
+data Drawable = Drawable
+  { offsets  :: Texture 'TextureBuffer
+  , colours  :: Texture 'TextureBuffer
+  , drawable :: UI.Drawable U V Frag
+  }
 
 
 vertices :: [V3 (Distance Float)]
