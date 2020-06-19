@@ -2,6 +2,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE DisambiguateRecordFields #-}
+{-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
@@ -22,18 +23,25 @@ import           Control.Effect.Lift
 import qualified Control.Effect.Reader.Labelled as Labelled
 import           Control.Effect.Trace
 import           Control.Lens (Lens', (&), (+~))
+import           Control.Monad.IO.Class.Lift
+import           Data.Coerce
 import           Data.Functor.I
 import           Data.Functor.Interval hiding (range)
 import           Data.Generics.Product.Fields
 import           Foreign.Storable
 import           Geometry.Transform
 import           GHC.Generics
+import           GHC.Stack
 import           GHC.TypeLits
 import           GL.Array
+import           GL.Buffer as Buffer
 import           GL.Effect.Check
 import           GL.Object
 import           GL.Shader.DSL as D hiding (get, (.*.), (./.), (^.), _x, _xy, _xz, _y, _yz, _z)
+import qualified GL.Shader.DSL as D
 import           GL.Texture
+import           GL.TextureUnit
+import           Graphics.GL.Core41
 import           Isometry.Octree as Octree (B(..), Oct(..), Size, size)
 import           Isometry.View as View
 import           Isometry.Voxel as Voxel
@@ -47,17 +55,28 @@ draw
   :: ( Has Check sig m
      , Has (Lift IO) sig m
      , Has (Reader Drawable) sig m
-     , Has (Reader (Interval I Int)) sig m
      , Has (Reader View) sig m
+     , Labelled.HasLabelled World (Reader (Octree s Voxel)) sig m
+     , HasCallStack
      )
   => m ()
 draw = UI.using drawable $ do
+  Drawable { originsT, coloursT } <- ask
   v <- ask
+  world <- Labelled.ask @World
+
+  setActiveTexture originsU
+  bind (Just originsT)
+
+  setActiveTexture coloursU
+  bind (Just coloursT)
+
   matrix_ ?= tmap realToFrac (transformToZoomed v)
-  drawArrays Triangles =<< ask
+  origins_ ?= originsU
+  colours_ ?= coloursU
+  drawArraysInstanced Triangles (0...length vertices) (length world)
 
 
--- fixme: run with some initial size & draw with an octree from a Reader var
 runDrawable
   :: ( Has Check sig m
      , Has Finally sig m
@@ -65,28 +84,48 @@ runDrawable
      , Has Trace sig m
      , Labelled.HasLabelled World (Reader (Octree s Voxel)) sig m
      , KnownNat (Size s)
+     , HasCallStack
      )
-  => ReaderC Drawable (ReaderC (Interval I Int) m) a
+  => ReaderC Drawable m a
   -> m a
 runDrawable m = do
-  world <- Labelled.ask @World
-  let vertices = makeVertices world
-  offsets <- gen1 @(Texture 'TextureBuffer)
-  colours <- gen1 @(Texture 'TextureBuffer)
-  runReader (0...length vertices) . UI.loadingDrawable (Drawable offsets colours) shader vertices $ m
+  originsT <- gen1 @(Texture 'TextureBuffer)
+  coloursT <- gen1 @(Texture 'TextureBuffer)
+  originsB <- gen1 @(Buffer 'Buffer.Texture (V4 (Distance Float)))
+  coloursB <- gen1 @(Buffer 'Buffer.Texture (UI.Colour Float))
 
-makeVertices :: KnownNat (Size s) => Octree s Voxel -> [V I]
-makeVertices (Octree o) = go (-pure (d0 `div` 2)) d0 o
+  (origins, colours) <- Labelled.asks @World (unzip . makeVoxels)
+
+  bindBuffer originsB $ do
+    realloc @'Buffer.Texture (length origins) Static Read
+    copy @'Buffer.Texture 0 (map (\ (V3 x y z) -> V4 x y z 0) origins)
+
+  bindBuffer coloursB $ do
+    realloc @'Buffer.Texture (length colours) Static Read
+    copy @'Buffer.Texture 0 colours
+
+  setActiveTexture originsU
+  bind (Just originsT)
+  runLiftIO $ glTexBuffer GL_TEXTURE_BUFFER GL_RGBA32F (unBuffer originsB)
+
+  setActiveTexture coloursU
+  bind (Just coloursT)
+  runLiftIO $ glTexBuffer GL_TEXTURE_BUFFER GL_RGBA32F (unBuffer coloursB)
+
+  UI.loadingDrawable (\ drawable -> Drawable{ originsT, originsB, coloursT, coloursB, drawable }) shader (coerce vertices) m
+
+makeVoxels :: KnownNat (Size s) => Octree s Voxel -> [(V3 (Distance Float), UI.Colour Float)]
+makeVoxels (Octree o) = go (-pure (d0 `div` 2)) d0 o
   where
   d0 = Octree.size o
   go
     :: V3 Integer
     -> Integer
     -> B s Oct Voxel
-    -> [V I]
+    -> [(V3 (Distance Float), UI.Colour Float)]
   go n d = \case
     E -> []
-    L c ->  map (\ v -> V (I (fmap fromIntegral n + v)) (I (Voxel.colour c))) vertices
+    L c -> [(fromIntegral <$> n, Voxel.colour c)]
     B (Oct bln ry1n
            tln ry2n
            blf ry1f
@@ -99,11 +138,18 @@ makeVertices (Octree o) = go (-pure (d0 `div` 2)) d0 o
 
 
 data Drawable = Drawable
-  { offsets  :: Texture 'TextureBuffer
-  , colours  :: Texture 'TextureBuffer
+  { originsT :: Texture 'TextureBuffer
+  , originsB :: Buffer 'Buffer.Texture (V4 (Distance Float))
+  , coloursT :: Texture 'TextureBuffer
+  , coloursB :: Buffer 'Buffer.Texture (UI.Colour Float)
   , drawable :: UI.Drawable U V Frag
   }
 
+originsU :: TextureUnit Index (V4 (Distance Float))
+originsU = TextureUnit 0
+
+coloursU :: TextureUnit Index (UI.Colour Float)
+coloursU = TextureUnit 1
 
 vertices :: [V3 (Distance Float)]
 vertices = map ((* 0.5) . (+ 1))
@@ -165,16 +211,18 @@ vertices = map ((* 0.5) . (+ 1))
 
 shader :: D.Shader shader => shader U V Frag
 shader
-  =   vertex (\ U{ matrix } V{ pos, colour } IF{ colour2 } -> main $ do
-    gl_Position .= matrix D.>* ext4 pos 1
-    colour2 .= colour)
+  =   vertex (\ U{ matrix, origins, colours } V{ pos } IF{ colour2 } -> main $ do
+    gl_Position .= matrix D.>* ext4 (pos + texelFetch origins (cast gl_InstanceID)D.^.D._xyz) 1
+    colour2 .= texelFetch colours (cast gl_InstanceID))
 
   >>> fragment (\ _ IF{ colour2 } Frag{ fragColour } -> main $
     fragColour .= colour2)
 
 
-newtype U v = U
-  { matrix :: v (Transform V4 Float Distance ClipUnits)
+data U v = U
+  { matrix  :: v (Transform V4 Float Distance ClipUnits)
+  , origins :: v (TextureUnit Index (V4 (Distance Float)))
+  , colours :: v (TextureUnit Index (UI.Colour Float))
   }
   deriving (Generic)
 
@@ -183,11 +231,14 @@ instance D.Vars U
 matrix_ :: Lens' (U v) (v (Transform V4 Float Distance ClipUnits))
 matrix_ = field @"matrix"
 
+origins_ :: Lens' (U v) (v (TextureUnit Index (V4 (Distance Float))))
+origins_ = field @"origins"
 
-data V v = V
-  { pos    :: v (V3 (Distance Float))
-  , colour :: v (UI.Colour Float)
-  }
+colours_ :: Lens' (U v) (v (TextureUnit Index (UI.Colour Float)))
+colours_ = field @"colours"
+
+
+newtype V v = V { pos :: v (V3 (Distance Float)) }
   deriving (Generic)
 
 instance D.Vars V

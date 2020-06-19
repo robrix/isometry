@@ -32,6 +32,7 @@ import           Data.Functor.Interval hiding (range)
 import           Data.Generics.Product.Fields
 import           Data.Time.Clock
 import           GHC.Generics (Generic)
+import           GHC.Stack
 import           GL.Effect.Check
 import           GL.Framebuffer
 import           Graphics.GL.Core41
@@ -60,13 +61,12 @@ runFrame
      , Has Trace sig m
      )
   => ReaderC Voxel.Drawable
-    (ReaderC (Interval I Int)
     (ReaderC Axis.Drawable
     (Labelled World (ReaderC (Octree ('S2x ('S2x ('S2x ('S2x ('S2x ('S2x ('S2x 'S1))))))) Voxel))
     (StateC UTCTime
     (StateC Player
     (EmptyC
-    m)))))) a
+    m))))) a
   -> m ()
 runFrame
   = evalEmpty
@@ -92,12 +92,13 @@ frame
      , Has Profile sig m
      , Has (Reader Axis.Drawable) sig m
      , Has (Reader Voxel.Drawable) sig m
-     , Has (Reader (Interval I Int)) sig m
      , Has (Reader UI) sig m
      , Has (Reader Window.Window) sig m
      , Has (State Input) sig m
      , Has (State Player) sig m
      , Has (State UTCTime) sig m
+     , HasLabelled World (Reader (Octree s Voxel)) sig m
+     , HasCallStack
      )
   => m ()
 frame = timed $ do
