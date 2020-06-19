@@ -24,10 +24,10 @@ import           Control.Effect.Trace
 import           Control.Lens (Lens', ifoldMap)
 import           Control.Monad.IO.Class.Lift
 import           Data.Coerce
-import           Data.Monoid (Endo(..))
 import           Data.Functor.I
 import           Data.Functor.Interval hiding (range)
 import           Data.Generics.Product.Fields
+import           Data.Monoid (Endo(..))
 import           Foreign.Storable
 import           Geometry.Transform
 import           GHC.Generics
