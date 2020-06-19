@@ -456,15 +456,18 @@ trf_ :: Lens' (Oct a) a
 trf_ = field @"trf"
 
 
-tetra :: SparseUnfoldableWithIndex (V3 (Index s)) (B s Oct) => (V3 (Index s) -> a) -> B s Oct a
-tetra f = run . iunfoldSparseA $ pure . (go . f <*> id)
-  where
-  go :: a -> V3 (Index s) -> Maybe a
-  go a = \case
-    V3 IL IL IL                      -> Just a
-    V3 (IB ix x) (IB iy y) (IB iz z)
-      | I1 <- ix `xor` iy `xor` iz   -> go a (V3 x y z)
-    _                                -> Nothing
+class UnfoldB s where
+  unfoldB :: (V3 Bit -> Bool) -> (V3 (Index s) -> a) -> B s Oct a
+
+instance UnfoldB 'S1 where
+  unfoldB _ leaf = L (leaf (pure IL))
+
+instance UnfoldB s => UnfoldB ('S2x s) where
+  unfoldB branch leaf = b (run (iunfoldA (\ i -> pure $ if branch i then unfoldB branch (leaf . (IB <$> i <*>)) else E)))
+
+
+tetra :: UnfoldB s => (V3 (Index s) -> a) -> B s Oct a
+tetra = unfoldB (fromBit . foldl1 xor)
 
 
 -- | Unfolding of finite dense structures with an index.
