@@ -30,6 +30,7 @@ import           Data.Bits ((.|.))
 import           Data.Functor.I
 import           Data.Functor.Interval hiding (range)
 import           Data.Generics.Product.Fields
+import           Data.Ratio ((%))
 import           Data.Time.Clock
 import           GHC.Generics (Generic)
 import           GHC.Stack
@@ -72,7 +73,7 @@ runFrame
   = evalEmpty
   . evalState Player{ angle = -pi/4 }
   . (\ m -> now >>= \ start -> evalState start m)
-  . runReader (Octree (tetra (\ v -> Voxel (ext (fromRational . toFraction <$> v) 1))))
+  . runReader (Octree (tetra (\ v -> Voxel (ext (fromRational . uncurry (%) . toFraction <$> v) 1))))
   . runLabelled
   . Axis.runDrawable
   . Voxel.runDrawable

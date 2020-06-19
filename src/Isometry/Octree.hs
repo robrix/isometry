@@ -61,7 +61,6 @@ import           Control.Lens (Lens', set)
 import           Control.Lens.Indexed hiding (Indexed(..))
 import           Data.Generics.Product.Fields
 import           Data.Proxy
-import           Data.Ratio ((%))
 import qualified Data.Vector as V
 import           GHC.Generics (Generic, Generic1)
 import           GHC.TypeLits
@@ -104,8 +103,8 @@ deriving instance Eq   (Index i)
 deriving instance Ord  (Index i)
 deriving instance Show (Index i)
 
-toFraction :: Index i -> Rational
-toFraction = uncurry (%) . go
+toFraction :: Index i -> (Integer, Integer)
+toFraction = go
   where
   go :: Index i -> (Integer, Integer)
   go II     = (0, 1)
