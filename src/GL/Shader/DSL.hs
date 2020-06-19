@@ -517,6 +517,7 @@ float' = cast' @_ @Float
 
 class (VertexRef ref, Expr ref expr) => VertexExpr ref expr where
   gl_InstanceID :: expr Int
+  gl_VertexID :: expr Int
 
 class (GeometryRef ref, Expr ref expr) => GeometryExpr ref expr where
 
@@ -627,6 +628,7 @@ instance Expr RRef RExpr where
 
 instance VertexExpr RRef RExpr where
   gl_InstanceID = RExpr $ pretty "gl_InstanceID"
+  gl_VertexID = RExpr $ pretty "gl_VertexID"
 
 instance GeometryExpr RRef RExpr where
 
