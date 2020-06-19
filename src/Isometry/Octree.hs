@@ -21,8 +21,8 @@ module Isometry.Octree
 , Bit(..)
 , toBit
 , fromBit
-, fromIndex
 , Index(..)
+, fromIndex
 , toFraction
 , B(..)
 , isE
@@ -133,8 +133,6 @@ instance FiniteBits Bit where
   countTrailingZeros = countTrailingZeros . fromBit
   countLeadingZeros = countLeadingZeros . fromBit
 
-fromIndex :: Index ('S2x i) -> (Bit, Index i)
-fromIndex (IB b i) = (b, i)
 
 data Index i where
   IL :: Index 'S1
@@ -143,6 +141,9 @@ data Index i where
 deriving instance Eq   (Index i)
 deriving instance Ord  (Index i)
 deriving instance Show (Index i)
+
+fromIndex :: Index ('S2x i) -> (Bit, Index i)
+fromIndex (IB b i) = (b, i)
 
 toFraction :: Index i -> (Integer, Integer)
 toFraction = go
