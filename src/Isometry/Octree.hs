@@ -242,6 +242,7 @@ b f | all isE f = E
 size :: forall s f a . KnownNat (Size s) => B s f a -> Integer
 size _ = natVal (Proxy @(Size s))
 
+-- FIXME: this is probably wrong? seems like we want the dimensionality of f rather than its count, and an exponent instead of multiplication.
 capacity :: forall s f a . (KnownNat (Linear.Size f), KnownNat (Size s)) => B s f a -> Integer
 capacity b = natVal (Proxy @(Linear.Size f)) * size b
 
