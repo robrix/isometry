@@ -118,6 +118,8 @@ frame = timed $ do
 
     clipTo =<< ask
 
+    glDepthMask GL_TRUE
+
     glClearColor 0 0 0 0
     glClear $ GL_COLOR_BUFFER_BIT .|. GL_DEPTH_BUFFER_BIT
 
@@ -125,6 +127,8 @@ frame = timed $ do
 
     Axis.draw
     Voxel.draw
+
+    glDepthMask GL_FALSE
 
     measure "setLabel" $ setLabel target font "hello"
     measure "drawLabel" $ drawLabel target 10 UI.white Nothing
