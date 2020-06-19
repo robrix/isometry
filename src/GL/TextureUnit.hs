@@ -1,5 +1,8 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
 module GL.TextureUnit
 ( TextureUnit(..)
 , setActiveTexture
@@ -12,6 +15,9 @@ import qualified GL.Type as GL
 import           GL.Uniform
 import           Graphics.GL.Core41
 import           Graphics.GL.Types
+import           Linear.V1
+import           Linear.V2
+import           Linear.V3
 
 newtype TextureUnit (u :: Type -> Type) (v :: Type -> Type) = TextureUnit { unTextureUnit :: GLint }
   deriving (Storable)
@@ -19,9 +25,21 @@ newtype TextureUnit (u :: Type -> Type) (v :: Type -> Type) = TextureUnit { unTe
 instance GL.Type (TextureUnit u v) where
   glType = GL_INT
 
-instance Uniform (TextureUnit u v) where
-  glslType = "sampler2D"
+instance Sampler u => Uniform (TextureUnit u v) where
+  glslType = glslSamplerType @u
   uniform prog loc = runLiftIO . glProgramUniform1i prog loc . unTextureUnit
+
+class Sampler (u :: Type -> Type) where
+  glslSamplerType :: String
+
+instance Sampler V1 where
+  glslSamplerType = "sampler1D"
+
+instance Sampler V2 where
+  glslSamplerType = "sampler2D"
+
+instance Sampler V3 where
+  glslSamplerType = "sampler3D"
 
 
 setActiveTexture :: Has (Lift IO) sig m => TextureUnit u v -> m ()
