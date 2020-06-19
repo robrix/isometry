@@ -71,7 +71,7 @@ draw = UI.using drawable $ do
   setActiveTexture coloursU
   bind (Just coloursT)
 
-  matrix_ ?= tmap realToFrac (transformToZoomed v)
+  matrix_  ?= tmap realToFrac (transformToZoomed v)
   origins_ ?= originsU
   colours_ ?= coloursU
   bindBuffer indicesB $
