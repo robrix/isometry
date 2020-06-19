@@ -127,8 +127,8 @@ frame = timed $ do
 
     glBlendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 
-    Axis.draw
-    Voxel.draw
+    measure "Axis.draw" Axis.draw
+    measure "Voxel.draw" Voxel.draw
 
     glDepthMask GL_FALSE
 
