@@ -19,6 +19,7 @@ module Isometry.Octree
 ( Shape(..)
 , Size
 , Bit(..)
+, toBit
 , fromIndex
 , Index(..)
 , toFraction
@@ -58,6 +59,7 @@ module Isometry.Octree
 import           Control.Carrier.State.Church
 import           Control.Lens (Lens', set)
 import           Control.Lens.Indexed hiding (Indexed(..))
+import           Data.Bool
 import           Data.Generics.Product.Fields
 import           Data.Proxy
 import qualified Data.Vector as V
@@ -84,6 +86,9 @@ data Bit
   = I0
   | I1
   deriving (Enum, Eq, Ord, Show)
+
+toBit :: Bool -> Bit
+toBit = bool I0 I1
 
 fromIndex :: Index ('S2x i) -> (Bit, Index i)
 fromIndex (IB b i) = (b, i)
