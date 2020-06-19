@@ -489,6 +489,7 @@ class ( Ref ref
   atan2' :: expr a -> expr a -> expr a
 
   texture :: expr (TextureUnit u v) -> expr (u Float) -> expr (v Float)
+  texelFetch :: expr (TextureUnit u v) -> expr (u Int) -> expr (v Float)
 
   fract :: expr a -> expr a
 
@@ -620,6 +621,7 @@ instance Expr RRef RExpr where
   atan2' = fn "atan"
 
   texture = fn "texture"
+  texelFetch = fn "texelFetch"
 
   (!) (C v) n = RExpr $ renderExpr v <> brackets (renderExpr n)
 
