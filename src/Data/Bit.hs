@@ -12,12 +12,6 @@ data Bit
   | I1
   deriving (Enum, Eq, Ord, Show)
 
-toBit :: Bool -> Bit
-toBit = bool I0 I1
-
-fromBit :: Bit -> Bool
-fromBit = (== I1)
-
 instance Bits Bit where
   -- fixme: should we avoid matching on the rhs when possible for laziness?
   I1 .&. I1 = I1
@@ -55,3 +49,9 @@ instance FiniteBits Bit where
   finiteBitSize _ = 1
   countTrailingZeros = countTrailingZeros . fromBit
   countLeadingZeros = countLeadingZeros . fromBit
+
+toBit :: Bool -> Bit
+toBit = bool I0 I1
+
+fromBit :: Bit -> Bool
+fromBit = (== I1)
