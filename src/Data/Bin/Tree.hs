@@ -81,6 +81,7 @@ import qualified Linear.V as Linear
 import           Linear.V1
 import           Linear.V2
 import           Linear.V3
+import           Linear.Vector (E)
 
 -- | The shape of (non-empty) perfectly balanced binary trees.
 --
@@ -448,6 +449,16 @@ tetra = unfoldB (fromBit . foldl1 xor)
 -- | Unfolding of finite dense structures with an index.
 class UnfoldableWithIndex i f | f -> i where
   iunfoldA :: Applicative m => (i -> m b) -> m (f b)
+
+instance UnfoldableWithIndex (E V1) V1 where
+  iunfoldA coalg = V1 <$> coalg ex
+
+instance UnfoldableWithIndex (E V2) V2 where
+  iunfoldA coalg = V2 <$> coalg ex <*> coalg ey
+
+instance UnfoldableWithIndex (E V3) V3 where
+  iunfoldA coalg = V3 <$> coalg ex <*> coalg ey <*> coalg ez
+
 
 iunfoldr :: UnfoldableWithIndex i f => (i -> s -> (s, b)) -> s -> f b
 iunfoldr f a = run . evalState a . iunfoldA $ state . f
