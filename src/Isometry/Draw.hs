@@ -26,11 +26,11 @@ import           Control.Effect.Trace
 import           Control.Lens (Lens', (^.))
 import           Control.Monad (when)
 import           Control.Monad.IO.Class.Lift
+import           Data.Bin.Tree as Octree (S128, tetra, toFraction)
 import           Data.Bits ((.|.))
 import           Data.Functor.I
 import           Data.Functor.Interval hiding (range)
 import           Data.Generics.Product.Fields
-import           Data.Octree as Octree (S128, tetra, toFraction)
 import           Data.Ratio ((%))
 import           Data.Time.Clock
 import           GHC.Generics (Generic)

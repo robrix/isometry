@@ -54,12 +54,12 @@ library
     Control.Exception.Lift
     Control.Monad.IO.Class.Lift
     Data.Bin.Bit
+    Data.Bin.Tree
     Data.Flag
     Data.Functor.C
     Data.Functor.I
     Data.Functor.Interval
     Data.Functor.K
-    Data.Octree
     Foreign.C.String.Lift
     Foreign.Marshal.Alloc.Lift
     Foreign.Marshal.Array.Lift

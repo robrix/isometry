@@ -15,7 +15,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
 -- | Sparse vectors, matrices, and volumes, represented as perfectly balanced binary trees.
-module Data.Octree
+module Data.Bin.Tree
 ( Shape(..)
 , S2
 , S4
