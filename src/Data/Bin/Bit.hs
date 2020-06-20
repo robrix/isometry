@@ -1,4 +1,4 @@
-module Data.Bit
+module Data.Bin.Bit
 ( Bit(..)
 , toBit
 , fromBit

@@ -70,7 +70,7 @@ module Data.Octree
 import           Control.Carrier.State.Church
 import           Control.Lens (Lens', set)
 import           Control.Lens.Indexed hiding (Indexed(..))
-import           Data.Bit
+import           Data.Bin.Bit
 import           Data.Bits
 import           Data.Generics.Product.Fields
 import           Data.Proxy
