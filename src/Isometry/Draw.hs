@@ -30,6 +30,7 @@ import           Data.Bits ((.|.))
 import           Data.Functor.I
 import           Data.Functor.Interval hiding (range)
 import           Data.Generics.Product.Fields
+import           Data.Octree as Octree (S128, tetra, toFraction)
 import           Data.Ratio ((%))
 import           Data.Time.Clock
 import           GHC.Generics (Generic)
@@ -40,7 +41,6 @@ import           Graphics.GL.Core41
 import qualified Isometry.Draw.Axis as Axis
 import qualified Isometry.Draw.Voxel as Voxel
 import           Isometry.Input as Input
-import           Isometry.Octree as Octree (S128, tetra, toFraction)
 import           Isometry.Time
 import           Isometry.UI
 import           Isometry.View as View

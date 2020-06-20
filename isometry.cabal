@@ -58,6 +58,7 @@ library
     Data.Functor.I
     Data.Functor.Interval
     Data.Functor.K
+    Data.Octree
     Foreign.C.String.Lift
     Foreign.Marshal.Alloc.Lift
     Foreign.Marshal.Array.Lift
@@ -95,7 +96,6 @@ library
     Isometry.Input
     Isometry.Language
     Isometry.Main
-    Isometry.Octree
     Isometry.Time
     Isometry.UI
     Isometry.View

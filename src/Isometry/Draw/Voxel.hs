@@ -28,6 +28,7 @@ import           Data.Functor.I
 import           Data.Functor.Interval hiding (range)
 import           Data.Generics.Product.Fields
 import           Data.Monoid (Endo(..))
+import           Data.Octree as Octree (Size, size, toFraction)
 import           Data.Word
 import           Foreign.Storable
 import           Geometry.Transform
@@ -43,7 +44,6 @@ import qualified GL.Shader.DSL as D
 import           GL.Texture
 import           GL.TextureUnit
 import           Graphics.GL.Core41
-import           Isometry.Octree as Octree (Size, size, toFraction)
 import           Isometry.View as View
 import           Isometry.Voxel as Voxel
 import           Isometry.World

@@ -5,7 +5,7 @@ module Isometry.World
 , Distance
 ) where
 
-import Isometry.Octree
+import Data.Octree
 import Unit.Length
 
 data World
