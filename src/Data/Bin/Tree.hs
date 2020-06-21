@@ -242,7 +242,9 @@ newtype Bin a = Bin { getBin :: V2 a }
 instance FoldableWithIndex (V1 Bit) Bin
 instance FunctorWithIndex (V1 Bit) Bin
 instance TraversableWithIndex (V1 Bit) Bin where
-  itraverse f (Bin b) = Bin <$> traverse2 f (V1 <$> V2 I0 I1) b
+  itraverse f (Bin b) = Bin <$> itraverse (\ ix -> f (indices^.el ix)) b
+    where
+    indices = V2 (V1 I0) (V1 I1)
 
 instance UnfoldableWithIndex (V1 Bit) Bin where
   iunfoldA f = bin
