@@ -24,3 +24,4 @@ instance Semigroup (f (g a)) => Semigroup ((f :.: g) a) where
 
 instance Monoid (f (g a)) => Monoid ((f :.: g) a) where
   mempty = C mempty
+  {-# INLINE mempty #-}
