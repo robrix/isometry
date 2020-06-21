@@ -50,6 +50,7 @@ module Data.Bin.Tree
 , tl_
 , tr_
 , Oct(..)
+, oct
 , bln_
 , brn_
 , tln_
@@ -330,29 +331,20 @@ tr_ = coerced.r_.r_
 -- | Octonary nodes.
 --
 -- Mnemonic for fields: bottom/top, left/right, near/far.
-data Oct a = Oct
-  { bln :: !a
-  , brn :: !a
-  , tln :: !a
-  , trn :: !a
-  , blf :: !a
-  , brf :: !a
-  , tlf :: !a
-  , trf :: !a
-  }
-  deriving (Foldable, Functor, Generic, Generic1, Traversable)
+newtype Oct a = Oct { getOct :: (Bin :.: Bin :.: Bin) a }
+  deriving (Applicative, Foldable, Functor, Generic, Generic1, Monoid, Semigroup, Traversable)
 
 instance FoldableWithIndex (V3 Bit) Oct
 instance FunctorWithIndex (V3 Bit) Oct
 instance TraversableWithIndex (V3 Bit) Oct where
-  itraverse f (Oct bln brn tln trn blf brf tlf trf) = Oct
+  itraverse f (Oct (C (Bin (C (Bin (Bin bln brn) (Bin tln trn))) (C (Bin (Bin blf brf) (Bin tlf trf)))))) = oct
     <$> f (V3 I0 I0 I0) bln <*> f (V3 I1 I0 I0) brn
     <*> f (V3 I0 I1 I0) tln <*> f (V3 I1 I1 I0) trn
     <*> f (V3 I0 I0 I1) blf <*> f (V3 I1 I0 I1) brf
     <*> f (V3 I0 I1 I1) tlf <*> f (V3 I1 I1 I1) trf
 
 instance UnfoldableWithIndex (V3 Bit) Oct where
-  iunfoldA f = Oct
+  iunfoldA f = oct
     <$> f (V3 I0 I0 I0)
     <*> f (V3 I1 I0 I0)
     <*> f (V3 I0 I1 I0)
@@ -364,14 +356,14 @@ instance UnfoldableWithIndex (V3 Bit) Oct where
 
 instance Indexed (V3 Bit) Oct where
   o ! i = case i of
-    V3 I0 I0 I0 -> bln o
-    V3 I1 I0 I0 -> brn o
-    V3 I0 I1 I0 -> tln o
-    V3 I1 I1 I0 -> trn o
-    V3 I0 I0 I1 -> blf o
-    V3 I1 I0 I1 -> brf o
-    V3 I0 I1 I1 -> tlf o
-    V3 I1 I1 I1 -> trf o
+    V3 I0 I0 I0 -> o^.bln_
+    V3 I1 I0 I0 -> o^.brn_
+    V3 I0 I1 I0 -> o^.tln_
+    V3 I1 I1 I0 -> o^.trn_
+    V3 I0 I0 I1 -> o^.blf_
+    V3 I1 I0 I1 -> o^.brf_
+    V3 I0 I1 I1 -> o^.tlf_
+    V3 I1 I1 I1 -> o^.trf_
 
 instance MutableIndexed (V3 Bit) Oct where
   insert (V3 I0 I0 I0) = set bln_
@@ -383,44 +375,37 @@ instance MutableIndexed (V3 Bit) Oct where
   insert (V3 I0 I1 I1) = set tlf_
   insert (V3 I1 I1 I1) = set trf_
 
-instance Applicative Oct where
-  pure a = Oct a a a a a a a a
-  Oct f1 f2 f3 f4 f5 f6 f7 f8 <*> Oct a1 a2 a3 a4 a5 a6 a7 a8 = Oct (f1 a1) (f2 a2) (f3 a3) (f4 a4) (f5 a5) (f6 a6) (f7 a7) (f8 a8)
-
 instance Linear.Finite Oct where
   type Size Oct = 8
 
-  fromV (Linear.V v) = Oct (v V.! 0) (v V.! 1) (v V.! 2) (v V.! 3) (v V.! 4) (v V.! 5) (v V.! 6) (v V.! 7)
+  fromV (Linear.V v) = oct (v V.! 0) (v V.! 1) (v V.! 2) (v V.! 3) (v V.! 4) (v V.! 5) (v V.! 6) (v V.! 7)
 
-instance Semigroup a => Semigroup (Oct a) where
-  Oct bln1 brn1 tln1 trn1 blf1 brf1 tlf1 trf1 <> Oct bln2 brn2 tln2 trn2 blf2 brf2 tlf2 trf2 = Oct (bln1 <> bln2) (brn1 <> brn2) (tln1 <> tln2) (trn1 <> trn2) (blf1 <> blf2) (brf1 <> brf2) (tlf1 <> tlf2) (trf1 <> trf2)
-
-instance Monoid a => Monoid (Oct a) where
-  mempty = Oct mempty mempty mempty mempty mempty mempty mempty mempty
+oct :: a -> a -> a -> a -> a -> a -> a -> a -> Oct a
+oct bln brn tln trn blf brf tlf trf = Oct . C $ Bin (C (Bin (Bin bln brn) (Bin tln trn))) (C (Bin (Bin blf brf) (Bin tlf trf)))
 
 bln_ :: Lens' (Oct a) a
-bln_ = field @"bln"
+bln_ = coerced.l_.l_.l_
 
 brn_ :: Lens' (Oct a) a
-brn_ = field @"brn"
+brn_ = coerced.l_.l_.r_
 
 tln_ :: Lens' (Oct a) a
-tln_ = field @"tln"
+tln_ = coerced.l_.r_.l_
 
 trn_ :: Lens' (Oct a) a
-trn_ = field @"trn"
+trn_ = coerced.l_.r_.r_
 
 blf_ :: Lens' (Oct a) a
-blf_ = field @"blf"
+blf_ = coerced.l_.l_.r_
 
 brf_ :: Lens' (Oct a) a
-brf_ = field @"brf"
+brf_ = coerced.r_.l_.r_
 
 tlf_ :: Lens' (Oct a) a
-tlf_ = field @"tlf"
+tlf_ = coerced.l_.r_.r_
 
 trf_ :: Lens' (Oct a) a
-trf_ = field @"trf"
+trf_ = coerced.r_.r_.r_
 
 
 class UnfoldB s where
