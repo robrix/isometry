@@ -259,6 +259,9 @@ instance Linear.Finite Bin where
 instance R1 Bin where
   _x = iso getBin Bin ._x
 
+instance R2 Bin where
+  _xy = iso getBin Bin
+
 bin :: a -> a -> Bin a
 bin l r = Bin $ V2 l r
 
