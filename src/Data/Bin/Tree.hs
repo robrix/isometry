@@ -281,9 +281,6 @@ r_ = field @"r"
 newtype Quad a = Quad { getQuad :: (Bin :.: Bin) a }
   deriving (Applicative, Foldable, Functor, Generic, Generic1, Monoid, Semigroup, Traversable)
 
-quad :: a -> a -> a -> a -> Quad a
-quad bl br tl tr = Quad . C $ Bin (Bin bl br) (Bin tl tr)
-
 instance FoldableWithIndex (V2 Bit) Quad
 instance FunctorWithIndex (V2 Bit) Quad
 instance TraversableWithIndex (V2 Bit) Quad where
@@ -313,6 +310,9 @@ instance Linear.Finite Quad where
   type Size Quad = 4
 
   fromV (Linear.V v) = quad (v V.! 0) (v V.! 1) (v V.! 2) (v V.! 3)
+
+quad :: a -> a -> a -> a -> Quad a
+quad bl br tl tr = Quad . C $ Bin (Bin bl br) (Bin tl tr)
 
 bl_ :: Lens' (Quad a) a
 bl_ = coerced.l_.l_
