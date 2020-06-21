@@ -71,7 +71,6 @@ module Data.Bin.Tree
 , Indexed(..)
 , SparseIndexed(..)
 , MutableIndexed(..)
-, foldMap2
 , deinterleaveWith
 ) where
 
@@ -465,9 +464,6 @@ class SparseIndexed i f | f -> i where
 class MutableIndexed i f | f -> i where
   insert :: i -> a -> f a -> f a
 
-
-foldMap2 :: (Foldable t, Monoid m) => (a -> b -> m) -> t a -> t b -> m
-foldMap2 f = foldMap . foldMap f
 
 deinterleaveWith :: (a -> a -> b) -> [a] -> [b]
 deinterleaveWith f (x:y:t) = f x y : deinterleaveWith f t
