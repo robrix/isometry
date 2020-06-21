@@ -72,12 +72,11 @@ module Data.Bin.Tree
 ) where
 
 import           Control.Carrier.State.Church
-import           Control.Lens (Lens', coerced, set, (^.))
+import           Control.Lens (Lens', coerced, iso, set, (^.))
 import           Control.Lens.Indexed hiding (Indexed(..))
 import           Data.Bin.Bit
 import           Data.Bits
 import           Data.Functor.C
-import           Data.Generics.Product.Fields
 import           Data.Proxy
 import qualified Data.Vector as V
 import           GHC.Generics (Generic, Generic1)
@@ -230,51 +229,41 @@ capacity b = size b ^ (round (logBase @Float 2 (fromIntegral (natVal (Proxy @(Li
 -- | Binary nodes.
 --
 -- Mnemonic for fields: left/right.
-data Bin a = Bin
-  { l :: !a
-  , r :: !a
-  }
-  deriving (Foldable, Functor, Generic, Generic1, Traversable)
+newtype Bin a = Bin { getBin :: V2 a }
+  deriving (Applicative, Foldable, Functor, Generic, Generic1, Monoid, Semigroup, Traversable)
 
 instance FoldableWithIndex (V1 Bit) Bin
 instance FunctorWithIndex (V1 Bit) Bin
 instance TraversableWithIndex (V1 Bit) Bin where
-  itraverse f (Bin l r) = Bin <$> f (V1 I0) l <*> f (V1 I1) r
+  itraverse f (Bin (V2 l r)) = bin <$> f (V1 I0) l <*> f (V1 I1) r
 
 instance UnfoldableWithIndex (V1 Bit) Bin where
-  iunfoldA f = Bin
+  iunfoldA f = bin
     <$> f (V1 I0)
     <*> f (V1 I1)
 
 instance Indexed (V1 Bit) Bin where
   b ! i = case i of
-    V1 I0 -> l b
-    V1 I1 -> r b
+    V1 I0 -> b^.l_
+    V1 I1 -> b^.r_
 
 instance MutableIndexed (V1 Bit) Bin where
   insert (V1 I0) = set l_
   insert (V1 I1) = set r_
 
-instance Applicative Bin where
-  pure a = Bin a a
-  Bin f1 f2 <*> Bin a1 a2 = Bin (f1 a1) (f2 a2)
-
 instance Linear.Finite Bin where
   type Size Bin = 2
 
-  fromV (Linear.V v) = Bin (v V.! 0) (v V.! 1)
+  fromV (Linear.V v) = bin (v V.! 0) (v V.! 1)
 
-instance Semigroup a => Semigroup (Bin a) where
-  Bin l1 r1 <> Bin l2 r2 = Bin (l1 <> l2) (r1 <> r2)
-
-instance Monoid a => Monoid (Bin a) where
-  mempty = Bin mempty mempty
+bin :: a -> a -> Bin a
+bin l r = Bin $ V2 l r
 
 l_ :: Lens' (Bin a) a
-l_ = field @"l"
+l_ = iso getBin Bin ._x
 
 r_ :: Lens' (Bin a) a
-r_ = field @"r"
+r_ = iso getBin Bin ._y
 
 
 -- | Quaternary nodes.
@@ -287,7 +276,7 @@ newtype Quad a = Quad { getQuad :: Bin (Bin a) }
 instance FoldableWithIndex (V2 Bit) Quad
 instance FunctorWithIndex (V2 Bit) Quad
 instance TraversableWithIndex (V2 Bit) Quad where
-  itraverse f (Quad (Bin (Bin bl br) (Bin tl tr))) = quad <$> f (V2 I0 I0) bl <*> f (V2 I1 I0) br <*> f (V2 I0 I1) tl <*> f (V2 I1 I1) tr
+  itraverse f (Quad (Bin (V2 (Bin (V2 bl br)) (Bin (V2 tl tr))))) = quad <$> f (V2 I0 I0) bl <*> f (V2 I1 I0) br <*> f (V2 I0 I1) tl <*> f (V2 I1 I1) tr
 
 instance UnfoldableWithIndex (V2 Bit) Quad where
   iunfoldA f = quad
@@ -315,7 +304,7 @@ instance Linear.Finite Quad where
   fromV (Linear.V v) = quad (v V.! 0) (v V.! 1) (v V.! 2) (v V.! 3)
 
 quad :: a -> a -> a -> a -> Quad a
-quad bl br tl tr = Quad $ Bin (Bin bl br) (Bin tl tr)
+quad bl br tl tr = Quad $ bin (bin bl br) (bin tl tr)
 
 bl_ :: Lens' (Quad a) a
 bl_ = coerced.l_.l_
@@ -340,7 +329,7 @@ newtype Oct a = Oct { getOct :: Bin (Bin (Bin a)) }
 instance FoldableWithIndex (V3 Bit) Oct
 instance FunctorWithIndex (V3 Bit) Oct
 instance TraversableWithIndex (V3 Bit) Oct where
-  itraverse f (Oct (Bin (Bin (Bin bln brn) (Bin tln trn)) (Bin (Bin blf brf) (Bin tlf trf)))) = oct
+  itraverse f (Oct (Bin (V2 (Bin (V2 (Bin (V2 bln brn)) (Bin (V2 tln trn)))) (Bin (V2 (Bin (V2 blf brf)) (Bin (V2 tlf trf))))))) = oct
     <$> f (V3 I0 I0 I0) bln <*> f (V3 I1 I0 I0) brn
     <*> f (V3 I0 I1 I0) tln <*> f (V3 I1 I1 I0) trn
     <*> f (V3 I0 I0 I1) blf <*> f (V3 I1 I0 I1) brf
@@ -384,7 +373,7 @@ instance Linear.Finite Oct where
   fromV (Linear.V v) = oct (v V.! 0) (v V.! 1) (v V.! 2) (v V.! 3) (v V.! 4) (v V.! 5) (v V.! 6) (v V.! 7)
 
 oct :: a -> a -> a -> a -> a -> a -> a -> a -> Oct a
-oct bln brn tln trn blf brf tlf trf = Oct $ Bin (Bin (Bin bln brn) (Bin tln trn)) (Bin (Bin blf brf) (Bin tlf trf))
+oct bln brn tln trn blf brf tlf trf = Oct $ bin (bin (bin bln brn) (bin tln trn)) (bin (bin blf brf) (bin tlf trf))
 
 bln_ :: Lens' (Oct a) a
 bln_ = coerced.l_.l_.l_
