@@ -5,6 +5,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NoStarIsType #-}
 {-# LANGUAGE QuantifiedConstraints #-}
@@ -43,6 +44,7 @@ module Data.Bin.Tree
 , l_
 , r_
 , Quad(..)
+, quad
 , bl_
 , br_
 , tl_
@@ -68,10 +70,11 @@ module Data.Bin.Tree
 ) where
 
 import           Control.Carrier.State.Church
-import           Control.Lens (Lens', set)
+import           Control.Lens (Lens', coerced, set, (^.))
 import           Control.Lens.Indexed hiding (Indexed(..))
 import           Data.Bin.Bit
 import           Data.Bits
+import           Data.Functor.C
 import           Data.Generics.Product.Fields
 import           Data.Proxy
 import qualified Data.Vector as V
@@ -275,21 +278,19 @@ r_ = field @"r"
 -- | Quaternary nodes.
 --
 -- Mnemonic for fields: bottom/top, left/right.
-data Quad a = Quad
-  { bl :: !a
-  , br :: !a
-  , tl :: !a
-  , tr :: !a
-  }
-  deriving (Foldable, Functor, Generic, Generic1, Traversable)
+newtype Quad a = Quad { getQuad :: (Bin :.: Bin) a }
+  deriving (Applicative, Foldable, Functor, Generic, Generic1, Monoid, Semigroup, Traversable)
+
+quad :: a -> a -> a -> a -> Quad a
+quad bl br tl tr = Quad . C $ Bin (Bin bl br) (Bin tl tr)
 
 instance FoldableWithIndex (V2 Bit) Quad
 instance FunctorWithIndex (V2 Bit) Quad
 instance TraversableWithIndex (V2 Bit) Quad where
-  itraverse f (Quad bl br tl tr) = Quad <$> f (V2 I0 I0) bl <*> f (V2 I1 I0) br <*> f (V2 I0 I1) tl <*> f (V2 I1 I1) tr
+  itraverse f (Quad (C (Bin (Bin bl br) (Bin tl tr)))) = quad <$> f (V2 I0 I0) bl <*> f (V2 I1 I0) br <*> f (V2 I0 I1) tl <*> f (V2 I1 I1) tr
 
 instance UnfoldableWithIndex (V2 Bit) Quad where
-  iunfoldA f = Quad
+  iunfoldA f = quad
     <$> f (V2 I0 I0)
     <*> f (V2 I1 I0)
     <*> f (V2 I0 I1)
@@ -297,10 +298,10 @@ instance UnfoldableWithIndex (V2 Bit) Quad where
 
 instance Indexed (V2 Bit) Quad where
   q ! i = case i of
-    V2 I0 I0 -> bl q
-    V2 I1 I0 -> br q
-    V2 I0 I1 -> tl q
-    V2 I1 I1 -> tr q
+    V2 I0 I0 -> q^.bl_
+    V2 I1 I0 -> q^.br_
+    V2 I0 I1 -> q^.tl_
+    V2 I1 I1 -> q^.tr_
 
 instance MutableIndexed (V2 Bit) Quad where
   insert (V2 I0 I0) = set bl_
@@ -308,32 +309,22 @@ instance MutableIndexed (V2 Bit) Quad where
   insert (V2 I0 I1) = set tl_
   insert (V2 I1 I1) = set tr_
 
-instance Applicative Quad where
-  pure a = Quad a a a a
-  Quad f1 f2 f3 f4 <*> Quad a1 a2 a3 a4 = Quad (f1 a1) (f2 a2) (f3 a3) (f4 a4)
-
 instance Linear.Finite Quad where
   type Size Quad = 4
 
-  fromV (Linear.V v) = Quad (v V.! 0) (v V.! 1) (v V.! 2) (v V.! 3)
-
-instance Semigroup a => Semigroup (Quad a) where
-  Quad bl1 br1 tl1 tr1 <> Quad bl2 br2 tl2 tr2 = Quad (bl1 <> bl2) (br1 <> br2) (tl1 <> tl2) (tr1 <> tr2)
-
-instance Monoid a => Monoid (Quad a) where
-  mempty = Quad mempty mempty mempty mempty
+  fromV (Linear.V v) = quad (v V.! 0) (v V.! 1) (v V.! 2) (v V.! 3)
 
 bl_ :: Lens' (Quad a) a
-bl_ = field @"bl"
+bl_ = coerced.l_.l_
 
 br_ :: Lens' (Quad a) a
-br_ = field @"br"
+br_ = coerced.l_.r_
 
 tl_ :: Lens' (Quad a) a
-tl_ = field @"tl"
+tl_ = coerced.r_.l_
 
 tr_ :: Lens' (Quad a) a
-tr_ = field @"tr"
+tr_ = coerced.r_.r_
 
 
 -- | Octonary nodes.
