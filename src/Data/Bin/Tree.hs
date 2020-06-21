@@ -275,14 +275,14 @@ r_ = _xy._y
 -- | Quaternary nodes.
 --
 -- Mnemonic for fields: bottom/top, left/right.
-newtype Quad a = Quad { getQuad :: Bin (Bin a) }
+newtype Quad a = Quad { getQuad :: V2 (V2 a) }
   deriving (Foldable, Functor, Generic, Generic1, Monoid, Semigroup, Traversable)
   deriving (Applicative) via (Bin :.: Bin)
 
 instance FoldableWithIndex (V2 Bit) Quad
 instance FunctorWithIndex (V2 Bit) Quad
 instance TraversableWithIndex (V2 Bit) Quad where
-  itraverse f (Quad (Bin (V2 (Bin (V2 bl br)) (Bin (V2 tl tr))))) = quad <$> f (V2 I0 I0) bl <*> f (V2 I1 I0) br <*> f (V2 I0 I1) tl <*> f (V2 I1 I1) tr
+  itraverse f (Quad (V2 (V2 bl br) (V2 tl tr))) = quad <$> f (V2 I0 I0) bl <*> f (V2 I1 I0) br <*> f (V2 I0 I1) tl <*> f (V2 I1 I1) tr
 
 instance UnfoldableWithIndex (V2 Bit) Quad where
   iunfoldA f = quad
@@ -310,7 +310,7 @@ instance Linear.Finite Quad where
   fromV (Linear.V v) = quad (v V.! 0) (v V.! 1) (v V.! 2) (v V.! 3)
 
 quad :: a -> a -> a -> a -> Quad a
-quad bl br tl tr = Quad $ bin (bin bl br) (bin tl tr)
+quad bl br tl tr = Quad $ V2 (V2 bl br) (V2 tl tr)
 
 bl_ :: Lens' (Quad a) a
 bl_ = coerced.l_.l_
