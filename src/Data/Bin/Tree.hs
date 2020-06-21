@@ -262,7 +262,7 @@ instance MutableIndexed (V1 Bit) Bin where
 instance Linear.Finite Bin where
   type Size Bin = 2
 
-  fromV (Linear.V v) = bin (v V.! 0) (v V.! 1)
+  fromV (Linear.V v) = Bin (head (deinterleaveWith V2 (map (v V.!) [0..1])))
 
 instance R1 Bin where
   _x = _xy._x
