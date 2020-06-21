@@ -74,7 +74,7 @@ module Data.Bin.Tree
 ) where
 
 import           Control.Carrier.State.Church
-import           Control.Lens (Lens', coerced, iso, set, (^.))
+import           Control.Lens (Lens', iso, set, (^.))
 import           Control.Lens.Indexed hiding (Indexed(..))
 import           Data.Bin.Bit
 import           Data.Bits
@@ -318,16 +318,16 @@ quad_ :: Lens' (Quad a) (V2 (V2 a))
 quad_ = iso getQuad Quad
 
 bl_ :: Lens' (Quad a) a
-bl_ = coerced.l_.l_
+bl_ = quad_._x._x
 
 br_ :: Lens' (Quad a) a
-br_ = coerced.l_.r_
+br_ = quad_._x._y
 
 tl_ :: Lens' (Quad a) a
-tl_ = coerced.r_.l_
+tl_ = quad_._y._x
 
 tr_ :: Lens' (Quad a) a
-tr_ = coerced.r_.r_
+tr_ = quad_._y._y
 
 
 -- | Octonary nodes.
