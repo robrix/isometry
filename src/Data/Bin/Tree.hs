@@ -43,6 +43,7 @@ module Data.Bin.Tree
 , capacity
 , Bin(..)
 , bin
+, bin_
 , l_
 , r_
 , Quad(..)
@@ -266,10 +267,13 @@ instance R1 Bin where
   _x = _xy._x
 
 instance R2 Bin where
-  _xy = iso getBin Bin
+  _xy = bin_
 
 bin :: a -> a -> Bin a
 bin l r = Bin $ V2 l r
+
+bin_ :: Lens' (Bin a) (V2 a)
+bin_ = iso getBin Bin
 
 l_ :: Lens' (Bin a) a
 l_ = _xy._x
