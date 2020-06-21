@@ -15,3 +15,6 @@ instance (Applicative f, Applicative g) => Applicative (f :.: g) where
 
   C f <*> C a = C $ liftA2 (<*>) f a
   {-# INLINE (<*>) #-}
+
+instance Semigroup (f (g a)) => Semigroup ((f :.: g) a) where
+  C f <> C g = C (f <> g)
