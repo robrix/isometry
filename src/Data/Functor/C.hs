@@ -9,6 +9,8 @@ import Control.Applicative
 newtype (f :.: g) a = C { getC :: f (g a) }
   deriving (Eq, Foldable, Functor, Ord, Show, Traversable)
 
+infixr 7 :.:
+
 instance (Applicative f, Applicative g) => Applicative (f :.: g) where
   pure = C . pure . pure
   {-# INLINE pure #-}
