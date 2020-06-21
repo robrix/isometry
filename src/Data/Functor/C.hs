@@ -5,15 +5,20 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Data.Functor.C
 ( (:.:)(..)
+, compose_
 ) where
 
 import Control.Applicative
+import Control.Lens (Iso', iso)
 import Control.Lens.Indexed
 
 newtype (f :.: g) a = C { getC :: f (g a) }
   deriving (Eq, Foldable, Functor, Monoid, Ord, Semigroup, Show, Traversable)
 
 infixr 7 :.:
+
+compose_ :: Iso' ((f :.: g) a) (f (g a))
+compose_ = iso getC C
 
 instance (Applicative f, Applicative g) => Applicative (f :.: g) where
   pure = C . pure . pure
