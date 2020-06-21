@@ -415,7 +415,7 @@ trf_ = coerced.r_.r_.r_
 
 
 class UnfoldB s where
-  unfoldB :: (V3 Bit -> Bool) -> (V3 (Index s) -> a) -> B s Oct a
+  unfoldB :: (Foldable f, UnfoldableWithIndex (v Bit) f, Applicative v) => (v Bit -> Bool) -> (v (Index s) -> a) -> B s f a
 
 instance UnfoldB 'S1 where
   unfoldB _ leaf = L (leaf (pure IL))
