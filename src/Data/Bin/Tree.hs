@@ -256,6 +256,9 @@ instance Linear.Finite Bin where
 
   fromV (Linear.V v) = bin (v V.! 0) (v V.! 1)
 
+instance R1 Bin where
+  _x = iso getBin Bin ._x
+
 bin :: a -> a -> Bin a
 bin l r = Bin $ V2 l r
 
