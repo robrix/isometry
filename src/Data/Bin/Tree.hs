@@ -92,7 +92,7 @@ import qualified Linear.V as Linear
 import           Linear.V1
 import           Linear.V2
 import           Linear.V3
-import           Linear.Vector (E)
+import           Linear.Vector (E(el))
 
 -- | The shape of (non-empty) perfectly balanced binary trees.
 --
@@ -289,7 +289,7 @@ newtype Quad a = Quad { getQuad :: V2 (V2 a) }
 instance FoldableWithIndex (V2 Bit) Quad
 instance FunctorWithIndex (V2 Bit) Quad
 instance TraversableWithIndex (V2 Bit) Quad where
-  itraverse f (Quad q) = Quad <$> traverse2 (traverse2 f) indices q
+  itraverse f (Quad q) = Quad <$> itraverse (\ ix -> itraverse (\ iy -> f (indices^.el ix.el iy))) q
     where
     indices = head (deinterleaveWith V2 (deinterleaveWith V2 (V2 <$> [I0, I1] <*> [I0, I1])))
 
