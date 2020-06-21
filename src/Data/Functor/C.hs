@@ -20,6 +20,7 @@ instance (Applicative f, Applicative g) => Applicative (f :.: g) where
 
 instance Semigroup (f (g a)) => Semigroup ((f :.: g) a) where
   C f <> C g = C (f <> g)
+  {-# INLINE (<>) #-}
 
 instance Monoid (f (g a)) => Monoid ((f :.: g) a) where
   mempty = C mempty
