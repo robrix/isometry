@@ -277,10 +277,10 @@ bin_ :: Lens' (Bin a) (V2 a)
 bin_ = iso getBin Bin
 
 l_ :: Lens' (Bin a) a
-l_ = _xy._x
+l_ = bin_._x
 
 r_ :: Lens' (Bin a) a
-r_ = _xy._y
+r_ = bin_._y
 
 
 -- | Quaternary nodes.
