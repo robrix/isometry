@@ -46,6 +46,7 @@ module Data.Bin.Tree
 , r_
 , Quad(..)
 , quad
+, quad_
 , bl_
 , br_
 , tl_
@@ -311,6 +312,9 @@ instance Linear.Finite Quad where
 
 quad :: a -> a -> a -> a -> Quad a
 quad bl br tl tr = Quad $ V2 (V2 bl br) (V2 tl tr)
+
+quad_ :: Lens' (Quad a) (V2 (V2 a))
+quad_ = iso getQuad Quad
 
 bl_ :: Lens' (Quad a) a
 bl_ = coerced.l_.l_
