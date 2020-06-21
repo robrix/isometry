@@ -29,3 +29,7 @@ instance (FoldableWithIndex i f, FoldableWithIndex j g) => FoldableWithIndex (i,
 instance (FunctorWithIndex i f, FunctorWithIndex j g) => FunctorWithIndex (i, j) (f :.: g) where
   imap f = C . imap (imap . fmap f . (,)) . getC
   {-# INLINABLE imap #-}
+
+instance (TraversableWithIndex i f, TraversableWithIndex j g) => TraversableWithIndex (i, j) (f :.: g) where
+  itraverse f = fmap C . itraverse (itraverse . fmap f . (,)) . getC
+  {-# INLINABLE itraverse #-}
