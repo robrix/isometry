@@ -71,15 +71,18 @@ module Data.Bin.Tree
 , Indexed(..)
 , SparseIndexed(..)
 , MutableIndexed(..)
+, traverse2
 ) where
 
 import           Control.Carrier.State.Church
 import           Control.Lens (Lens', iso, set, (^.))
 import           Control.Lens.Indexed hiding (Indexed(..))
+import           Control.Monad (join)
 import           Data.Bin.Bit
 import           Data.Bits
 import           Data.Functor.C
 import           Data.Proxy
+import           Data.Traversable (for)
 import qualified Data.Vector as V
 import           GHC.Generics (Generic, Generic1)
 import           GHC.TypeLits
@@ -460,3 +463,7 @@ class SparseIndexed i f | f -> i where
 
 class MutableIndexed i f | f -> i where
   insert :: i -> a -> f a -> f a
+
+
+traverse2 :: (Monad t, Traversable t, Applicative f) => (a -> b -> f c) -> t a -> t b -> f (t c)
+traverse2 f a b = join <$> traverse (for b . f) a
