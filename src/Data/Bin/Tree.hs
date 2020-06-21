@@ -77,7 +77,7 @@ module Data.Bin.Tree
 ) where
 
 import           Control.Carrier.State.Church
-import           Control.Lens (Lens', iso, set, (^.))
+import           Control.Lens (Iso', Lens', iso, set, (^.))
 import           Control.Lens.Indexed hiding (Indexed(..))
 import           Data.Bin.Bit
 import           Data.Bits
@@ -273,7 +273,7 @@ instance R2 Bin where
 bin :: forall a . a -> a -> Bin a
 bin = coerce (V2 :: a -> a -> V2 a)
 
-bin_ :: Lens' (Bin a) (V2 a)
+bin_ :: Iso' (Bin a) (V2 a)
 bin_ = iso getBin Bin
 
 l_ :: Lens' (Bin a) a
@@ -325,7 +325,7 @@ instance Linear.Finite Quad where
 quad :: a -> a -> a -> a -> Quad a
 quad bl br tl tr = Quad $ V2 (V2 bl br) (V2 tl tr)
 
-quad_ :: Lens' (Quad a) (V2 (V2 a))
+quad_ :: Iso' (Quad a) (V2 (V2 a))
 quad_ = iso getQuad Quad
 
 bl_ :: Lens' (Quad a) a
@@ -395,7 +395,7 @@ instance Linear.Finite Oct where
 oct :: a -> a -> a -> a -> a -> a -> a -> a -> Oct a
 oct bln brn tln trn blf brf tlf trf = Oct $ V2 (V2 (V2 bln brn) (V2 tln trn)) (V2 (V2 blf brf) (V2 tlf trf))
 
-oct_ :: Lens' (Oct a) (V2 (V2 (V2 a)))
+oct_ :: Iso' (Oct a) (V2 (V2 (V2 a)))
 oct_ = iso getOct Oct
 
 bln_ :: Lens' (Oct a) a
