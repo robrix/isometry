@@ -42,6 +42,7 @@ module Data.Bin.Tree
 , size
 , capacity
 , Bin(..)
+, bin
 , l_
 , r_
 , Quad(..)
