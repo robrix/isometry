@@ -467,7 +467,7 @@ class MutableIndexed i f | f -> i where
 
 
 foldMap2 :: (Foldable t, Monoid m) => (a -> b -> m) -> t a -> t b -> m
-foldMap2 f a b = foldMap (foldMap f a) b
+foldMap2 f = foldMap . foldMap f
 
 traverse2 :: (Monad t, Traversable t, Applicative f) => (a -> b -> f c) -> t a -> t b -> f (t c)
 traverse2 f a b = join <$> traverse (for b . f) a
