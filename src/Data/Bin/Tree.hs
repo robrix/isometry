@@ -289,7 +289,9 @@ newtype Quad a = Quad { getQuad :: V2 (V2 a) }
 instance FoldableWithIndex (V2 Bit) Quad
 instance FunctorWithIndex (V2 Bit) Quad
 instance TraversableWithIndex (V2 Bit) Quad where
-  itraverse f (Quad (V2 (V2 bl br) (V2 tl tr))) = quad <$> f (V2 I0 I0) bl <*> f (V2 I1 I0) br <*> f (V2 I0 I1) tl <*> f (V2 I1 I1) tr
+  itraverse f (Quad q) = Quad <$> traverse2 (traverse2 f) indices q
+    where
+    indices = head (deinterleaveWith V2 (deinterleaveWith V2 (V2 <$> [I0, I1] <*> [I0, I1])))
 
 instance UnfoldableWithIndex (V2 Bit) Quad where
   iunfoldA f = quad
