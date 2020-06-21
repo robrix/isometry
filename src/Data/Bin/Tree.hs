@@ -257,7 +257,7 @@ instance Linear.Finite Bin where
   fromV (Linear.V v) = bin (v V.! 0) (v V.! 1)
 
 instance R1 Bin where
-  _x = iso getBin Bin ._x
+  _x = _xy._x
 
 instance R2 Bin where
   _xy = iso getBin Bin
@@ -266,10 +266,10 @@ bin :: a -> a -> Bin a
 bin l r = Bin $ V2 l r
 
 l_ :: Lens' (Bin a) a
-l_ = iso getBin Bin ._x
+l_ = _xy._x
 
 r_ :: Lens' (Bin a) a
-r_ = iso getBin Bin ._y
+r_ = _xy._y
 
 
 -- | Quaternary nodes.
