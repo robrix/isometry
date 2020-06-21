@@ -109,8 +109,10 @@ frame = timed $ do
   dt <- ask @(Seconds _)
   input <- get @Input
 
-  when (input^.pressed_ SDL.KeycodeQ) $ angle_ %= \ angle -> wrap radians (angle + (-turnRate .*. dt))
-  when (input^.pressed_ SDL.KeycodeE) $ angle_ %= \ angle -> wrap radians (angle +   turnRate .*. dt)
+  let turningL = input^.pressed_ SDL.KeycodeQ
+      turningR = input^.pressed_ SDL.KeycodeE
+  when turningL $ angle_ %= \ angle -> wrap radians (angle + (-turnRate .*. dt))
+  when turningR $ angle_ %= \ angle -> wrap radians (angle +   turnRate .*. dt)
 
   angle <- use angle_
 
