@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveTraversable #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE TypeOperators #-}
 module Data.Functor.C
 ( (:.:)(..)
@@ -7,7 +8,7 @@ module Data.Functor.C
 import Control.Applicative
 
 newtype (f :.: g) a = C { getC :: f (g a) }
-  deriving (Eq, Foldable, Functor, Ord, Show, Traversable)
+  deriving (Eq, Foldable, Functor, Monoid, Ord, Semigroup, Show, Traversable)
 
 infixr 7 :.:
 
@@ -17,11 +18,3 @@ instance (Applicative f, Applicative g) => Applicative (f :.: g) where
 
   C f <*> C a = C $ liftA2 (<*>) f a
   {-# INLINE (<*>) #-}
-
-instance Semigroup (f (g a)) => Semigroup ((f :.: g) a) where
-  C f <> C g = C (f <> g)
-  {-# INLINE (<>) #-}
-
-instance Monoid (f (g a)) => Monoid ((f :.: g) a) where
-  mempty = C mempty
-  {-# INLINE mempty #-}
