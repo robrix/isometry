@@ -70,12 +70,14 @@ module Data.Bin.Tree
 , SparseUnfoldableWithIndex(..)
 , iunfoldr
 -- * Indexing
+, Indices(..)
 , Indexed(..)
 , SparseIndexed(..)
 , MutableIndexed(..)
 , deinterleaveWith
 ) where
 
+import           Control.Applicative (liftA2, liftA3)
 import           Control.Carrier.State.Church
 import           Control.Lens (Iso', Lens', iso, set, (^.))
 import           Control.Lens.Indexed hiding (Indexed(..))
@@ -457,6 +459,19 @@ iunfoldr f a = run . evalState a . iunfoldA $ state . f
 -- | Unfolding of finite sparse structures with an index.
 class UnfoldableWithIndex i f => SparseUnfoldableWithIndex i f where
   iunfoldSparseA :: Applicative m => (i -> m (Maybe b)) -> m (f b)
+
+
+class BinaryIndexed f t | t -> f where
+  indices :: t (f Bit)
+
+instance BinaryIndexed V1 Bin where
+  indices = Bin (head (deinterleaveWith V2 (map V1 [I0, I1])))
+
+instance BinaryIndexed V2 Quad where
+  indices = Quad (head (deinterleaveWith V2 (deinterleaveWith V2 (liftA2 V2 [I0, I1] [I0, I1]))))
+
+instance BinaryIndexed V3 Oct where
+  indices = Oct (head (deinterleaveWith V2 (deinterleaveWith V2 (deinterleaveWith V2 (liftA3 V3 [I0, I1] [I0, I1] [I0, I1])))))
 
 
 class Indexed i f | f -> i where
