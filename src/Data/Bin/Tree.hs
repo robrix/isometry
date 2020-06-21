@@ -390,28 +390,28 @@ oct_ :: Lens' (Oct a) (V2 (V2 (V2 a)))
 oct_ = iso getOct Oct
 
 bln_ :: Lens' (Oct a) a
-bln_ = coerced.l_.l_.l_
+bln_ = oct_._x._x._x
 
 brn_ :: Lens' (Oct a) a
-brn_ = coerced.l_.l_.r_
+brn_ = oct_._x._x._y
 
 tln_ :: Lens' (Oct a) a
-tln_ = coerced.l_.r_.l_
+tln_ = oct_._x._y._x
 
 trn_ :: Lens' (Oct a) a
-trn_ = coerced.l_.r_.r_
+trn_ = oct_._x._y._y
 
 blf_ :: Lens' (Oct a) a
-blf_ = coerced.l_.l_.r_
+blf_ = oct_._x._x._y
 
 brf_ :: Lens' (Oct a) a
-brf_ = coerced.r_.l_.r_
+brf_ = oct_._y._x._y
 
 tlf_ :: Lens' (Oct a) a
-tlf_ = coerced.l_.r_.r_
+tlf_ = oct_._x._y._y
 
 trf_ :: Lens' (Oct a) a
-trf_ = coerced.r_.r_.r_
+trf_ = oct_._y._y._y
 
 
 class UnfoldB s where
