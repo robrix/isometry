@@ -73,6 +73,7 @@ module Data.Bin.Tree
 , MutableIndexed(..)
 , foldMap2
 , traverse2
+, deinterleaveWith
 ) where
 
 import           Control.Carrier.State.Church
@@ -471,3 +472,7 @@ foldMap2 f = foldMap . foldMap f
 
 traverse2 :: (Monad t, Traversable t, Applicative f) => (a -> b -> f c) -> t a -> t b -> f (t c)
 traverse2 f a b = join <$> traverse (for b . f) a
+
+deinterleaveWith :: (a -> a -> b) -> [a] -> [b]
+deinterleaveWith f (x:y:t) = f x y : deinterleaveWith f t
+deinterleaveWith _ _       = []
