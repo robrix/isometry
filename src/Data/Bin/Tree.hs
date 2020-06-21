@@ -80,7 +80,7 @@ module Data.Bin.Tree
 import           Control.Applicative (liftA2, liftA3)
 import           Control.Carrier.State.Church
 import           Control.Lens (Iso', Lens', iso, set, (^.))
-import           Control.Lens.Indexed hiding (Indexed(..))
+import           Control.Lens.Indexed hiding (Indexed(..), indices)
 import           Data.Bin.Bit
 import           Data.Bits
 import           Data.Coerce
