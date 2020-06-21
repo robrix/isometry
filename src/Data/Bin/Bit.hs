@@ -2,10 +2,13 @@ module Data.Bin.Bit
 ( Bit(..)
 , toBit
 , fromBit
+, toBasis
 ) where
 
 import Data.Bits
 import Data.Bool (bool)
+import Linear.Vector (E(..))
+import Linear.V2
 
 data Bit
   = I0
@@ -55,3 +58,6 @@ toBit = bool I0 I1
 
 fromBit :: Bit -> Bool
 fromBit = (== I1)
+
+toBasis :: Bit -> E V2
+toBasis = bool ex ey . fromBit
