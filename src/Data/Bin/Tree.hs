@@ -72,19 +72,16 @@ module Data.Bin.Tree
 , SparseIndexed(..)
 , MutableIndexed(..)
 , foldMap2
-, traverse2
 , deinterleaveWith
 ) where
 
 import           Control.Carrier.State.Church
 import           Control.Lens (Lens', iso, set, (^.))
 import           Control.Lens.Indexed hiding (Indexed(..))
-import           Control.Monad (join)
 import           Data.Bin.Bit
 import           Data.Bits
 import           Data.Functor.C
 import           Data.Proxy
-import           Data.Traversable (for)
 import qualified Data.Vector as V
 import           GHC.Generics (Generic, Generic1)
 import           GHC.TypeLits
@@ -471,9 +468,6 @@ class MutableIndexed i f | f -> i where
 
 foldMap2 :: (Foldable t, Monoid m) => (a -> b -> m) -> t a -> t b -> m
 foldMap2 f = foldMap . foldMap f
-
-traverse2 :: (Monad t, Traversable t, Applicative f) => (a -> b -> f c) -> t a -> t b -> f (t c)
-traverse2 f a b = join <$> traverse (for b . f) a
 
 deinterleaveWith :: (a -> a -> b) -> [a] -> [b]
 deinterleaveWith f (x:y:t) = f x y : deinterleaveWith f t
