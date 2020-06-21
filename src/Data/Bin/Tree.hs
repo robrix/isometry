@@ -333,13 +333,14 @@ tr_ = coerced.r_.r_
 -- | Octonary nodes.
 --
 -- Mnemonic for fields: bottom/top, left/right, near/far.
-newtype Oct a = Oct { getOct :: (Bin :.: Bin :.: Bin) a }
-  deriving (Applicative, Foldable, Functor, Generic, Generic1, Monoid, Semigroup, Traversable)
+newtype Oct a = Oct { getOct :: Bin (Bin (Bin a)) }
+  deriving (Foldable, Functor, Generic, Generic1, Monoid, Semigroup, Traversable)
+  deriving (Applicative) via (Bin :.: Bin :.: Bin)
 
 instance FoldableWithIndex (V3 Bit) Oct
 instance FunctorWithIndex (V3 Bit) Oct
 instance TraversableWithIndex (V3 Bit) Oct where
-  itraverse f (Oct (C (Bin (C (Bin (Bin bln brn) (Bin tln trn))) (C (Bin (Bin blf brf) (Bin tlf trf)))))) = oct
+  itraverse f (Oct (Bin (Bin (Bin bln brn) (Bin tln trn)) (Bin (Bin blf brf) (Bin tlf trf)))) = oct
     <$> f (V3 I0 I0 I0) bln <*> f (V3 I1 I0 I0) brn
     <*> f (V3 I0 I1 I0) tln <*> f (V3 I1 I1 I0) trn
     <*> f (V3 I0 I0 I1) blf <*> f (V3 I1 I0 I1) brf
@@ -383,7 +384,7 @@ instance Linear.Finite Oct where
   fromV (Linear.V v) = oct (v V.! 0) (v V.! 1) (v V.! 2) (v V.! 3) (v V.! 4) (v V.! 5) (v V.! 6) (v V.! 7)
 
 oct :: a -> a -> a -> a -> a -> a -> a -> a -> Oct a
-oct bln brn tln trn blf brf tlf trf = Oct . C $ Bin (C (Bin (Bin bln brn) (Bin tln trn))) (C (Bin (Bin blf brf) (Bin tlf trf)))
+oct bln brn tln trn blf brf tlf trf = Oct $ Bin (Bin (Bin bln brn) (Bin tln trn)) (Bin (Bin blf brf) (Bin tlf trf))
 
 bln_ :: Lens' (Oct a) a
 bln_ = coerced.l_.l_.l_
