@@ -53,6 +53,7 @@ module Data.Bin.Tree
 , tr_
 , Oct(..)
 , oct
+, oct_
 , bln_
 , brn_
 , tln_
@@ -384,6 +385,9 @@ instance Linear.Finite Oct where
 
 oct :: a -> a -> a -> a -> a -> a -> a -> a -> Oct a
 oct bln brn tln trn blf brf tlf trf = Oct $ V2 (V2 (V2 bln brn) (V2 tln trn)) (V2 (V2 blf brf) (V2 tlf trf))
+
+oct_ :: Lens' (Oct a) (V2 (V2 (V2 a)))
+oct_ = iso getOct Oct
 
 bln_ :: Lens' (Oct a) a
 bln_ = coerced.l_.l_.l_
