@@ -23,7 +23,8 @@ import qualified Control.Effect.Reader.Labelled as Labelled
 import           Control.Effect.Trace
 import           Control.Lens (Lens', ifoldMap)
 import           Control.Monad.IO.Class.Lift
-import           Data.Bin.Tree as Octree (Size, size, toFraction)
+import           Data.Bin.Shape (Size)
+import           Data.Bin.Tree as Octree (size, toFraction)
 import           Data.Coerce
 import           Data.Functor.I
 import           Data.Functor.Interval hiding (range)

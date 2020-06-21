@@ -18,22 +18,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 -- | Sparse vectors, matrices, and volumes, represented as perfectly balanced binary trees.
 module Data.Bin.Tree
-( Shape(..)
-, S2
-, S4
-, S8
-, S16
-, S32
-, S64
-, S128
-, S256
-, S512
-, S1024
-, S2048
-, S4096
-, S8192
-, Size
-, Index(..)
+( Index(..)
 , fromIndex
 , toFraction
 , B(..)
@@ -82,6 +67,7 @@ import           Control.Carrier.State.Church
 import           Control.Lens (Iso', Lens', iso, set, (^.))
 import           Control.Lens.Indexed hiding (Indexed(..), indices)
 import           Data.Bin.Bit
+import           Data.Bin.Shape
 import           Data.Bits
 import           Data.Coerce
 import           Data.Functor.C
@@ -94,33 +80,6 @@ import           Linear.V1
 import           Linear.V2
 import           Linear.V3
 import           Linear.Vector (E(el))
-
--- | The shape of (non-empty) perfectly balanced binary trees.
---
--- This represents shapes of size 2ⁿ.
-data Shape
-  = S1         -- 1
-  | S2x !Shape -- 2 * n
-
-type S2 = 'S2x 'S1
-type S4 = 'S2x S2
-type S8 = 'S2x S4
-type S16 = 'S2x S8
-type S32 = 'S2x S16
-type S64 = 'S2x S32
-type S128 = 'S2x S64
-type S256 = 'S2x S128
-type S512 = 'S2x S256
-type S1024 = 'S2x S512
-type S2048 = 'S2x S1024
-type S4096 = 'S2x S2048
-type S8192 = 'S2x S4096
-
-
-type family Size (b :: Shape) :: Nat where
-  Size 'S1      = 1
-  Size ('S2x l) = 2 * Size l
-
 
 data Index i where
   IL :: Index 'S1
