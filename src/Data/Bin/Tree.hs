@@ -249,7 +249,7 @@ r_ = bin_._y
 -- Mnemonic for fields: bottom/top, left/right.
 newtype Quad a = Quad { getQuad :: V2 (V2 a) }
   deriving (Foldable, Functor, Generic, Generic1, Monoid, Semigroup, Traversable)
-  deriving (Applicative) via (Bin :.: Bin)
+  deriving (Applicative) via (V2 :.: V2)
 
 instance FoldableWithIndex (V2 Bit) Quad
 instance FunctorWithIndex (V2 Bit) Quad
@@ -307,7 +307,7 @@ tr_ = quad_._y._y
 -- Mnemonic for fields: bottom/top, left/right, near/far.
 newtype Oct a = Oct { getOct :: V2 (V2 (V2 a)) }
   deriving (Foldable, Functor, Generic, Generic1, Monoid, Semigroup, Traversable)
-  deriving (Applicative) via (Bin :.: Bin :.: Bin)
+  deriving (Applicative) via (V2 :.: V2 :.: V2)
 
 instance FoldableWithIndex (V3 Bit) Oct
 instance FunctorWithIndex (V3 Bit) Oct
