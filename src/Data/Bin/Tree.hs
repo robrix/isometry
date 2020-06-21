@@ -70,7 +70,7 @@ module Data.Bin.Tree
 , SparseUnfoldableWithIndex(..)
 , iunfoldr
 -- * Indexing
-, Indices(..)
+, BinaryIndexed(..)
 , Indexed(..)
 , SparseIndexed(..)
 , MutableIndexed(..)
