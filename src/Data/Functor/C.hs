@@ -24,3 +24,4 @@ instance (Applicative f, Applicative g) => Applicative (f :.: g) where
 
 instance (FoldableWithIndex i f, FoldableWithIndex j g) => FoldableWithIndex (i, j) (f :.: g) where
   ifoldMap f = ifoldMap (ifoldMap . fmap f . (,)) . getC
+  {-# INLINABLE ifoldMap #-}
