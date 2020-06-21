@@ -320,7 +320,7 @@ instance MutableIndexed (V2 Bit) Quad where
 instance Linear.Finite Quad where
   type Size Quad = 4
 
-  fromV (Linear.V v) = Quad (head (deinterleaveWith V2 (deinterleaveWith V2 (map (v V.!) [0..7]))))
+  fromV (Linear.V v) = Quad (head (deinterleaveWith V2 (deinterleaveWith V2 (map (v V.!) [0..3]))))
 
 quad :: a -> a -> a -> a -> Quad a
 quad bl br tl tr = Quad $ V2 (V2 bl br) (V2 tl tr)
