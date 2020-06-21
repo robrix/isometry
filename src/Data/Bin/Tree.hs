@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DeriveTraversable #-}
+{-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
@@ -279,13 +280,14 @@ r_ = field @"r"
 -- | Quaternary nodes.
 --
 -- Mnemonic for fields: bottom/top, left/right.
-newtype Quad a = Quad { getQuad :: (Bin :.: Bin) a }
-  deriving (Applicative, Foldable, Functor, Generic, Generic1, Monoid, Semigroup, Traversable)
+newtype Quad a = Quad { getQuad :: Bin (Bin a) }
+  deriving (Foldable, Functor, Generic, Generic1, Monoid, Semigroup, Traversable)
+  deriving (Applicative) via (Bin :.: Bin)
 
 instance FoldableWithIndex (V2 Bit) Quad
 instance FunctorWithIndex (V2 Bit) Quad
 instance TraversableWithIndex (V2 Bit) Quad where
-  itraverse f (Quad (C (Bin (Bin bl br) (Bin tl tr)))) = quad <$> f (V2 I0 I0) bl <*> f (V2 I1 I0) br <*> f (V2 I0 I1) tl <*> f (V2 I1 I1) tr
+  itraverse f (Quad (Bin (Bin bl br) (Bin tl tr))) = quad <$> f (V2 I0 I0) bl <*> f (V2 I1 I0) br <*> f (V2 I0 I1) tl <*> f (V2 I1 I1) tr
 
 instance UnfoldableWithIndex (V2 Bit) Quad where
   iunfoldA f = quad
@@ -313,7 +315,7 @@ instance Linear.Finite Quad where
   fromV (Linear.V v) = quad (v V.! 0) (v V.! 1) (v V.! 2) (v V.! 3)
 
 quad :: a -> a -> a -> a -> Quad a
-quad bl br tl tr = Quad . C $ Bin (Bin bl br) (Bin tl tr)
+quad bl br tl tr = Quad $ Bin (Bin bl br) (Bin tl tr)
 
 bl_ :: Lens' (Quad a) a
 bl_ = coerced.l_.l_
