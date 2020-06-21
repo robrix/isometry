@@ -473,6 +473,9 @@ instance BinaryIndexed V2 Quad where
 instance BinaryIndexed V3 Oct where
   indices = Oct (head (deinterleaveWith V2 (deinterleaveWith V2 (deinterleaveWith V2 (liftA3 V3 [I0, I1] [I0, I1] [I0, I1])))))
 
+instance BinaryIndexed V1 V2 where
+  indices = head (deinterleaveWith V2 (map V1 [I0, I1]))
+
 
 class Indexed i f | f -> i where
   (!) :: f a -> i -> a
