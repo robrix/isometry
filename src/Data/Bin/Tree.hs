@@ -347,11 +347,9 @@ newtype Oct a = Oct { getOct :: V2 (V2 (V2 a)) }
 instance FoldableWithIndex (V3 Bit) Oct
 instance FunctorWithIndex (V3 Bit) Oct
 instance TraversableWithIndex (V3 Bit) Oct where
-  itraverse f (Oct (V2 (V2 (V2 bln brn) (V2 tln trn)) (V2 (V2 blf brf) (V2 tlf trf)))) = oct
-    <$> f (V3 I0 I0 I0) bln <*> f (V3 I1 I0 I0) brn
-    <*> f (V3 I0 I1 I0) tln <*> f (V3 I1 I1 I0) trn
-    <*> f (V3 I0 I0 I1) blf <*> f (V3 I1 I0 I1) brf
-    <*> f (V3 I0 I1 I1) tlf <*> f (V3 I1 I1 I1) trf
+  itraverse f (Oct o) = Oct <$> itraverse (\ ix -> itraverse (\ iy -> let ixy = el ix.el iy in itraverse (\ iz -> f (indices^.ixy.el iz)))) o
+    where
+    indices = head (deinterleaveWith V2 (deinterleaveWith V2 (deinterleaveWith V2 (V3 <$> [I0, I1] <*> [I0, I1] <*> [I0, I1]))))
 
 instance UnfoldableWithIndex (V3 Bit) Oct where
   iunfoldA f = oct
