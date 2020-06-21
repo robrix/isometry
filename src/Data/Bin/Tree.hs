@@ -81,6 +81,7 @@ import           Control.Lens (Lens', iso, set, (^.))
 import           Control.Lens.Indexed hiding (Indexed(..))
 import           Data.Bin.Bit
 import           Data.Bits
+import           Data.Coerce
 import           Data.Functor.C
 import           Data.Proxy
 import qualified Data.Vector as V
@@ -269,8 +270,8 @@ instance R1 Bin where
 instance R2 Bin where
   _xy = bin_
 
-bin :: a -> a -> Bin a
-bin l r = Bin $ V2 l r
+bin :: forall a . a -> a -> Bin a
+bin = coerce (V2 :: a -> a -> V2 a)
 
 bin_ :: Lens' (Bin a) (V2 a)
 bin_ = iso getBin Bin
