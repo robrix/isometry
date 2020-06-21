@@ -390,7 +390,7 @@ instance MutableIndexed (V3 Bit) Oct where
 instance Linear.Finite Oct where
   type Size Oct = 8
 
-  fromV (Linear.V v) = oct (v V.! 0) (v V.! 1) (v V.! 2) (v V.! 3) (v V.! 4) (v V.! 5) (v V.! 6) (v V.! 7)
+  fromV (Linear.V v) = Oct (head (deinterleaveWith V2 (deinterleaveWith V2 (deinterleaveWith V2 (map (v V.!) [0..7])))))
 
 oct :: a -> a -> a -> a -> a -> a -> a -> a -> Oct a
 oct bln brn tln trn blf brf tlf trf = Oct $ V2 (V2 (V2 bln brn) (V2 tln trn)) (V2 (V2 blf brf) (V2 tlf trf))
