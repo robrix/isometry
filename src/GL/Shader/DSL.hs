@@ -396,6 +396,7 @@ class Vec expr where
   dext4 :: Coercible a Double => expr (V3 a) -> expr a -> expr (V4 a)
 
   norm :: expr (v a) -> expr a
+  normalize :: expr (v a) -> expr (v a)
   dot :: expr (v a) -> expr (v a) -> expr a
 
   (^*) :: expr (v a) -> expr a -> expr (v a)
@@ -575,6 +576,7 @@ instance Vec RExpr where
   dext4 = fn "dvec4"
 
   norm = fn "length"
+  normalize = fn "normalize"
   dot = fn "dot"
 
   (^*) = infix' "*"
