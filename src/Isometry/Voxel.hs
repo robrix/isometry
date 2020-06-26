@@ -1,5 +1,6 @@
 module Isometry.Voxel
 ( Voxel(..)
+, Side(..)
 ) where
 
 import           Data.Ix
