@@ -60,7 +60,7 @@ instance R3 Colour where
 
 instance R4 Colour where
   _w = _xyzw._w
-  _xyzw = iso getColour Colour ._xyzw
+  _xyzw = components._xyzw
 
 components :: Iso (Colour a) (Colour b) (V4 a) (V4 b)
 components = iso getColour Colour
@@ -118,13 +118,13 @@ newtype Packed = Packed { getPacked :: Word32 }
   deriving (Bits, Enum, Eq, Integral, Num, Ord, R.Random, Real, Show, Storable, Type, Uniform)
 
 bytes :: (RealFrac a, Fractional b) => Iso (Colour a) (Colour b) (V4 Word8) (V4 Word8)
-bytes = iso getColour Colour .iso to from
+bytes = components.iso to from
   where
   to = fmap (round . (* 255))
   from = fmap ((/ 255) . fromIntegral)
 
 packed :: (RealFrac a, Fractional b) => Iso (Colour a) (Colour b) Packed Packed
-packed = iso getColour Colour .iso pack unpack
+packed = components.iso pack unpack
   where
   pack (fmap (round . (* 255)) -> V4 r g b a) = shiftL r 24 .|. shiftL g 16 .|. shiftL b 8 .|. a :: Packed
   unpack i = (/ 255) . fromIntegral <$> V4 (0xff .&. shiftR i 24) (0xff .&. shiftR i 16) (0xff .&. shiftR i 8) (0xff .&. i)
