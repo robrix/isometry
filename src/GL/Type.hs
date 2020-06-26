@@ -8,6 +8,7 @@ import           Data.Int
 import           Data.Functor.Const
 import           Data.Functor.Identity
 import           Data.Functor.K
+import           Data.Word
 import qualified Foreign.Storable as S
 import           Graphics.GL.Core41
 import           Graphics.GL.Types
@@ -37,6 +38,9 @@ instance Type Int where
 
 instance Type Int32 where
   glType = GL_INT
+
+instance Type Word32 where
+  glType = GL_UNSIGNED_INT
 
 instance Type a => Type (V1 a) where
   glType = pure <$> glType
