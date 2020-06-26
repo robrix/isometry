@@ -19,6 +19,7 @@ import           Data.Functor.Const
 import           Data.Functor.Identity
 import           Data.Functor.K
 import           Data.Int
+import           Data.Word
 import qualified Foreign.Marshal.Utils.Lift as A
 import           Foreign.Ptr
 import           GHC.Stack
@@ -45,6 +46,10 @@ instance Uniform Int where
 instance Uniform Int32 where
   glslType = "int"
   uniform prog loc = runLiftIO . glProgramUniform1i prog loc
+
+instance Uniform Word32 where
+  glslType = "uint"
+  uniform prog loc = runLiftIO . glProgramUniform1ui prog loc
 
 instance Uniform Float where
   glslType = "float"
