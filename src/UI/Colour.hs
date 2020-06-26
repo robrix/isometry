@@ -24,6 +24,7 @@ module UI.Colour
 , _a
 , opaque
 , setClearColour
+, Packed(..)
 , packed
 , HasColour(..)
 ) where
@@ -105,6 +106,8 @@ opaque = set _a 1
 setClearColour :: (Real a, Has (Lift IO) sig m) => Colour a -> m ()
 setClearColour (fmap realToFrac -> Colour (V4 r g b a)) = runLiftIO $ glClearColor r g b a
 
+
+newtype Packed = Packed { getPacked :: Word32 }
 
 packed :: (RealFrac a, Fractional b) => Iso (Colour a) (Colour b) Word32 Word32
 packed = iso getColour Colour .iso pack unpack
