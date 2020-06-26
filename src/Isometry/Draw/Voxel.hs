@@ -196,7 +196,7 @@ shader :: D.Shader shader => shader U V Frag
 shader
   =   vertex (\ U{ matrix, origins, colours } V{ pos } IF{ colour2 } -> main $ do
     gl_Position .= matrix D.>* ext4 (pos + texelFetch origins (cast gl_InstanceID)D.^.D._xyz) 1
-    colour2 .= texelFetch colours (cast gl_InstanceID))
+    colour2 .= coerce @(_ (V4 Float)) (texelFetch colours (cast gl_InstanceID)))
 
   >>> fragment (\ _ IF{ colour2 } Frag{ fragColour } -> main $
     fragColour .= colour2)
