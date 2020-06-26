@@ -8,6 +8,7 @@
 {-# LANGUAGE ViewPatterns #-}
 module UI.Colour
 ( Colour(..)
+, components
 , black
 , white
 , transparent
@@ -60,6 +61,10 @@ instance R3 Colour where
 instance R4 Colour where
   _w = _xyzw._w
   _xyzw = iso getColour Colour ._xyzw
+
+components :: Iso (Colour a) (Colour b) (V4 a) (V4 b)
+components = iso getColour Colour
+
 
 black, white :: Num a => Colour a
 
