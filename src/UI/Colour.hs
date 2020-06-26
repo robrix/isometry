@@ -117,7 +117,7 @@ setClearColour (fmap realToFrac -> Colour (V4 r g b a)) = runLiftIO $ glClearCol
 newtype Packed = Packed { getPacked :: Word32 }
   deriving (Bits, Enum, Eq, Integral, Num, Ord, R.Random, Real, Show, Storable, Type, Uniform)
 
-bytes :: (RealFrac a, Fractional b) => Iso (Colour a) (Colour b) (V4 Word8) (V4 Word8)
+bytes :: (RealFrac a, Fractional b, Integral i) => Iso (Colour a) (Colour b) (V4 i) (V4 i)
 bytes = components.iso to from
   where
   to = fmap (round . (* 255))
