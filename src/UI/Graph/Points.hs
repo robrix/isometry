@@ -13,9 +13,11 @@ module UI.Graph.Points
 ) where
 
 import Control.Lens (Lens')
+import Data.Coerce
 import Data.Generics.Product.Fields
 import GHC.Generics (Generic)
 import GL.Shader.DSL
+import UI.Colour (Colour(..))
 import UI.Graph.Vertex
 
 shader :: Shader shader => shader U V Frag
@@ -30,7 +32,7 @@ shader
       discard
       (do
         mag <- let' "mag" (norm p * 2)
-        fragColour .= ext4 (colour ^. _xyz) (1 - mag ** 3 / 2)))
+        fragColour .= coerce @(_ (V4 Float)) (ext4 (colour ^. _xyz) (1 - mag ** 3 / 2))))
 
 
 data U v = U

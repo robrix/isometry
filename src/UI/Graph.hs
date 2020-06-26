@@ -30,7 +30,7 @@ import           UI.Graph.Vertex
 
 data Graph = Graph
   { matrix    :: !(M33 (ClipUnits Float))
-  , colour    :: !(V4 Float)
+  , colour    :: !(Colour Float)
   , array     :: !(Array (V I))
   , points    :: !(Program Points.U V Points.Frag)
   , lines     :: !(Program Lines.U  V Lines.Frag)
