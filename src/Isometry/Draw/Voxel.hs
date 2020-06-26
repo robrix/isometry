@@ -21,7 +21,7 @@ import           Control.Effect.Lens ((?=))
 import           Control.Effect.Lift
 import qualified Control.Effect.Reader.Labelled as Labelled
 import           Control.Effect.Trace
-import           Control.Lens (Lens', ifoldMap)
+import           Control.Lens (Lens', ifoldMap, (^.))
 import           Control.Monad.IO.Class.Lift
 import           Data.Bin.Shape (Size)
 import           Data.Bin.Tree as Octree (size, toFraction)
@@ -122,7 +122,7 @@ runDrawable m = do
   UI.loadingDrawable (\ drawable -> Drawable{ originsT, originsB, coloursT, coloursB, indicesB, drawable }) shader (coerce corners) m
 
 makeVoxels :: KnownNat (Size s) => Octree s Voxel -> [(V3 (Distance Float), UI.Colour Float)]
-makeVoxels (Octree o) = appEndo (ifoldMap (\ n (Voxel c) -> Endo ((fromIntegral . (+ offset) . fst . toFraction <$> n, c):)) o) []
+makeVoxels (Octree o) = appEndo (ifoldMap (\ n v -> Endo ((fromIntegral . (+ offset) . fst . toFraction <$> n, v^.UI.colour_):)) o) []
   where
   offset = negate (Octree.size o `div` 2)
 

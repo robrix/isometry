@@ -23,7 +23,7 @@ import           Control.Effect.Lens (use, (%=))
 import           Control.Effect.Lift
 import           Control.Effect.Profile
 import           Control.Effect.Trace
-import           Control.Lens (Lens', (^.))
+import           Control.Lens (Lens', (&), (.~), (^.))
 import           Control.Monad (when)
 import           Control.Monad.IO.Class.Lift
 import           Data.Bin.Shape (S128)
@@ -74,7 +74,7 @@ runFrame
   = evalEmpty
   . evalState Player{ angle = -pi/4 }
   . (\ m -> now >>= \ start -> evalState start m)
-  . runReader (Octree (tetra (\ v -> Voxel (ext (fromRational . uncurry (%) . toFraction <$> v) 1))))
+  . runReader (Octree (tetra (\ v -> Voxel 0 & UI.colour_ .~ ext (fromRational . uncurry (%) . toFraction <$> v) 1)))
   . runLabelled
   . Axis.runDrawable
   . Voxel.runDrawable
