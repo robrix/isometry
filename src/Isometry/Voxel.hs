@@ -9,13 +9,12 @@ module Isometry.Voxel
 import           Control.Lens.Iso (from)
 import           Data.Generics.Product.Fields
 import           Data.Ix
-import           Data.Word
 import           GHC.Generics (Generic)
 import qualified UI.Colour as UI
 
 -- FIXME: indicate which sides are present
 
-newtype Voxel = Voxel { colour :: Word32 }
+newtype Voxel = Voxel { colour :: UI.Packed }
   deriving (Generic)
 
 instance UI.HasColour Voxel where

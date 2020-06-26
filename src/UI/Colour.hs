@@ -29,17 +29,18 @@ module UI.Colour
 , HasColour(..)
 ) where
 
-import Control.Effect.Random
-import Control.Lens
-import Control.Monad.IO.Class.Lift
-import Data.Bits
-import Data.Generics.Product.Fields
-import Data.Word
-import Foreign.Storable (Storable)
-import GL.Type (Type)
-import GL.Uniform (Uniform)
-import Graphics.GL.Core41
-import Linear.V4
+import           Control.Effect.Random
+import           Control.Lens
+import           Control.Monad.IO.Class.Lift
+import           Data.Bits
+import           Data.Generics.Product.Fields
+import           Data.Word
+import           Foreign.Storable (Storable)
+import           GL.Type (Type)
+import           GL.Uniform (Uniform)
+import           Graphics.GL.Core41
+import           Linear.V4
+import qualified System.Random as R (Random)
 
 newtype Colour a = Colour { getColour :: V4 a }
   deriving (Eq, Floating, Foldable, Fractional, Functor, Num, Ord, Show, Storable, Traversable, Type, Uniform)
@@ -108,11 +109,12 @@ setClearColour (fmap realToFrac -> Colour (V4 r g b a)) = runLiftIO $ glClearCol
 
 
 newtype Packed = Packed { getPacked :: Word32 }
+  deriving (Bits, Enum, Eq, Integral, Num, Ord, R.Random, Real, Show, Storable, Type, Uniform)
 
-packed :: (RealFrac a, Fractional b) => Iso (Colour a) (Colour b) Word32 Word32
+packed :: (RealFrac a, Fractional b) => Iso (Colour a) (Colour b) Packed Packed
 packed = iso getColour Colour .iso pack unpack
   where
-  pack (fmap (round . (* 255)) -> V4 r g b a) = shiftL r 24 .|. shiftL g 16 .|. shiftL b 8 .|. a :: Word32
+  pack (fmap (round . (* 255)) -> V4 r g b a) = shiftL r 24 .|. shiftL g 16 .|. shiftL b 8 .|. a :: Packed
   unpack i = (/ 255) . fromIntegral <$> V4 (0xff .&. shiftR i 24) (0xff .&. shiftR i 16) (0xff .&. shiftR i 8) (0xff .&. i)
 
 
