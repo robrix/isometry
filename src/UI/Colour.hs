@@ -124,10 +124,10 @@ bytes = components.iso to from
   from = fmap ((/ 255) . fromIntegral)
 
 packed :: (RealFrac a, Fractional b) => Iso (Colour a) (Colour b) Packed Packed
-packed = components.iso pack unpack
+packed = bytes.iso pack unpack
   where
-  pack (fmap (round . (* 255)) -> V4 r g b a) = shiftL r 24 .|. shiftL g 16 .|. shiftL b 8 .|. a :: Packed
-  unpack i = (/ 255) . fromIntegral <$> V4 (0xff .&. shiftR i 24) (0xff .&. shiftR i 16) (0xff .&. shiftR i 8) (0xff .&. i)
+  pack (V4 r g b a) = shiftL r 24 .|. shiftL g 16 .|. shiftL b 8 .|. a :: Packed
+  unpack i = V4 (0xff .&. shiftR i 24) (0xff .&. shiftR i 16) (0xff .&. shiftR i 8) (0xff .&. i)
 
 
 class HasColour t where
