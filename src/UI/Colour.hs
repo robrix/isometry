@@ -123,5 +123,8 @@ class HasColour t where
   default colour_ :: HasField "colour" t t (Colour Float) (Colour Float) => Lens' t (Colour Float)
   colour_ = field @"colour"
 
+instance HasColour (Colour Float) where
+  colour_ = id
+
 instance HasColour (V4 Float) where
   colour_ = coerced
