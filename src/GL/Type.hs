@@ -4,10 +4,10 @@ module GL.Type
 ( Type(..)
 ) where
 
-import           Data.Int
 import           Data.Functor.Const
 import           Data.Functor.Identity
 import           Data.Functor.K
+import           Data.Int
 import           Data.Word
 import qualified Foreign.Storable as S
 import           Graphics.GL.Core41
