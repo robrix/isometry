@@ -1,11 +1,13 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DefaultSignatures #-}
+{-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ViewPatterns #-}
 module UI.Colour
-( Colour
+( Colour(..)
 , black
 , white
 , transparent
@@ -32,32 +34,51 @@ import Control.Monad.IO.Class.Lift
 import Data.Bits
 import Data.Generics.Product.Fields
 import Data.Word
+import Foreign.Storable (Storable)
+import GL.Type (Type)
+import GL.Uniform (Uniform)
 import Graphics.GL.Core41
 import Linear.V4
 
-type Colour = V4
+newtype Colour a = Colour { getColour :: V4 a }
+  deriving (Eq, Floating, Foldable, Fractional, Functor, Num, Ord, Show, Storable, Traversable, Type, Uniform)
+
+instance R1 Colour where
+  _x = _xyzw._x
+
+instance R2 Colour where
+  _y = _xyzw._y
+  _xy = _xyzw._xy
+
+instance R3 Colour where
+  _z = _xyzw._z
+  _xyz = _xyzw._xyz
+
+instance R4 Colour where
+  _w = _xyzw._w
+  _xyzw = iso getColour Colour ._xyzw
 
 black, white :: Num a => Colour a
 
-black = V4 0 0 0 1
-white = V4 1 1 1 1
+black = Colour $ V4 0 0 0 1
+white = Colour $ V4 1 1 1 1
 
 transparent :: Num a => Colour a
-transparent = V4 0 0 0 0
+transparent = Colour $ V4 0 0 0 0
 
 
 red, green, blue :: Num a => Colour a
 
-red = V4 1 0 0 1
-green = V4 0 1 0 1
-blue = V4 0 0 1 1
+red = Colour $ V4 1 0 0 1
+green = Colour $ V4 0 1 0 1
+blue = Colour $ V4 0 0 1 1
 
 
 cyan, magenta, yellow :: Num a => Colour a
 
-cyan = V4 0 1 1 1
-magenta = V4 1 0 1 1
-yellow = V4 1 1 0 1
+cyan = Colour $ V4 0 1 1 1
+magenta = Colour $ V4 1 0 1 1
+yellow = Colour $ V4 1 1 0 1
 
 
 uniformRGB :: (RealFrac a, Has Random sig m) => m (Colour a)
@@ -82,11 +103,11 @@ opaque = set _a 1
 
 
 setClearColour :: (Real a, Has (Lift IO) sig m) => Colour a -> m ()
-setClearColour (fmap realToFrac -> V4 r g b a) = runLiftIO $ glClearColor r g b a
+setClearColour (fmap realToFrac -> Colour (V4 r g b a)) = runLiftIO $ glClearColor r g b a
 
 
 packed :: (RealFrac a, Fractional b) => Iso (Colour a) (Colour b) Word32 Word32
-packed = iso pack unpack
+packed = iso getColour Colour .iso pack unpack
   where
   pack (fmap (round . (* 255)) -> V4 r g b a) = shiftL r 24 .|. shiftL g 16 .|. shiftL b 8 .|. a :: Word32
   unpack i = (/ 255) . fromIntegral <$> V4 (0xff .&. shiftR i 24) (0xff .&. shiftR i 16) (0xff .&. shiftR i 8) (0xff .&. i)
@@ -98,4 +119,4 @@ class HasColour t where
   colour_ = field @"colour"
 
 instance HasColour (V4 Float) where
-  colour_ = id
+  colour_ = coerced

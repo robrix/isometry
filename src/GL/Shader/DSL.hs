@@ -118,7 +118,7 @@ import           Linear.V4 (V4(..))
 import           Linear.Vector
 import           Prelude hiding (break)
 import           System.Random (Random)
-import           UI.Colour (Colour)
+import           UI.Colour (Colour(..))
 import           Unit
 import           Unit.Algebra (Div, Mul)
 import           Unit.Length (Length)
@@ -412,8 +412,8 @@ xyz x y z = v3 (V3 x y z)
 xyzw :: (Vec expr, GL.Row a) => expr a -> expr a -> expr a -> expr a -> expr (V4 a)
 xyzw x y z w = v4 (V4 x y z w)
 
-rgba :: (Vec expr, GL.Row a) => expr a -> expr a -> expr a -> expr a -> expr (V4 a)
-rgba r g b a = v4 (V4 r g b a)
+rgba :: (Vec expr, GL.Row a, forall x y . Coercible x y => Coercible (expr x) (expr y)) => expr a -> expr a -> expr a -> expr a -> expr (Colour a)
+rgba r g b a = coerce (v4 (V4 r g b a))
 
 class Vec expr => Mat expr where
   mkRotation :: expr (m (m (I a))) -> expr (Transform m a u v)

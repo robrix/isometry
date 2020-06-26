@@ -21,7 +21,7 @@ import Data.Generics.Product.Fields
 import Foreign.Storable (Storable)
 import GHC.Generics (Generic)
 import GL.Shader.DSL
-import UI.Colour as UI (Colour)
+import UI.Colour as UI (Colour(..))
 
 shader :: Shader shader => shader U V Frag
 shader
@@ -43,7 +43,7 @@ shader
     alphaR <- let' "alphaR" $ min' (abs (upperR - lowerR)) 2
 
     -- Average the energy over the pixels on either side
-    rgba <- let' "rgba" $ xyzw
+    rgba <- let' "rgba" . coerce $ xyzw
       ((alphaR ^. _x + alphaR ^. _y + alphaR ^. _z) / 6)
       ((alphaL ^. _y + alphaR ^. _x + alphaR ^. _y) / 6)
       ((alphaL ^. _x + alphaL ^. _y + alphaR ^. _x) / 6)

@@ -74,7 +74,7 @@ runFrame
   = evalEmpty
   . evalState Player{ angle = -pi/4 }
   . (\ m -> now >>= \ start -> evalState start m)
-  . runReader (Octree (tetra (\ v -> Voxel 0 & UI.colour_ .~ ext (fromRational . uncurry (%) . toFraction <$> v) 1)))
+  . runReader (Octree (tetra (\ v -> Voxel 0 & UI.colour_ .~ UI.Colour (ext (fromRational . uncurry (%) . toFraction <$> v) 1))))
   . runLabelled
   . Axis.runDrawable
   . Voxel.runDrawable
