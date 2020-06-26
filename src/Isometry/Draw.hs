@@ -64,7 +64,7 @@ runFrame
      )
   => ReaderC Voxel.Drawable
     (ReaderC Axis.Drawable
-    (Labelled World (ReaderC (Octree S128 Voxel))
+    (Labelled World (ReaderC (Octree S1024 Voxel))
     (StateC UTCTime
     (StateC Player
     (EmptyC
