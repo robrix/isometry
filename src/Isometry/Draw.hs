@@ -26,7 +26,7 @@ import           Control.Effect.Trace
 import           Control.Lens (Lens', (&), (.~), (^.))
 import           Control.Monad (when)
 import           Control.Monad.IO.Class.Lift
-import           Data.Bin.Shape (S128)
+import           Data.Bin.Shape
 import           Data.Bin.Tree (tetra, toFraction)
 import           Data.Bits ((.|.))
 import           Data.Functor.I
