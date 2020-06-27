@@ -1,5 +1,7 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE StandaloneDeriving #-}
 module Data.Bin.Octree
 ( Octree(..)
 ) where
@@ -14,3 +16,7 @@ data Octree s a where
     -> !(Octree s a) -> !(Octree s a)
     -> !(Octree s a) -> !(Octree s a)
     -> Octree ('S2x s) a
+
+deriving instance Foldable    (Octree s)
+deriving instance Functor     (Octree s)
+deriving instance Traversable (Octree s)
