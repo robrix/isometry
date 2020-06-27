@@ -67,7 +67,7 @@ draw
 draw = UI.using drawable $ do
   Drawable { originsT, coloursT, indicesB } <- ask
   v <- ask
-  world <- Labelled.ask @World
+  World { size } <- Labelled.ask @World
 
   setActiveTexture originsU
   bind (Just originsT)
@@ -79,7 +79,7 @@ draw = UI.using drawable $ do
   origins_ ?= originsU
   colours_ ?= coloursU
   bindBuffer indicesB $
-    drawElementsInstanced Triangles (0...length indices) (length world)
+    drawElementsInstanced Triangles (0...length indices) size
 
 
 runDrawable
@@ -130,7 +130,7 @@ runDrawable m = do
   UI.loadingDrawable (\ drawable -> Drawable{ originsT, originsB, coloursT, coloursB, indicesB, drawable }) shader (coerce corners) m
 
 makeVoxels :: KnownNat (Size s) => World s Voxel -> ([V3 (Distance Float)], [UI.Colour Float])
-makeVoxels (World o) = appEndo (ifoldMap (\ n (Voxel c) -> Endo (\ (!os, !cs) -> (fmap (fromIntegral . (+ offset) . fst . toFraction) n:os, c:cs))) o) ([], [])
+makeVoxels (World _ o) = appEndo (ifoldMap (\ n (Voxel c) -> Endo (\ (!os, !cs) -> (fmap (fromIntegral . (+ offset) . fst . toFraction) n:os, c:cs))) o) ([], [])
   where
   !offset = negate (Octree.size o `div` 2)
 
