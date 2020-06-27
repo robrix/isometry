@@ -10,10 +10,10 @@ module Isometry.World
 import Data.Bin.Tree
 import Unit.Length
 
-newtype World s a = World { voxels :: B Oct s a }
+newtype World s a = World { voxels :: Octree s a }
   deriving (Foldable, Functor)
 
-makeWorld :: B Oct s a -> World s a
+makeWorld :: Octree s a -> World s a
 makeWorld voxels = World { voxels }
 
 -- | 1 unit in world space is a semimetre.
