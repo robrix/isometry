@@ -1,24 +1,19 @@
-{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TypeApplications #-}
 module Isometry.Voxel
 ( Voxel(..)
 , Side(..)
 ) where
 
-import           Control.Lens.Iso (from)
-import           Data.Generics.Product.Fields
 import           Data.Ix
 import           GHC.Generics (Generic)
 import qualified UI.Colour as UI
 
 -- FIXME: indicate which sides are present
 
-newtype Voxel = Voxel { colour :: UI.Packed }
+newtype Voxel = Voxel { colour :: UI.Colour Float }
   deriving (Generic)
 
-instance UI.HasColour Voxel where
-  colour_ = field @"colour".from UI.packed
+instance UI.HasColour Voxel
 
 data Side
   = L
