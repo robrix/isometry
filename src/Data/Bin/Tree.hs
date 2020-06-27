@@ -150,10 +150,10 @@ instance (UnfoldableWithIndex (v Bit) f, Applicative v, UnfoldableWithIndex (v (
   iunfoldA f = makeB <$> iunfoldA (\ i -> iunfoldA (\ j -> f (IB <$> i <*> j)))
 
 instance (Applicative v, UnfoldableWithIndex (v Bit) f) => SparseUnfoldableWithIndex v (Index 'S1) (B 'S1 f) where
-  iunfoldSparse _ leaf = L (leaf (pure IL))
+  iunfoldSparseM _ leaf = L <$> leaf (pure IL)
 
 instance (Applicative v, UnfoldableWithIndex (v Bit) f, SparseUnfoldableWithIndex v (Index s) (B s f), Foldable f) => SparseUnfoldableWithIndex v (Index ('S2x s)) (B ('S2x s) f) where
-  iunfoldSparse branch leaf = b (run (iunfoldA (\ i -> pure $ if branch i then iunfoldSparse branch (leaf . (IB <$> i <*>)) else E)))
+  iunfoldSparseM branch leaf = b <$> iunfoldA (\ i -> branch i >>= \ b -> if b then iunfoldSparseM branch (leaf . (IB <$> i <*>)) else pure E)
 
 instance (Indexed (v Bit) f, Functor v) => SparseIndexed (v (Index s)) (B s f) where
   E     !? _ = Nothing
@@ -404,7 +404,7 @@ trf_ = oct_._y._y._y
 
 
 tetra :: SparseUnfoldableWithIndex V3 (Index s) (B s Oct) => (V3 (Index s) -> a) -> B s Oct a
-tetra = iunfoldSparse (fromBit . foldl' xor I0)
+tetra = run . iunfoldSparseM (pure . fromBit . foldl' xor I0) . (pure .)
 
 
 -- | Unfolding of finite dense structures with an index.
@@ -426,7 +426,7 @@ iunfoldr f a = run . evalState a . iunfoldA $ state . f
 
 -- | Unfolding of finite sparse structures with an index.
 class SparseUnfoldableWithIndex v i t | t -> v i where
-  iunfoldSparse :: (v Bit -> Bool) -> (v i -> a) -> t a
+  iunfoldSparseM :: Monad m => (v Bit -> m Bool) -> (v i -> m a) -> m (t a)
 
 
 class BinaryIndexed f t | t -> f where
