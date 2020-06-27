@@ -117,8 +117,8 @@ frame = timed $ do
 
   let turningL = input^.pressed_ SDL.KeycodeQ
       turningR = input^.pressed_ SDL.KeycodeE
-  when turningL $ angle_ %= \ angle -> wrap radians (angle + (-turnRate .*. dt))
-  when turningR $ angle_ %= \ angle -> wrap radians (angle +   turnRate .*. dt)
+  when turningL $ angle_ %= wrap radians . (+ (-turnRate .*. dt))
+  when turningR $ angle_ %= wrap radians . (+   turnRate .*. dt)
 
   angle <- use angle_
 
