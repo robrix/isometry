@@ -130,9 +130,9 @@ runDrawable m = do
   UI.loadingDrawable (\ drawable -> Drawable{ originsT, originsB, coloursT, coloursB, indicesB, drawable }) shader (coerce corners) m
 
 makeVoxels :: KnownNat (Size s) => World s Voxel -> ([V3 (Distance Float)], [UI.Colour Float])
-makeVoxels (World _ o) = appEndo (ifoldMap (\ n (Voxel c) -> Endo (\ (!os, !cs) -> (fmap (fromIntegral . (+ offset) . fst . toFraction) n:os, c:cs))) o) ([], [])
+makeVoxels World{ voxels } = appEndo (ifoldMap (\ n (Voxel c) -> Endo (\ (!os, !cs) -> (fmap (fromIntegral . (+ offset) . fst . toFraction) n:os, c:cs))) voxels) ([], [])
   where
-  !offset = negate (Octree.size o `div` 2)
+  !offset = negate (Octree.size voxels `div` 2)
 
 
 data Drawable = Drawable
