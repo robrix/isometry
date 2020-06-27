@@ -23,12 +23,6 @@ module Data.Bin.Tree
 , b
 , size
 , capacity
-, Bintree
-, Bin(..)
-, bin
-, bin_
-, l_
-, r_
 , Quadtree
 , Quad(..)
 , quad
@@ -70,7 +64,6 @@ import           Data.Bin.Bit
 import           Data.Bin.Index
 import           Data.Bin.Shape
 import           Data.Bits
-import           Data.Coerce
 import           Data.Foldable (foldl')
 import           Data.Functor.C
 import           Data.Monoid (Sum(..))
@@ -187,59 +180,6 @@ makeB a = B (getSum (foldMap (Sum . length) a)) a
 
 capacity :: forall s f a . (KnownNat (Linear.Size f), KnownNat (Size s)) => B f s a -> Integer
 capacity b = size b ^ (round (logBase @Float 2 (fromIntegral (natVal (Proxy @(Linear.Size f))))) :: Int)
-
-
-type Bintree = B Bin
-
--- | Binary nodes.
---
--- Mnemonic for fields: left/right.
-newtype Bin a = Bin { getBin :: V2 a }
-  deriving (Applicative, Foldable, Functor, Generic, Generic1, Monoid, Semigroup, Traversable)
-
-instance FoldableWithIndex (V1 Bit) Bin
-instance FunctorWithIndex (V1 Bit) Bin
-instance TraversableWithIndex (V1 Bit) Bin where
-  itraverse f (Bin b) = Bin <$> itraverse (\ ix -> f (indices^.el ix)) b
-    where
-    indices = head (deinterleaveWith V2 (V1 <$> [I0, I1]))
-
-instance UnfoldableWithIndex (V1 Bit) Bin where
-  iunfoldA f = bin
-    <$> f (V1 I0)
-    <*> f (V1 I1)
-
-instance Indexed (V1 Bit) Bin where
-  b ! i = case i of
-    V1 I0 -> b^.l_
-    V1 I1 -> b^.r_
-
-instance MutableIndexed (V1 Bit) Bin where
-  insert (V1 I0) = set l_
-  insert (V1 I1) = set r_
-
-instance Linear.Finite Bin where
-  type Size Bin = 2
-
-  fromV (Linear.V v) = Bin (head (deinterleaveWith V2 (map (v V.!) [0..1])))
-
-instance R1 Bin where
-  _x = _xy._x
-
-instance R2 Bin where
-  _xy = bin_
-
-bin :: forall a . a -> a -> Bin a
-bin = coerce (V2 :: a -> a -> V2 a)
-
-bin_ :: Iso' (Bin a) (V2 a)
-bin_ = iso getBin Bin
-
-l_ :: Lens' (Bin a) a
-l_ = bin_._x
-
-r_ :: Lens' (Bin a) a
-r_ = bin_._y
 
 
 type Quadtree = B Quad
@@ -414,9 +354,6 @@ class SparseUnfoldableWithIndex v i t | t -> v i where
 
 class BinaryIndexed f t | t -> f where
   indices :: t (f Bit)
-
-instance BinaryIndexed V1 Bin where
-  indices = Bin (head (deinterleaveWith V2 (map V1 [I0, I1])))
 
 instance BinaryIndexed V2 Quad where
   indices = Quad (head (deinterleaveWith V2 (deinterleaveWith V2 (liftA2 V2 [I0, I1] [I0, I1]))))
