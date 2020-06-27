@@ -143,7 +143,7 @@ coloursU :: TextureUnit Index (UI.Colour Float)
 coloursU = TextureUnit 1
 
 corners :: [V3 (Distance Float)]
-corners = map ((* 0.5) . (+ 1)) $ V3 <$> [-1, 1] <*> [-1, 1] <*> [-1, 1]
+corners = V3 <$> [0, 1] <*> [0, 1] <*> [0, 1]
 
 indices :: [Word32]
 indices =
