@@ -47,6 +47,10 @@ instance Uniform Int32 where
   glslType = "int"
   uniform prog loc = runLiftIO . glProgramUniform1i prog loc
 
+instance Uniform Word where
+  glslType = "uint"
+  uniform prog loc = runLiftIO . glProgramUniform1ui prog loc . fromIntegral
+
 instance Uniform Word32 where
   glslType = "uint"
   uniform prog loc = runLiftIO . glProgramUniform1ui prog loc
