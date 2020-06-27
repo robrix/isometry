@@ -403,17 +403,17 @@ trf_ :: Lens' (Oct a) a
 trf_ = oct_._y._y._y
 
 
-class UnfoldB s where
-  unfoldB :: (Foldable f, UnfoldableWithIndex (v Bit) f, Applicative v) => (v Bit -> Bool) -> (v (Index s) -> a) -> B s f a
+class UnfoldableWithIndex' v i t | t -> v i where
+  unfoldB :: (v Bit -> Bool) -> (v i -> a) -> t a
 
-instance UnfoldB 'S1 where
+instance (Applicative v, UnfoldableWithIndex (v Bit) f) => UnfoldableWithIndex' v (Index 'S1) (B 'S1 f) where
   unfoldB _ leaf = L (leaf (pure IL))
 
-instance UnfoldB s => UnfoldB ('S2x s) where
+instance (Applicative v, UnfoldableWithIndex (v Bit) f, UnfoldableWithIndex' v (Index s) (B s f), Foldable f) => UnfoldableWithIndex' v (Index ('S2x s)) (B ('S2x s) f) where
   unfoldB branch leaf = b (run (iunfoldA (\ i -> pure $ if branch i then unfoldB branch (leaf . (IB <$> i <*>)) else E)))
 
 
-tetra :: UnfoldB s => (V3 (Index s) -> a) -> B s Oct a
+tetra :: UnfoldableWithIndex' V3 (Index s) (B s Oct) => (V3 (Index s) -> a) -> B s Oct a
 tetra = unfoldB (fromBit . foldl' xor I0)
 
 
