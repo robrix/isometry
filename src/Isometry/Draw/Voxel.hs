@@ -100,7 +100,11 @@ runDrawable m = do
   coloursB <- gen1 @(Buffer 'Buffer.Texture (UI.Colour Float))
   indicesB <- gen1 @(Buffer 'ElementArray Word32)
 
-  (origins, colours) <- Labelled.asks @World (unzip . makeVoxels)
+  (origins, colours) <- measure "make voxels" $ do
+    (origins, colours) <- Labelled.asks @World (unzip . makeVoxels)
+    trace ("origins length: " <> show (length origins))
+    trace ("colours length: " <> show (length colours))
+    pure (origins, colours)
 
   measure "alloc & copy origins" . bindBuffer originsB $ do
     realloc @'Buffer.Texture (length origins) Static Read
