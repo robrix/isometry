@@ -60,7 +60,7 @@ draw
      , Has (Lift IO) sig m
      , Has (Reader Drawable) sig m
      , Has (Reader View) sig m
-     , Labelled.HasLabelled World (Reader (Octree s Voxel)) sig m
+     , Labelled.HasLabelled World (Reader (World s Voxel)) sig m
      , HasCallStack
      )
   => m ()
@@ -88,7 +88,7 @@ runDrawable
      , Has (Lift IO) sig m
      , Has Profile sig m
      , Has Trace sig m
-     , Labelled.HasLabelled World (Reader (Octree s Voxel)) sig m
+     , Labelled.HasLabelled World (Reader (World s Voxel)) sig m
      , KnownNat (Size s)
      , HasCallStack
      )
@@ -129,8 +129,8 @@ runDrawable m = do
 
   UI.loadingDrawable (\ drawable -> Drawable{ originsT, originsB, coloursT, coloursB, indicesB, drawable }) shader (coerce corners) m
 
-makeVoxels :: KnownNat (Size s) => Octree s Voxel -> ([V3 (Distance Float)], [UI.Colour Float])
-makeVoxels (Octree o) = appEndo (ifoldMap (\ n (Voxel c) -> Endo (\ (!os, !cs) -> (fmap (fromIntegral . (+ offset) . fst . toFraction) n:os, c:cs))) o) ([], [])
+makeVoxels :: KnownNat (Size s) => World s Voxel -> ([V3 (Distance Float)], [UI.Colour Float])
+makeVoxels (World o) = appEndo (ifoldMap (\ n (Voxel c) -> Endo (\ (!os, !cs) -> (fmap (fromIntegral . (+ offset) . fst . toFraction) n:os, c:cs))) o) ([], [])
   where
   !offset = negate (Octree.size o `div` 2)
 

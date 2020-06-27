@@ -65,7 +65,7 @@ runFrame
      )
   => ReaderC Voxel.Drawable
     (ReaderC Axis.Drawable
-    (Labelled World (ReaderC (Octree S128 Voxel))
+    (Labelled World (ReaderC (World S128 Voxel))
     (StateC UTCTime
     (StateC Player
     (EmptyC
@@ -77,7 +77,7 @@ runFrame
   . (\ m -> now >>= \ start -> evalState start m)
   . (\ m -> do
     world <- measure "build" $ do
-      let world = Octree (tetra (\ v -> Voxel 0 & UI.colour_ .~ UI.Colour (ext (fromRational . uncurry (%) . toFraction <$> v) 1)))
+      let world = World (tetra (\ v -> Voxel 0 & UI.colour_ .~ UI.Colour (ext (fromRational . uncurry (%) . toFraction <$> v) 1)))
       world <$ trace ("world length: " <> show (length world))
     runReader world m)
   . runLabelled
@@ -104,7 +104,7 @@ frame
      , Has (State Input) sig m
      , Has (State Player) sig m
      , Has (State UTCTime) sig m
-     , HasLabelled World (Reader (Octree s Voxel)) sig m
+     , HasLabelled World (Reader (World s Voxel)) sig m
      , HasCallStack
      )
   => m ()
