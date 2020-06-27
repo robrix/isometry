@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingVia #-}
@@ -129,9 +130,8 @@ runDrawable m = do
   UI.loadingDrawable (\ drawable -> Drawable{ originsT, originsB, coloursT, coloursB, indicesB, drawable }) shader (coerce corners) m
 
 makeVoxels :: KnownNat (Size s) => Octree s Voxel -> ([V3 (Distance Float)], [UI.Colour Float])
-makeVoxels (Octree o) = (appEndo os [], appEndo cs [])
+makeVoxels (Octree o) = appEndo (ifoldMap (\ n v -> Endo (\ (!os, !cs) -> (fmap (fromIntegral . (+ offset) . fst . toFraction) n:os, v^.UI.colour_:cs))) o) ([], [])
   where
-  (os, cs) = ifoldMap (\ n v -> (Endo ((fromIntegral . (+ offset) . fst . toFraction <$> n):), Endo (v^.UI.colour_:))) o
   offset = negate (Octree.size o `div` 2)
 
 
