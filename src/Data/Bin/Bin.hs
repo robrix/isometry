@@ -15,15 +15,17 @@ module Data.Bin.Bin
 , Bintree
 ) where
 
-import Control.Lens (Iso', Lens')
-import Control.Lens.Indexed
+import Control.Lens (Iso', Lens', iso, set, (^.))
+import Control.Lens.Indexed hiding (Indexed)
 import Data.Bin.Bit
 import Data.Bin.Tree
+import Data.Coerce (coerce)
 import Data.Vector as V ((!))
 import GHC.Generics (Generic, Generic1)
 import Linear.V as Linear
 import Linear.V1
 import Linear.V2
+import Linear.Vector
 
 -- | Binary nodes.
 --
