@@ -93,7 +93,7 @@ runDrawable
 runDrawable m = do
   originsT <- gen1 @(Texture 'TextureBuffer)
   coloursT <- gen1 @(Texture 'TextureBuffer)
-  originsB <- gen1 @(Buffer 'Buffer.Texture (V4 (Distance Float)))
+  originsB <- gen1 @(Buffer 'Buffer.Texture (V3 (Distance Float)))
   coloursB <- gen1 @(Buffer 'Buffer.Texture (UI.Colour Float))
   indicesB <- gen1 @(Buffer 'ElementArray Word32)
 
@@ -101,7 +101,7 @@ runDrawable m = do
 
   bindBuffer originsB $ do
     realloc @'Buffer.Texture (length origins) Static Read
-    copy @'Buffer.Texture 0 (map (\ (V3 x y z) -> V4 x y z 0) origins)
+    copy @'Buffer.Texture 0 origins
 
   bindBuffer coloursB $ do
     realloc @'Buffer.Texture (length colours) Static Read
@@ -113,7 +113,7 @@ runDrawable m = do
 
   setActiveTexture originsU
   bind (Just originsT)
-  runLiftIO $ glTexBuffer GL_TEXTURE_BUFFER GL_RGBA32F (unBuffer originsB)
+  runLiftIO $ glTexBuffer GL_TEXTURE_BUFFER GL_RGB32F (unBuffer originsB)
 
   setActiveTexture coloursU
   bind (Just coloursT)
@@ -129,14 +129,14 @@ makeVoxels (Octree o) = appEndo (ifoldMap (\ n v -> Endo ((fromIntegral . (+ off
 
 data Drawable = Drawable
   { originsT :: Texture 'TextureBuffer
-  , originsB :: Buffer 'Buffer.Texture (V4 (Distance Float))
+  , originsB :: Buffer 'Buffer.Texture (V3 (Distance Float))
   , coloursT :: Texture 'TextureBuffer
   , coloursB :: Buffer 'Buffer.Texture (UI.Colour Float)
   , indicesB :: Buffer 'ElementArray Word32
   , drawable :: UI.Drawable U V Frag
   }
 
-originsU :: TextureUnit Index (V4 (Distance Float))
+originsU :: TextureUnit Index (V3 (Distance Float))
 originsU = TextureUnit 0
 
 coloursU :: TextureUnit Index (UI.Colour Float)
@@ -204,7 +204,7 @@ shader
 
 data U v = U
   { matrix  :: v (Transform V4 Float Distance ClipUnits)
-  , origins :: v (TextureUnit Index (V4 (Distance Float)))
+  , origins :: v (TextureUnit Index (V3 (Distance Float)))
   , colours :: v (TextureUnit Index (UI.Colour Float))
   }
   deriving (Generic)
@@ -214,7 +214,7 @@ instance D.Vars U
 matrix_ :: Lens' (U v) (v (Transform V4 Float Distance ClipUnits))
 matrix_ = field @"matrix"
 
-origins_ :: Lens' (U v) (v (TextureUnit Index (V4 (Distance Float))))
+origins_ :: Lens' (U v) (v (TextureUnit Index (V3 (Distance Float))))
 origins_ = field @"origins"
 
 colours_ :: Lens' (U v) (v (TextureUnit Index (UI.Colour Float)))
