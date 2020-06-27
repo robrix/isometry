@@ -39,6 +39,9 @@ instance Type Int where
 instance Type Int32 where
   glType = GL_INT
 
+instance Type Word where
+  glType = GL_UNSIGNED_INT
+
 instance Type Word32 where
   glType = GL_UNSIGNED_INT
 
