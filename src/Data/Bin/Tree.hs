@@ -70,6 +70,7 @@ import           Data.Bin.Bit
 import           Data.Bin.Shape
 import           Data.Bits
 import           Data.Coerce
+import           Data.Foldable (foldl')
 import           Data.Functor.C
 import           Data.Proxy
 import qualified Data.Vector as V
@@ -395,7 +396,7 @@ instance UnfoldB s => UnfoldB ('S2x s) where
 
 
 tetra :: UnfoldB s => (V3 (Index s) -> a) -> B s Oct a
-tetra = unfoldB (fromBit . foldl1 xor)
+tetra = unfoldB (fromBit . foldl' xor I0)
 
 
 -- | Unfolding of finite dense structures with an index.
