@@ -56,11 +56,10 @@ instance FoldableWithIndex (V3 (Index s)) (Octree s) where
   ifoldMap f = \case
     E   -> mempty
     L a -> f (pure IL) a
-    B _
-      lbf rbf
-      ltf rtf
-      lbn rbn
-      ltn rtn
+    B _ lbf rbf
+        ltf rtf
+        lbn rbn
+        ltn rtn
       -> ifoldMap (f . (IB <$> V3 I0 I0 I0 <*>)) lbf <> ifoldMap (f . (IB <$> V3 I1 I0 I0 <*>)) rbf
       <> ifoldMap (f . (IB <$> V3 I0 I1 I0 <*>)) ltf <> ifoldMap (f . (IB <$> V3 I1 I1 I0 <*>)) rtf
       <> ifoldMap (f . (IB <$> V3 I0 I0 I1 <*>)) lbn <> ifoldMap (f . (IB <$> V3 I1 I0 I1 <*>)) rbn
