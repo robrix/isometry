@@ -26,11 +26,13 @@ module Data.Bin.Tree
 , b
 , size
 , capacity
+, Bintree
 , Bin(..)
 , bin
 , bin_
 , l_
 , r_
+, Quadtree
 , Quad(..)
 , quad
 , quad_
@@ -38,6 +40,7 @@ module Data.Bin.Tree
 , br_
 , tl_
 , tr_
+, Octree
 , Oct(..)
 , oct
 , oct_
@@ -212,6 +215,8 @@ capacity :: forall s f a . (KnownNat (Linear.Size f), KnownNat (Size s)) => B f 
 capacity b = size b ^ (round (logBase @Float 2 (fromIntegral (natVal (Proxy @(Linear.Size f))))) :: Int)
 
 
+type Bintree = B Bin
+
 -- | Binary nodes.
 --
 -- Mnemonic for fields: left/right.
@@ -262,6 +267,8 @@ l_ = bin_._x
 r_ :: Lens' (Bin a) a
 r_ = bin_._y
 
+
+type Quadtree = B Quad
 
 -- | Quaternary nodes.
 --
@@ -320,6 +327,8 @@ tl_ = quad_._y._x
 tr_ :: Lens' (Quad a) a
 tr_ = quad_._y._y
 
+
+type Octree = B Oct
 
 -- | Octonary nodes.
 --
