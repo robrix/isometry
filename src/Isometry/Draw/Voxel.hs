@@ -7,6 +7,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeApplications #-}
 module Isometry.Draw.Voxel
@@ -19,6 +20,7 @@ import           Control.Carrier.Reader
 import           Control.Effect.Finally
 import           Control.Effect.Lens ((?=))
 import           Control.Effect.Lift
+import           Control.Effect.Profile
 import qualified Control.Effect.Reader.Labelled as Labelled
 import           Control.Effect.Trace
 import           Control.Lens (Lens', ifoldMap, (^.))
@@ -83,6 +85,7 @@ runDrawable
   :: ( Has Check sig m
      , Has Finally sig m
      , Has (Lift IO) sig m
+     , Has Profile sig m
      , Has Trace sig m
      , Labelled.HasLabelled World (Reader (Octree s Voxel)) sig m
      , KnownNat (Size s)
@@ -99,15 +102,15 @@ runDrawable m = do
 
   (origins, colours) <- Labelled.asks @World (unzip . makeVoxels)
 
-  bindBuffer originsB $ do
+  measure "alloc & copy origins" . bindBuffer originsB $ do
     realloc @'Buffer.Texture (length origins) Static Read
     copy @'Buffer.Texture 0 origins
 
-  bindBuffer coloursB $ do
+  measure "alloc & copy colours" . bindBuffer coloursB $ do
     realloc @'Buffer.Texture (length colours) Static Read
     copy @'Buffer.Texture 0 colours
 
-  bindBuffer indicesB $ do
+  measure "alloc & copy indices" . bindBuffer indicesB $ do
     realloc @'Buffer.ElementArray (length indices) Static Read
     copy @'Buffer.ElementArray 0 indices
 
