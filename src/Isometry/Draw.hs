@@ -27,7 +27,8 @@ import           Control.Lens (Lens', (&), (.~), (^.))
 import           Control.Monad (when)
 import           Control.Monad.IO.Class.Lift
 import           Data.Bin.Shape
-import           Data.Bin.Tree (tetra, toFraction)
+import           Data.Bin.Index (toFraction)
+import           Data.Bin.Tree (tetra)
 import           Data.Bits ((.|.))
 import           Data.Functor.I
 import           Data.Functor.Interval hiding (range)

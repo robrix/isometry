@@ -18,10 +18,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 -- | Sparse vectors, matrices, and volumes, represented as perfectly balanced binary trees.
 module Data.Bin.Tree
-( Index(..)
-, fromIndex
-, toFraction
-, B(..)
+( B(..)
 , isE
 , b
 , size
@@ -70,6 +67,7 @@ import           Control.Carrier.State.Church
 import           Control.Lens (Iso', Lens', iso, set, (^.))
 import           Control.Lens.Indexed hiding (Indexed(..), indices)
 import           Data.Bin.Bit
+import           Data.Bin.Index
 import           Data.Bin.Shape
 import           Data.Bits
 import           Data.Coerce
@@ -85,27 +83,6 @@ import           Linear.V1
 import           Linear.V2
 import           Linear.V3
 import           Linear.Vector (E(el))
-
-data Index i where
-  IL :: Index 'S1
-  IB :: Bit -> Index i -> Index ('S2x i)
-
-deriving instance Eq   (Index i)
-deriving instance Ord  (Index i)
-deriving instance Show (Index i)
-
-fromIndex :: Index ('S2x i) -> (Bit, Index i)
-fromIndex (IB b i) = (b, i)
-
-toFraction :: Index i -> (Integer, Integer)
-toFraction = go
-  where
-  go :: Index i -> (Integer, Integer)
-  go IL       = (0, 1)
-  go (IB b i) = let (n, d) = go i in case b of
-    I0 -> (n, d * 2)
-    I1 -> (n + d, d * 2)
-
 
 data B f s a where
   E :: B f s a
