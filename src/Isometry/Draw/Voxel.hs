@@ -132,7 +132,7 @@ runDrawable m = do
 makeVoxels :: KnownNat (Size s) => Octree s Voxel -> ([V3 (Distance Float)], [UI.Colour Float])
 makeVoxels (Octree o) = appEndo (ifoldMap (\ n v -> Endo (\ (!os, !cs) -> (fmap (fromIntegral . (+ offset) . fst . toFraction) n:os, v^.UI.colour_:cs))) o) ([], [])
   where
-  offset = negate (Octree.size o `div` 2)
+  !offset = negate (Octree.size o `div` 2)
 
 
 data Drawable = Drawable
