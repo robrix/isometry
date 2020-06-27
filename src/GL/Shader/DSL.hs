@@ -504,6 +504,8 @@ class ( Ref ref
   (!) :: (expr :.: []) a -> expr Int -> expr a
   infixl 9 !
 
+  bitfieldExtract :: expr a -> expr Int -> expr Int -> expr a
+
 cast :: forall a b expr ref . (Expr ref expr, GL.Uniform b) => expr a -> expr b
 cast = cast'' . K
 
@@ -627,6 +629,8 @@ instance Expr RRef RExpr where
   texelFetch = fn "texelFetch"
 
   (!) (C v) n = RExpr $ renderExpr v <> brackets (renderExpr n)
+
+  bitfieldExtract = fn "bitfieldExtract"
 
 instance VertexExpr RRef RExpr where
   gl_InstanceID = RExpr $ pretty "gl_InstanceID"
