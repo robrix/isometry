@@ -67,7 +67,7 @@ draw
 draw = UI.using drawable $ do
   Drawable { originsT, coloursT, indicesB } <- ask
   v <- ask
-  World { size } <- Labelled.ask @World
+  world <- Labelled.ask @World
 
   setActiveTexture originsU
   bind (Just originsT)
@@ -79,7 +79,7 @@ draw = UI.using drawable $ do
   origins_ ?= originsU
   colours_ ?= coloursU
   bindBuffer indicesB $
-    drawElementsInstanced Triangles (0...length indices) size
+    drawElementsInstanced Triangles (0...length indices) (length world)
 
 
 runDrawable
