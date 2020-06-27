@@ -20,7 +20,8 @@ import Linear.V3
 data Octree s a where
   E :: Octree s a
   L :: !a -> Octree 'S1 a
-  B :: !(Octree s a) -> !(Octree s a)
+  B :: {-# UNPACK #-} !Int
+    -> !(Octree s a) -> !(Octree s a)
     -> !(Octree s a) -> !(Octree s a)
     -> !(Octree s a) -> !(Octree s a)
     -> !(Octree s a) -> !(Octree s a)
@@ -34,7 +35,8 @@ instance FoldableWithIndex (V3 (Index s)) (Octree s) where
   ifoldMap f = \case
     E   -> mempty
     L a -> f (pure IL) a
-    B lbf rbf
+    B _
+      lbf rbf
       ltf rtf
       lbn rbn
       ltn rtn
@@ -47,10 +49,25 @@ instance SparseUnfoldableWithIndex V3 (Index 'S1) (Octree 'S1) where
   iunfoldSparseM _ leaf = L <$> leaf (pure IL)
 
 instance SparseUnfoldableWithIndex V3 (Index s) (Octree s) => SparseUnfoldableWithIndex V3 (Index ('S2x s)) (Octree ('S2x s)) where
-  iunfoldSparseM branch leaf = B
+  iunfoldSparseM branch leaf = makeB
     <$> go (V3 I0 I0 I0) <*> go (V3 I1 I0 I0)
     <*> go (V3 I0 I1 I0) <*> go (V3 I1 I1 I0)
     <*> go (V3 I0 I0 I1) <*> go (V3 I1 I0 I1)
     <*> go (V3 I0 I1 I1) <*> go (V3 I1 I1 I1)
     where
     go i = branch i >>= \ b -> if b then iunfoldSparseM branch (leaf . (IB <$> i <*>)) else pure E
+
+makeB :: Octree s a -> Octree s a -> Octree s a -> Octree s a -> Octree s a -> Octree s a -> Octree s a -> Octree s a -> Octree ('S2x s) a
+makeB
+  lbf rbf
+  ltf rtf
+  lbn rbn
+  ltn rtn
+  = B (length lbf + length rbf
+    +  length ltf + length rtf
+    +  length lbn + length rbn
+    +  length ltn + length rtn)
+    lbf rbf
+    ltf rtf
+    lbn rbn
+    ltn rtn
