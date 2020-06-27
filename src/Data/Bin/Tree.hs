@@ -149,11 +149,11 @@ instance (UnfoldableWithIndex (v Bit) f, Applicative v) => UnfoldableWithIndex (
 instance (UnfoldableWithIndex (v Bit) f, Applicative v, UnfoldableWithIndex (v (Index s)) (B s f), Foldable f) => UnfoldableWithIndex (v (Index ('S2x s))) (B ('S2x s) f) where
   iunfoldA f = makeB <$> iunfoldA (\ i -> iunfoldA (\ j -> f (IB <$> i <*> j)))
 
-instance (UnfoldableWithIndex (v Bit) f, Applicative v) => SparseUnfoldableWithIndex (v (Index 'S1)) (B 'S1 f) where
-  iunfoldSparseA f = maybe E L <$> f (pure IL)
+instance (Applicative v, UnfoldableWithIndex (v Bit) f) => SparseUnfoldableWithIndex v (Index 'S1) (B 'S1 f) where
+  iunfoldSparse _ leaf = L (leaf (pure IL))
 
-instance (Foldable f, UnfoldableWithIndex (v Bit) f, Applicative v, SparseUnfoldableWithIndex (v (Index s)) (B s f)) => SparseUnfoldableWithIndex (v (Index ('S2x s))) (B ('S2x s) f) where
-  iunfoldSparseA f = b <$> iunfoldA (\ i -> iunfoldSparseA (\ j -> f (IB <$> i <*> j)))
+instance (Applicative v, UnfoldableWithIndex (v Bit) f, SparseUnfoldableWithIndex v (Index s) (B s f), Foldable f) => SparseUnfoldableWithIndex v (Index ('S2x s)) (B ('S2x s) f) where
+  iunfoldSparse branch leaf = b (run (iunfoldA (\ i -> pure $ if branch i then iunfoldSparse branch (leaf . (IB <$> i <*>)) else E)))
 
 instance (Indexed (v Bit) f, Functor v) => SparseIndexed (v (Index s)) (B s f) where
   E     !? _ = Nothing
@@ -403,18 +403,8 @@ trf_ :: Lens' (Oct a) a
 trf_ = oct_._y._y._y
 
 
-class UnfoldableWithIndex' v i t | t -> v i where
-  unfoldB :: (v Bit -> Bool) -> (v i -> a) -> t a
-
-instance (Applicative v, UnfoldableWithIndex (v Bit) f) => UnfoldableWithIndex' v (Index 'S1) (B 'S1 f) where
-  unfoldB _ leaf = L (leaf (pure IL))
-
-instance (Applicative v, UnfoldableWithIndex (v Bit) f, UnfoldableWithIndex' v (Index s) (B s f), Foldable f) => UnfoldableWithIndex' v (Index ('S2x s)) (B ('S2x s) f) where
-  unfoldB branch leaf = b (run (iunfoldA (\ i -> pure $ if branch i then unfoldB branch (leaf . (IB <$> i <*>)) else E)))
-
-
-tetra :: UnfoldableWithIndex' V3 (Index s) (B s Oct) => (V3 (Index s) -> a) -> B s Oct a
-tetra = unfoldB (fromBit . foldl' xor I0)
+tetra :: SparseUnfoldableWithIndex V3 (Index s) (B s Oct) => (V3 (Index s) -> a) -> B s Oct a
+tetra = iunfoldSparse (fromBit . foldl' xor I0)
 
 
 -- | Unfolding of finite dense structures with an index.
@@ -435,8 +425,8 @@ iunfoldr :: UnfoldableWithIndex i f => (i -> s -> (s, b)) -> s -> f b
 iunfoldr f a = run . evalState a . iunfoldA $ state . f
 
 -- | Unfolding of finite sparse structures with an index.
-class UnfoldableWithIndex i f => SparseUnfoldableWithIndex i f where
-  iunfoldSparseA :: Applicative m => (i -> m (Maybe b)) -> m (f b)
+class SparseUnfoldableWithIndex v i t | t -> v i where
+  iunfoldSparse :: (v Bit -> Bool) -> (v i -> a) -> t a
 
 
 class BinaryIndexed f t | t -> f where
