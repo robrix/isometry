@@ -7,7 +7,7 @@ module Isometry.World
 , Distance
 ) where
 
-import Data.Bin.Tree
+import Data.Bin.Octree
 import Unit.Length
 
 newtype World s a = World { voxels :: Octree s a }
