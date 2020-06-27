@@ -208,9 +208,6 @@ b f | all isE f = E
 makeB :: Foldable f => f (B f s a) ->  B f ('S2x s) a
 makeB a = B (getSum (foldMap (Sum . length) a)) a
 
-size :: forall s f a . KnownNat (Size s) => B f s a -> Integer
-size _ = natVal (Proxy @(Size s))
-
 capacity :: forall s f a . (KnownNat (Linear.Size f), KnownNat (Size s)) => B f s a -> Integer
 capacity b = size b ^ (round (logBase @Float 2 (fromIntegral (natVal (Proxy @(Linear.Size f))))) :: Int)
 

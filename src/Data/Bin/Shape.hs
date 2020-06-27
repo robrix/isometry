@@ -1,5 +1,8 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NoStarIsType #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
@@ -19,8 +22,10 @@ module Data.Bin.Shape
 , S4096
 , S8192
 , Size
+, size
 ) where
 
+import Data.Proxy
 import GHC.TypeLits
 
 -- | The shape of (non-empty) perfectly balanced binary trees.
@@ -48,3 +53,6 @@ type S8192 = 'S2x S4096
 type family Size (b :: Shape) :: Nat where
   Size 'S1      = 1
   Size ('S2x s) = 2 * Size s
+
+size :: forall s t a . KnownNat (Size s) => t s a -> Integer
+size _ = natVal (Proxy @(Size s))
