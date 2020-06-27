@@ -61,6 +61,7 @@ library
     Data.Bin.Bit
     Data.Bin.Index
     Data.Bin.Octree
+    Data.Bin.Quad
     Data.Bin.Shape
     Data.Bin.Tree
     Data.Flag
