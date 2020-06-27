@@ -60,6 +60,7 @@ runFrame
   :: ( Has Check sig m
      , Has Finally sig m
      , Has (Lift IO) sig m
+     , Has Profile sig m
      , Has Trace sig m
      )
   => ReaderC Voxel.Drawable
@@ -74,7 +75,11 @@ runFrame
   = evalEmpty
   . evalState Player{ angle = -pi/4 }
   . (\ m -> now >>= \ start -> evalState start m)
-  . runReader (Octree (tetra (\ v -> Voxel 0 & UI.colour_ .~ UI.Colour (ext (fromRational . uncurry (%) . toFraction <$> v) 1))))
+  . (\ m -> do
+    world <- measure "build" $ do
+      let world = Octree (tetra (\ v -> Voxel 0 & UI.colour_ .~ UI.Colour (ext (fromRational . uncurry (%) . toFraction <$> v) 1)))
+      world <$ trace ("world length: " <> show (length world))
+    runReader world m)
   . runLabelled
   . Axis.runDrawable
   . Voxel.runDrawable
