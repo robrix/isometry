@@ -386,7 +386,7 @@ trf_ :: Lens' (Oct a) a
 trf_ = oct_._y._y._y
 
 
-tetra :: SparseUnfoldableWithIndex V3 (Index s) (B Oct s) => (V3 (Index s) -> a) -> B Oct s a
+tetra :: (Foldable v, SparseUnfoldableWithIndex v i t) => (v i -> a) -> t a
 tetra = run . iunfoldSparseM (pure . fromBit . foldl' xor I0) . (pure .)
 
 
