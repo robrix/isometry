@@ -72,6 +72,7 @@ import           Data.Bits
 import           Data.Coerce
 import           Data.Foldable (foldl')
 import           Data.Functor.C
+import           Data.Monoid (Sum(..))
 import           Data.Proxy
 import qualified Data.Vector as V
 import           GHC.Generics (Generic, Generic1)
@@ -106,34 +107,47 @@ toFraction = go
 data B s f a where
   E :: B s f a
   L :: !a -> B 'S1 f a
-  B :: !(f (B s f a)) -> B ('S2x s) f a
+  B :: {-# UNPACK #-} !Int -> !(f (B s f a)) -> B ('S2x s) f a
 
-deriving instance Foldable f => Foldable (B s f)
+instance Foldable f => Foldable (B s f) where
+  foldMap (f :: a -> m) = go
+    where
+    go :: B s' f a -> m
+    go = \case
+      E     -> mempty
+      L a   -> f a
+      B _ b -> foldMap go b
+
+  length = \case
+    E     -> 0
+    L _   -> 1
+    B l _ -> l
+
 deriving instance Functor f => Functor (B s f)
 deriving instance Traversable f => Traversable (B s f)
 
 instance (FoldableWithIndex (v Bit) f, Applicative v) => FoldableWithIndex (v (Index s)) (B s f) where
-  ifoldMap _ E     = mempty
-  ifoldMap f (L a) = f (pure IL) a
-  ifoldMap f (B b) = ifoldMap (\ i -> ifoldMap (\ j -> f (IB <$> i <*> j))) b
+  ifoldMap _ E       = mempty
+  ifoldMap f (L   a) = f (pure IL) a
+  ifoldMap f (B _ b) = ifoldMap (\ i -> ifoldMap (\ j -> f (IB <$> i <*> j))) b
 
 instance (FunctorWithIndex (v Bit) f, Applicative v) => FunctorWithIndex (v (Index s)) (B s f) where
-  imap _ E     = E
-  imap f (L a) = L (f (pure IL) a)
-  imap f (B b) = B (imap (\ i -> imap (\ j -> f (IB <$> i <*> j))) b)
+  imap _ E       = E
+  imap f (L   a) = L (f (pure IL) a)
+  imap f (B l b) = B l (imap (\ i -> imap (\ j -> f (IB <$> i <*> j))) b)
 
 instance (FoldableWithIndex (v Bit) f, FunctorWithIndex (v Bit) f, TraversableWithIndex (v Bit) f, Applicative v) => TraversableWithIndex (v (Index s)) (B s f) where
-  itraverse _ E     = pure E
-  itraverse f (L a) = L <$> f (pure IL) a
-  itraverse f (B b) = B <$> itraverse (\ i -> itraverse (\ j -> f (IB <$> i <*> j))) b
+  itraverse _ E       = pure E
+  itraverse f (L   a) = L <$> f (pure IL) a
+  itraverse f (B l b) = B l <$> itraverse (\ i -> itraverse (\ j -> f (IB <$> i <*> j))) b
 
 -- | Note that this instance can only express dense unfoldings.
 instance (UnfoldableWithIndex (v Bit) f, Applicative v) => UnfoldableWithIndex (v (Index 'S1)) (B 'S1 f) where
   iunfoldA f = L <$> f (pure IL)
 
 -- | Note that this instance can only express dense unfoldings.
-instance (UnfoldableWithIndex (v Bit) f, Applicative v, UnfoldableWithIndex (v (Index s)) (B s f)) => UnfoldableWithIndex (v (Index ('S2x s))) (B ('S2x s) f) where
-  iunfoldA f = B <$> iunfoldA (\ i -> iunfoldA (\ j -> f (IB <$> i <*> j)))
+instance (UnfoldableWithIndex (v Bit) f, Applicative v, UnfoldableWithIndex (v (Index s)) (B s f), Foldable f) => UnfoldableWithIndex (v (Index ('S2x s))) (B ('S2x s) f) where
+  iunfoldA f = makeB <$> iunfoldA (\ i -> iunfoldA (\ j -> f (IB <$> i <*> j)))
 
 instance (UnfoldableWithIndex (v Bit) f, Applicative v) => SparseUnfoldableWithIndex (v (Index 'S1)) (B 'S1 f) where
   iunfoldSparseA f = maybe E L <$> f (pure IL)
@@ -142,17 +156,17 @@ instance (Foldable f, UnfoldableWithIndex (v Bit) f, Applicative v, SparseUnfold
   iunfoldSparseA f = b <$> iunfoldA (\ i -> iunfoldSparseA (\ j -> f (IB <$> i <*> j)))
 
 instance (Indexed (v Bit) f, Functor v) => SparseIndexed (v (Index s)) (B s f) where
-  E   !? _ = Nothing
-  L a !? _ = Just a
-  B b !? v = b ! fmap (fst . fromIndex) v !? fmap (snd . fromIndex) v
+  E     !? _ = Nothing
+  L   a !? _ = Just a
+  B _ b !? v = b ! fmap (fst . fromIndex) v !? fmap (snd . fromIndex) v
 
 instance MutableIndexed (v Bit) f => MutableIndexed (v (Index 'S1)) (B 'S1 f) where
   insert _ a _ = L a
 
-instance (MutableIndexed (v Bit) f, Applicative f, Functor v, MutableIndexed (v (Index s)) (B s f), Indexed (v Bit) f) => MutableIndexed (v (Index ('S2x s))) (B ('S2x s) f) where
-  insert i a = B . uncurry (insert ihead . insert itail a) . \case
-    E   -> (E, pure E)
-    B f -> (f ! ihead, f)
+instance (MutableIndexed (v Bit) f, Applicative f, Foldable f, Functor v, MutableIndexed (v (Index s)) (B s f), Indexed (v Bit) f) => MutableIndexed (v (Index ('S2x s))) (B ('S2x s) f) where
+  insert i a = makeB . uncurry (insert ihead . insert itail a) . \case
+    E     -> (E, pure E)
+    B _ f -> (f ! ihead, f)
     where
     ihead = fst . fromIndex <$> i
     itail = snd . fromIndex <$> i
@@ -163,20 +177,21 @@ instance Functor f => Applicative (B 'S1 f) where
   E   <*> _ = E
   L f <*> a = fmap f a
 
-instance (Applicative f, Applicative (B s f)) => Applicative (B ('S2x s) f) where
-  pure a = B (pure (pure a))
+instance (Applicative f, Applicative (B s f), Foldable f) => Applicative (B ('S2x s) f) where
+  -- FIXME: this could probably just use the capacity instead
+  pure a = makeB (pure (pure a))
 
-  E   <*> _   = E
-  _   <*> E   = E
-  B f <*> B a = B ((<*>) <$> f <*> a)
+  E     <*> _     = E
+  _     <*> E     = E
+  B _ f <*> B _ a = makeB ((<*>) <$> f <*> a)
 
-instance (Semigroup a, forall x . Semigroup x => Semigroup (f x)) => Semigroup (B s f a) where
-  E   <> b   = b
-  a   <> E   = a
-  L a <> L b = L (a <> b)
-  B a <> B b = B (a <> b)
+instance (Semigroup a, forall x . Semigroup x => Semigroup (f x), Foldable f) => Semigroup (B s f a) where
+  E     <> b     = b
+  a     <> E     = a
+  L   a <> L   b = L (a <> b)
+  B _ a <> B _ b = makeB (a <> b)
 
-instance (Semigroup a, forall x . Semigroup x => Semigroup (f x)) => Monoid (B s f a) where
+instance (Semigroup a, forall x . Semigroup x => Semigroup (f x), Foldable f) => Monoid (B s f a) where
   mempty = E
 
 isE :: B s f a -> Bool
@@ -185,7 +200,10 @@ isE _ = False
 
 b :: Foldable f => f (B s f a) -> B ('S2x s) f a
 b f | all isE f = E
-    | otherwise = B f
+    | otherwise = makeB f
+
+makeB :: Foldable f => f (B s f a) ->  B ('S2x s) f a
+makeB a = B (getSum (foldMap (Sum . length) a)) a
 
 size :: forall s f a . KnownNat (Size s) => B s f a -> Integer
 size _ = natVal (Proxy @(Size s))
