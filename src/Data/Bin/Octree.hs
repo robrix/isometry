@@ -5,6 +5,7 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
 module Data.Bin.Octree
 ( Octree(..)
@@ -27,7 +28,27 @@ data Octree s a where
     -> !(Octree s a) -> !(Octree s a)
     -> Octree ('S2x s) a
 
-deriving instance Foldable    (Octree s)
+instance Foldable (Octree s) where
+  foldMap (f :: a -> m) = go
+    where
+    go :: Octree s' a -> m
+    go = \case
+      E   -> mempty
+      L a -> f a
+      B _ lbf rbf
+          ltf rtf
+          lbn rbn
+          ltn rtn
+        -> go lbf <> go rbf
+        <> go ltf <> go rtf
+        <> go lbn <> go rbn
+        <> go ltn <> go rtn
+
+  length = \case
+    E   -> 0
+    L _ -> 1
+    B l _ _ _ _ _ _ _ _ -> l
+
 deriving instance Functor     (Octree s)
 deriving instance Traversable (Octree s)
 
