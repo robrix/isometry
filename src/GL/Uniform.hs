@@ -124,6 +124,16 @@ instance Row Int32 where
     R4 -> glProgramUniform4iv
   {-# INLINE uniformForRow #-}
 
+instance Row Word where
+  glslTypeForRow = ('u':) . glslTypeForRowD
+  {-# INLINE glslTypeForRow #-}
+
+  uniformForRow = \case
+    R2 -> coerce (glProgramUniform2uiv @IO)
+    R3 -> coerce (glProgramUniform3uiv @IO)
+    R4 -> coerce (glProgramUniform4uiv @IO)
+  {-# INLINE uniformForRow #-}
+
 instance Row Word32 where
   glslTypeForRow = ('u':) . glslTypeForRowD
   {-# INLINE glslTypeForRow #-}
