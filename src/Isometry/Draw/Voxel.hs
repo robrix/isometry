@@ -194,12 +194,12 @@ indices =
 
 shader :: D.Shader shader => shader U V Frag
 shader
-  =   vertex (\ U{ matrix, origins, colours } V{ pos } IF{ colour } -> main $ do
+  =   vertex (\ U{ matrix, origins } V{ pos } IF{ colour } -> main $ do
     gl_Position .= matrix D.>* ext4 (pos + texelFetch origins (cast gl_InstanceID)D.^.D._xyz) 1
-    colour .= coerce @(_ (V4 Float)) (texelFetch colours (cast gl_InstanceID)))
+    colour .= cast gl_InstanceID)
 
-  >>> fragment (\ _ IF{ colour } Frag{ fragColour } -> main $
-    fragColour .= colour)
+  >>> fragment (\ U{ colours } IF{ colour } Frag{ fragColour } -> main $
+    fragColour .= coerce @(_ (V4 Float)) (texelFetch colours (cast colour)))
 
 
 data U v = U
@@ -230,7 +230,7 @@ deriving via Fields V instance Storable (V I)
 
 
 newtype IF v = IF
-  { colour :: v (Colour Float)
+  { colour :: v Float
   }
   deriving (Generic)
 
