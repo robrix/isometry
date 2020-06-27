@@ -31,8 +31,8 @@ instance Foldable (Octree s) where
     where
     go :: Octree s' a -> m
     go = \case
-      E   -> mempty
-      L a -> f a
+      E     -> mempty
+      L   a -> f a
       B _ b -> foldMap go b
 
   length = \case
