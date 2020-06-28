@@ -13,6 +13,7 @@ module GL.Buffer
 , copyV
 , copyMV
 , copyA
+, copyWith
 , Type(..)
 , KnownType(..)
 , Update(..)
