@@ -2,6 +2,8 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE RoleAnnotations #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE UndecidableInstances #-}
 module Data.Bin.Index
 ( Index
 , il
@@ -14,15 +16,16 @@ import Data.Bin.Bit
 import Data.Bin.Shape
 import Data.Bits
 import Data.Word
+import GHC.TypeLits
 
 type role Index representational
 
 newtype Index (i :: Shape) = Index { getIndex :: Word32 }
   deriving (Eq, Ord, Show)
 
-instance Bounded (Index 'S1) where
-  minBound = il
-  maxBound = il
+instance KnownNat (Place i) => Bounded (Index i) where
+  minBound = Index 0
+  maxBound = let i = Index (bit (place i) - 1) in i
 
 instance Enum (Index 'S1) where
   toEnum 0 = il
