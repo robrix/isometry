@@ -53,12 +53,11 @@ copy offset vertices = askBuffer @ty >> A.withArrayLen vertices
   (\ len -> let i = ((0...len) + point (I offset)) ^* S.sizeOf @v undefined in checking . runLiftIO . glBufferSubData (glEnum (typeVal @ty)) (fromIntegral (inf i)) (fromIntegral (size i)) . castPtr)
 
 copyV :: forall ty v m sig . (HasLabelled (Buffer ty) (Reader (Buffer ty v)) sig m, KnownType ty, S.Storable v, Has Check sig m, Has (Lift IO) sig m) => Int -> V.Vector v -> m ()
-copyV offset vertices = askBuffer @ty >> withVector vertices
-  (checking . runLiftIO . glBufferSubData (glEnum (typeVal @ty)) (fromIntegral (inf i)) (fromIntegral (size i)) . castPtr) where
-  i = ((0...V.length vertices) + point (I offset)) ^* S.sizeOf @v undefined
+copyV offset vertices = askBuffer @ty >> withVectorLen vertices
+  (\ len -> let i = ((0...len) + point (I offset)) ^* S.sizeOf @v undefined in checking . runLiftIO . glBufferSubData (glEnum (typeVal @ty)) (fromIntegral (inf i)) (fromIntegral (size i)) . castPtr)
 
-withVector :: (Has (Lift IO) sig m, Storable a) => V.Vector a -> (Ptr a -> m b) -> m b
-withVector as with = liftWith $ \ hdl ctx -> V.unsafeWith as (hdl . (<$ ctx) . with)
+withVectorLen :: (Has (Lift IO) sig m, Storable a) => V.Vector a -> (Int -> Ptr a -> m b) -> m b
+withVectorLen as with = liftWith $ \ hdl ctx -> V.unsafeWith as (hdl . (<$ ctx) . with (V.length as))
 
 
 
