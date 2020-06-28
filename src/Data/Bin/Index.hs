@@ -24,6 +24,11 @@ instance Bounded (Index 'S1) where
   minBound = il
   maxBound = il
 
+instance Enum (Index 'S1) where
+  toEnum 0 = il
+  toEnum _ = error "Data.Bin.Index.Index 'S1.toEnum: bad argument"
+  fromEnum _ = 0
+
 il :: Index 'S1
 il = Index 0
 
