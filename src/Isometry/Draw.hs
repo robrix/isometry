@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingVia #-}
@@ -77,7 +78,12 @@ runFrame
   . (\ m -> now >>= \ start -> evalState start m)
   . (\ m -> do
     world <- measure "build" $ do
-      let world = makeWorld (tetra (\ v -> Voxel 0 & UI.colour_ .~ UI.Colour (ext ((/ fromIntegral (Shape.size world)) . fromIntegral . toInt <$> v) 1)))
+      let world = makeWorld (tetra (\ v ->
+            let o = fmap (fromIntegral . (+ offset) . toInt) v
+            in Voxel o 0 & UI.colour_ .~ UI.Colour (ext ((/ fromIntegral s) . fromIntegral . toInt <$> v) 1)))
+          !offset = negate (s `div` 2)
+          !s = Shape.size world
+
       world <$ trace ("world length: " <> show (length world))
     runReader world m)
   . runLabelled

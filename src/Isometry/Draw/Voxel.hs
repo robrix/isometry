@@ -24,11 +24,8 @@ import           Control.Effect.Lift
 import           Control.Effect.Profile
 import qualified Control.Effect.Reader.Labelled as Labelled
 import           Control.Effect.Trace
-import           Control.Lens (Lens', ifoldMap)
+import           Control.Lens (Lens')
 import           Control.Monad.IO.Class.Lift
-import           Data.Bin.Index (toInt)
-import           Data.Bin.Shape (Size)
-import           Data.Bin.Tree as Octree (size)
 import           Data.Coerce
 import           Data.Functor.I
 import           Data.Functor.Interval hiding (range)
@@ -41,7 +38,6 @@ import           Foreign.Storable
 import           Geometry.Transform
 import           GHC.Generics
 import           GHC.Stack
-import           GHC.TypeLits
 import           GL.Array
 import           GL.Buffer as Buffer
 import           GL.Effect.Check
@@ -92,7 +88,6 @@ runDrawable
      , Has Profile sig m
      , Has Trace sig m
      , Labelled.HasLabelled World (Reader (World s Voxel)) sig m
-     , KnownNat (Size s)
      , HasCallStack
      )
   => ReaderC Drawable m a
@@ -132,21 +127,18 @@ runDrawable m = do
 
   UI.loadingDrawable (\ drawable -> Drawable{ originsT, originsB, coloursT, coloursB, indicesB, drawable }) shader (coerce corners) m
 
-makeVoxels :: (KnownNat (Size s), Has (Lift IO) sig m) => World s Voxel -> m (V.IOVector (V3 (Distance Float)), V.IOVector (UI.Colour Float))
+makeVoxels :: (Has (Lift IO) sig m) => World s Voxel -> m (V.IOVector (V3 (Distance Float)), V.IOVector (UI.Colour Float))
 makeVoxels World{ voxels } = sendIO $ do
   origins <- V.unsafeNew l
   colours <- V.unsafeNew l
   index <- newIORef 0
-  getAp (ifoldMap (\ !n (Voxel !c) -> Ap $ do
-    let !v = fmap (fromIntegral . (+ offset) . toInt) n
+  getAp (foldMap (\ (Voxel !o !c) -> Ap $ do
     i <- readIORef index
-    V.unsafeWrite origins i v
+    V.unsafeWrite origins i o
     V.unsafeWrite colours i c
     writeIORef index (i + 1)) voxels)
   pure (origins, colours)
   where
-  !offset = negate (s `div` 2)
-  !s = Octree.size voxels
   !l = length voxels
 
 
