@@ -77,32 +77,32 @@ deriving instance Traversable f => Traversable (B f s)
 
 instance (FoldableWithIndex (v Bit) f, Applicative v) => FoldableWithIndex (v (Index s)) (B f s) where
   ifoldMap _ E       = mempty
-  ifoldMap f (L   a) = f (pure IL) a
-  ifoldMap f (B _ b) = ifoldMap (\ i -> ifoldMap (\ j -> f (IB <$> i <*> j))) b
+  ifoldMap f (L   a) = f (pure il) a
+  ifoldMap f (B _ b) = ifoldMap (\ i -> ifoldMap (\ j -> f (ib <$> i <*> j))) b
 
 instance (FunctorWithIndex (v Bit) f, Applicative v) => FunctorWithIndex (v (Index s)) (B f s) where
   imap _ E       = E
-  imap f (L   a) = L (f (pure IL) a)
-  imap f (B l b) = B l (imap (\ i -> imap (\ j -> f (IB <$> i <*> j))) b)
+  imap f (L   a) = L (f (pure il) a)
+  imap f (B l b) = B l (imap (\ i -> imap (\ j -> f (ib <$> i <*> j))) b)
 
 instance (FoldableWithIndex (v Bit) f, FunctorWithIndex (v Bit) f, TraversableWithIndex (v Bit) f, Applicative v) => TraversableWithIndex (v (Index s)) (B f s) where
   itraverse _ E       = pure E
-  itraverse f (L   a) = L <$> f (pure IL) a
-  itraverse f (B l b) = B l <$> itraverse (\ i -> itraverse (\ j -> f (IB <$> i <*> j))) b
+  itraverse f (L   a) = L <$> f (pure il) a
+  itraverse f (B l b) = B l <$> itraverse (\ i -> itraverse (\ j -> f (ib <$> i <*> j))) b
 
 -- | Note that this instance can only express dense unfoldings.
 instance (UnfoldableWithIndex (v Bit) f, Applicative v) => UnfoldableWithIndex (v (Index 'S1)) (B f 'S1) where
-  iunfoldA f = L <$> f (pure IL)
+  iunfoldA f = L <$> f (pure il)
 
 -- | Note that this instance can only express dense unfoldings.
 instance (UnfoldableWithIndex (v Bit) f, Applicative v, UnfoldableWithIndex (v (Index s)) (B f s), Foldable f) => UnfoldableWithIndex (v (Index ('S2x s))) (B f ('S2x s)) where
-  iunfoldA f = makeB <$> iunfoldA (\ i -> iunfoldA (\ j -> f (IB <$> i <*> j)))
+  iunfoldA f = makeB <$> iunfoldA (\ i -> iunfoldA (\ j -> f (ib <$> i <*> j)))
 
 instance (Applicative v, UnfoldableWithIndex (v Bit) f) => SparseUnfoldableWithIndex v (Index 'S1) (B f 'S1) where
-  iunfoldSparseM _ leaf = L <$> leaf (pure IL)
+  iunfoldSparseM _ leaf = L <$> leaf (pure il)
 
 instance (Applicative v, UnfoldableWithIndex (v Bit) f, SparseUnfoldableWithIndex v (Index s) (B f s), Foldable f) => SparseUnfoldableWithIndex v (Index ('S2x s)) (B f ('S2x s)) where
-  iunfoldSparseM branch leaf = b <$> iunfoldA (\ i -> branch i >>= \ b -> if b then iunfoldSparseM branch (leaf . (IB <$> i <*>)) else pure E)
+  iunfoldSparseM branch leaf = b <$> iunfoldA (\ i -> branch i >>= \ b -> if b then iunfoldSparseM branch (leaf . (ib <$> i <*>)) else pure E)
 
 instance (Indexed (v Bit) f, Functor v) => SparseIndexed (v (Index s)) (B f s) where
   E     !? _ = Nothing

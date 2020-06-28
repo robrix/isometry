@@ -1,12 +1,10 @@
-{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE StandaloneDeriving #-}
-{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE RoleAnnotations #-}
 module Data.Bin.Index
-( Index(..)
+( Index
+, il
+, ib
 , decompose
 , toInt
 ) where
@@ -14,27 +12,22 @@ module Data.Bin.Index
 import Data.Bin.Bit
 import Data.Bin.Shape
 import Data.Bits
-import Data.Proxy
-import GHC.TypeLits
+import Data.Word
 
-data Index i where
-  IL :: Index 'S1
-  IB :: !Bit -> !(Index i) -> Index ('S2x i)
+type role Index representational
 
-deriving instance Eq   (Index i)
-deriving instance Ord  (Index i)
-deriving instance Show (Index i)
+newtype Index (i :: Shape) = Index { getIndex :: Word32 }
+  deriving (Eq, Ord, Show)
+
+il :: Index 'S1
+il = Index 0
+
+ib :: Bit -> Index s -> Index ('S2x s)
+ib I0 (Index i) = Index (shift i 1)
+ib I1 (Index i) = Index (shift i 1 .|. 1)
 
 decompose :: Index ('S2x i) -> (Bit, Index i)
-decompose (IB b i) = (b, i)
+decompose (Index i) = (toBit (testBit i 0), Index (shift i (-1)))
 
-toInt :: forall i . KnownNat (Size i) => Index i -> Int
-toInt = go 0 (fromIntegral (natVal (Proxy @(Size i))))
-  where
-  go :: Int -> Int -> Index i' -> Int
-  go !n !_ IL       = n
-  go !n !d (IB b i) = go (case b of
-    I0 -> n
-    I1 -> n + d') d' i
-    where
-    !d' = shift d (-1)
+toInt :: Index i -> Int
+toInt = fromIntegral . getIndex
