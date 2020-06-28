@@ -32,7 +32,7 @@ toInt :: forall i . KnownNat (Size i) => Index i -> Int
 toInt = go 0 (fromIntegral (natVal (Proxy @(Size i))))
   where
   go :: Int -> Int -> Index i' -> Int
-  go !n !_ IL     = n
+  go !n !_ IL       = n
   go !n !d (IB b i) = go (case b of
     I0 -> n
     I1 -> n + d') d' i
