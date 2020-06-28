@@ -162,6 +162,7 @@ capacity b = size b ^ (round (logBase @Float 2 (fromIntegral (natVal (Proxy @(Li
 
 tetra :: (Foldable v, SparseUnfoldableWithIndex v i t) => (v i -> a) -> t a
 tetra = iunfoldSparse (fromBit . foldl' xor B0)
+{-# INLINABLE tetra #-}
 
 
 -- | Unfolding of finite dense structures with an index.
