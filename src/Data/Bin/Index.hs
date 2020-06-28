@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE RoleAnnotations #-}
 module Data.Bin.Index
@@ -18,6 +19,10 @@ type role Index representational
 
 newtype Index (i :: Shape) = Index { getIndex :: Word32 }
   deriving (Eq, Ord, Show)
+
+instance Bounded (Index 'S1) where
+  minBound = il
+  maxBound = il
 
 il :: Index 'S1
 il = Index 0
