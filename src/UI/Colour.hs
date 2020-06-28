@@ -110,8 +110,8 @@ opaque :: Num a => Colour a -> Colour a
 opaque = set _a 1
 
 
-setClearColour :: (Real a, Has (Lift IO) sig m) => Colour a -> m ()
-setClearColour (fmap realToFrac -> Colour (V4 r g b a)) = runLiftIO $ glClearColor r g b a
+setClearColour :: Has (Lift IO) sig m => Colour Float -> m ()
+setClearColour (Colour (V4 r g b a)) = runLiftIO $ glClearColor r g b a
 
 
 newtype Packed = Packed { getPacked :: Word32 }
