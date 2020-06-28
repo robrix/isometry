@@ -14,6 +14,7 @@ module GL.Buffer
 , copyMV
 , copyA
 , copyWith
+, copyPtr
 , Type(..)
 , KnownType(..)
 , Update(..)
@@ -79,6 +80,12 @@ withStorableArrayLen as with = liftWith $ \ hdl ctx -> do
 copyWith :: forall ty t v m sig . (HasLabelled (Buffer ty) (Reader (Buffer ty v)) sig m, KnownType ty, S.Storable v, Has Check sig m, Has (Lift IO) sig m) => (t v -> (Int -> Ptr v -> m ()) -> m ()) -> Int -> t v -> m ()
 copyWith with offset vertices = askBuffer @ty >> with vertices
   (\ len -> let i = ((0...len) + point (I offset)) ^* S.sizeOf @v undefined in checking . runLiftIO . glBufferSubData (glEnum (typeVal @ty)) (fromIntegral (inf i)) (fromIntegral (size i)) . castPtr)
+
+copyPtr :: forall ty v m sig . (HasLabelled (Buffer ty) (Reader (Buffer ty v)) sig m, KnownType ty, S.Storable v, Has Check sig m, Has (Lift IO) sig m) => Interval I Int -> Ptr v -> m ()
+copyPtr i' ptr = do
+  _ <- askBuffer @ty
+  let i = i' ^* S.sizeOf @v undefined
+  checking . runLiftIO . glBufferSubData (glEnum (typeVal @ty)) (fromIntegral (inf i)) (fromIntegral (size i)) $ castPtr ptr
 
 
 
