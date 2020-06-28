@@ -11,6 +11,7 @@ module GL.Buffer
 , realloc
 , copy
 , copyV
+, copyMV
 , Type(..)
 , KnownType(..)
 , Update(..)
@@ -25,6 +26,7 @@ import           Control.Monad.IO.Class.Lift
 import           Data.Functor.I
 import           Data.Functor.Interval
 import qualified Data.Vector.Storable as V
+import qualified Data.Vector.Storable.Mutable as MV
 import qualified Foreign.Marshal.Array.Lift as A
 import           Foreign.Ptr (Ptr, castPtr, nullPtr)
 import           Foreign.Storable as S
@@ -56,6 +58,12 @@ copyV = copyWith @ty withVectorLen
 
 withVectorLen :: (Has (Lift IO) sig m, Storable a) => V.Vector a -> (Int -> Ptr a -> m b) -> m b
 withVectorLen as with = liftWith $ \ hdl ctx -> V.unsafeWith as (hdl . (<$ ctx) . with (V.length as))
+
+copyMV :: forall ty v m sig . (HasLabelled (Buffer ty) (Reader (Buffer ty v)) sig m, KnownType ty, S.Storable v, Has Check sig m, Has (Lift IO) sig m) => Int -> MV.IOVector v -> m ()
+copyMV = copyWith @ty withMutableVectorLen
+
+withMutableVectorLen :: (Has (Lift IO) sig m, Storable a) => MV.IOVector a -> (Int -> Ptr a -> m b) -> m b
+withMutableVectorLen as with = liftWith $ \ hdl ctx -> MV.unsafeWith as (hdl . (<$ ctx) . with (MV.length as))
 
 copyWith :: forall ty t v m sig . (HasLabelled (Buffer ty) (Reader (Buffer ty v)) sig m, KnownType ty, S.Storable v, Has Check sig m, Has (Lift IO) sig m) => (t v -> (Int -> Ptr v -> m ()) -> m ()) -> Int -> t v -> m ()
 copyWith with offset vertices = askBuffer @ty >> with vertices
