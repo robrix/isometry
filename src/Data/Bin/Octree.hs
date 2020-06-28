@@ -9,7 +9,7 @@
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE UndecidableInstances #-}
 module Data.Bin.Octree
-( Octree
+( Octree(..)
 , withOctreeLen
 ) where
 
