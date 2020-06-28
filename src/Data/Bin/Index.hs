@@ -8,6 +8,8 @@ module Data.Bin.Index
 ( Index
 , il
 , ib
+, i0
+, i1
 , decompose
 , toInt
 ) where
@@ -90,6 +92,12 @@ ib :: Bit -> Index s -> Index ('S2x s)
 ib B0 (Index i) = Index (shift i 1)
 ib B1 (Index i) = Index (shift i 1 .|. 1)
 {-# INLINABLE ib #-}
+
+i0, i1 :: Index s -> Index ('S2x s)
+i0 = ib B0
+{-# INLINABLE i0 #-}
+i1 = ib B1
+{-# INLINABLE i1 #-}
 
 decompose :: Index ('S2x i) -> (Bit, Index i)
 decompose (Index i) = (toBit (testBit i 0), Index (shift i (-1)))
