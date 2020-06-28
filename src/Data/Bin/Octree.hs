@@ -110,7 +110,11 @@ instance Applicative (Octree s) => Applicative (Octree ('S2x s)) where
   B _ f1 f2 f3 f4 f5 f6 f7 f8 <*> B _ a1 a2 a3 a4 a5 a6 a7 a8 = makeB (f1 <*> a1) (f2 <*> a2) (f3 <*> a3) (f4 <*> a4) (f5 <*> a5) (f6 <*> a6) (f7 <*> a7) (f8 <*> a8)
 
 makeB :: Octree s a -> Octree s a -> Octree s a -> Octree s a -> Octree s a -> Octree s a -> Octree s a -> Octree s a -> Octree ('S2x s) a
-makeB o1 o2 o3 o4 o5 o6 o7 o8 = B (length o1 + length o2 + length o3 + length o4 + length o5 + length o6 + length o7 + length o8) o1 o2 o3 o4 o5 o6 o7 o8
+makeB o1 o2 o3 o4 o5 o6 o7 o8
+  | len > 0   = B len o1 o2 o3 o4 o5 o6 o7 o8
+  | otherwise = E
+  where
+  !len = length o1 + length o2 + length o3 + length o4 + length o5 + length o6 + length o7 + length o8
 {-# INLINABLE makeB #-}
 
 withOctreeLen :: (Has (Lift IO) sig m, Storable a) => Octree s a -> (Int -> Ptr a -> m b) -> m b
