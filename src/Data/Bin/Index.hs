@@ -15,6 +15,7 @@ module Data.Bin.Index
 import Data.Bin.Bit
 import Data.Bin.Shape
 import Data.Bits
+import Data.Coerce
 import Data.Word
 import GHC.TypeLits
 
@@ -32,6 +33,29 @@ instance KnownNat (Place i) => Enum (Index i) where
            , i' <= getIndex (maxBound :: Index i) = Index i'
            | otherwise = error "Data.Bin.Index.Index.toEnum: bad argument"
   fromEnum = fromIntegral . getIndex
+
+instance KnownNat (Place i) => Bits (Index i) where
+  Index a .&. Index b = Index (a .&. b)
+  Index a .|. Index b = Index (a .|. b)
+  Index a `xor` Index b = Index (a `xor` b)
+  zeroBits = Index 0
+  bitSize = finiteBitSize
+  bitSizeMaybe = Just . finiteBitSize
+  isSigned _ = False
+  popCount = coerce (popCount :: Word32 -> Int)
+  complement = xor maxBound
+  testBit i p
+    | p > place i = False
+    | otherwise   = testBit (getIndex i) p
+  bit p = Index (bit p) .&. maxBound
+  shift i p = Index (shift (getIndex i) p) .&. maxBound
+  rotate i p =
+    let bits = finiteBitSize i
+        p' = p `mod` bits
+    in Index (shift (getIndex i) p' .|. shift (getIndex i) (-(bits - p'))) .&. maxBound
+
+instance KnownNat (Place i) => FiniteBits (Index i) where
+  finiteBitSize = place
 
 il :: Index 'S1
 il = Index 0
