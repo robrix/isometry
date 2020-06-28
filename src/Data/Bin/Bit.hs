@@ -11,30 +11,30 @@ import Linear.Vector (E(..))
 import Linear.V2
 
 data Bit
-  = I0
-  | I1
+  = B0
+  | B1
   deriving (Enum, Eq, Ord, Show)
 
 instance Bits Bit where
   -- fixme: should we avoid matching on the rhs when possible for laziness?
-  I1 .&. I1 = I1
-  _  .&. _  = I0
+  B1 .&. B1 = B1
+  _  .&. _  = B0
 
-  I0 .|. I0 = I0
-  _  .|. _  = I1
+  B0 .|. B0 = B0
+  _  .|. _  = B1
 
-  a `xor` b = if a /= b then I1 else I0
+  a `xor` b = if a /= b then B1 else B0
 
-  complement I0 = I1
-  complement I1 = I0
+  complement B0 = B1
+  complement B1 = B0
 
   shift x 0 = x
-  shift _ _ = I0
+  shift _ _ = B0
 
   rotate x _ = x
 
-  bit 0 = I1
-  bit _ = I0
+  bit 0 = B1
+  bit _ = B0
 
   testBit x 0 = fromBit x
   testBit _ _ = False
@@ -45,8 +45,8 @@ instance Bits Bit where
 
   isSigned _ = False
 
-  popCount I0 = 0
-  popCount I1 = 1
+  popCount B0 = 0
+  popCount B1 = 1
 
 instance FiniteBits Bit where
   finiteBitSize _ = 1
@@ -54,10 +54,10 @@ instance FiniteBits Bit where
   countLeadingZeros = countLeadingZeros . fromBit
 
 toBit :: Bool -> Bit
-toBit = bool I0 I1
+toBit = bool B0 B1
 
 fromBit :: Bit -> Bool
-fromBit = (== I1)
+fromBit = (== B1)
 
 toBasis :: Bit -> E V2
 toBasis = bool ex ey . fromBit

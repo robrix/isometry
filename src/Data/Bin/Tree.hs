@@ -159,7 +159,7 @@ capacity b = size b ^ (round (logBase @Float 2 (fromIntegral (natVal (Proxy @(Li
 
 
 tetra :: (Foldable v, SparseUnfoldableWithIndex v i t) => (v i -> a) -> t a
-tetra = run . iunfoldSparseM (pure . fromBit . foldl' xor I0) . (pure .)
+tetra = run . iunfoldSparseM (pure . fromBit . foldl' xor B0) . (pure .)
 
 
 -- | Unfolding of finite dense structures with an index.
@@ -188,13 +188,13 @@ class BinaryIndexed f t | t -> f where
   indices :: t (f Bit)
 
 instance BinaryIndexed V1 V2 where
-  indices = head (deinterleaveWith V2 (map V1 [I0, I1]))
+  indices = head (deinterleaveWith V2 (map V1 [B0, B1]))
 
 instance BinaryIndexed V2 (V2 :.: V2) where
-  indices = C (head (deinterleaveWith V2 (deinterleaveWith V2 (liftA2 V2 [I0, I1] [I0, I1]))))
+  indices = C (head (deinterleaveWith V2 (deinterleaveWith V2 (liftA2 V2 [B0, B1] [B0, B1]))))
 
 instance BinaryIndexed V3 (V2 :.: V2 :.: V2) where
-  indices = C (head (deinterleaveWith V2 (deinterleaveWith (fmap C . V2) (deinterleaveWith V2 (liftA3 V3 [I0, I1] [I0, I1] [I0, I1])))))
+  indices = C (head (deinterleaveWith V2 (deinterleaveWith (fmap C . V2) (deinterleaveWith V2 (liftA3 V3 [B0, B1] [B0, B1] [B0, B1])))))
 
 
 class Indexed i f | f -> i where

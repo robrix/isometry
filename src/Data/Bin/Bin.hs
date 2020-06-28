@@ -38,24 +38,24 @@ instance FunctorWithIndex (V1 Bit) Bin
 instance TraversableWithIndex (V1 Bit) Bin where
   itraverse f (Bin b) = Bin <$> itraverse (\ ix -> f (indices^.el ix)) b
     where
-    indices = head (deinterleaveWith V2 (V1 <$> [I0, I1]))
+    indices = head (deinterleaveWith V2 (V1 <$> [B0, B1]))
 
 instance Indexed (V1 Bit) Bin where
   b ! i = case i of
-    V1 I0 -> b^.l_
-    V1 I1 -> b^.r_
+    V1 B0 -> b^.l_
+    V1 B1 -> b^.r_
 
 instance BinaryIndexed V1 Bin where
-  indices = Bin (head (deinterleaveWith V2 (map V1 [I0, I1])))
+  indices = Bin (head (deinterleaveWith V2 (map V1 [B0, B1])))
 
 instance MutableIndexed (V1 Bit) Bin where
-  insert (V1 I0) = set l_
-  insert (V1 I1) = set r_
+  insert (V1 B0) = set l_
+  insert (V1 B1) = set r_
 
 instance UnfoldableWithIndex (V1 Bit) Bin where
   iunfoldA f = bin
-    <$> f (V1 I0)
-    <*> f (V1 I1)
+    <$> f (V1 B0)
+    <*> f (V1 B1)
 
 instance Linear.Finite Bin where
   type Size Bin = 2

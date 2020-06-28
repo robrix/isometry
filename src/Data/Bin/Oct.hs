@@ -47,42 +47,42 @@ instance FunctorWithIndex (V3 Bit) Oct
 instance TraversableWithIndex (V3 Bit) Oct where
   itraverse f (Oct o) = Oct <$> itraverse (\ ix -> itraverse (\ iy -> let ixy = el ix.el iy in itraverse (\ iz -> f (indices^.ixy.el iz)))) o
     where
-    indices = head (deinterleaveWith V2 (deinterleaveWith V2 (deinterleaveWith V2 (V3 <$> [I0, I1] <*> [I0, I1] <*> [I0, I1]))))
+    indices = head (deinterleaveWith V2 (deinterleaveWith V2 (deinterleaveWith V2 (V3 <$> [B0, B1] <*> [B0, B1] <*> [B0, B1]))))
 
 instance UnfoldableWithIndex (V3 Bit) Oct where
   iunfoldA f = oct
-    <$> f (V3 I0 I0 I0)
-    <*> f (V3 I1 I0 I0)
-    <*> f (V3 I0 I1 I0)
-    <*> f (V3 I1 I1 I0)
-    <*> f (V3 I0 I0 I1)
-    <*> f (V3 I1 I0 I1)
-    <*> f (V3 I0 I1 I1)
-    <*> f (V3 I1 I1 I1)
+    <$> f (V3 B0 B0 B0)
+    <*> f (V3 B1 B0 B0)
+    <*> f (V3 B0 B1 B0)
+    <*> f (V3 B1 B1 B0)
+    <*> f (V3 B0 B0 B1)
+    <*> f (V3 B1 B0 B1)
+    <*> f (V3 B0 B1 B1)
+    <*> f (V3 B1 B1 B1)
 
 instance Indexed (V3 Bit) Oct where
   o ! i = case i of
-    V3 I0 I0 I0 -> o^.bln_
-    V3 I1 I0 I0 -> o^.brn_
-    V3 I0 I1 I0 -> o^.tln_
-    V3 I1 I1 I0 -> o^.trn_
-    V3 I0 I0 I1 -> o^.blf_
-    V3 I1 I0 I1 -> o^.brf_
-    V3 I0 I1 I1 -> o^.tlf_
-    V3 I1 I1 I1 -> o^.trf_
+    V3 B0 B0 B0 -> o^.bln_
+    V3 B1 B0 B0 -> o^.brn_
+    V3 B0 B1 B0 -> o^.tln_
+    V3 B1 B1 B0 -> o^.trn_
+    V3 B0 B0 B1 -> o^.blf_
+    V3 B1 B0 B1 -> o^.brf_
+    V3 B0 B1 B1 -> o^.tlf_
+    V3 B1 B1 B1 -> o^.trf_
 
 instance BinaryIndexed V3 Oct where
-  indices = Oct (head (deinterleaveWith V2 (deinterleaveWith V2 (deinterleaveWith V2 (liftA3 V3 [I0, I1] [I0, I1] [I0, I1])))))
+  indices = Oct (head (deinterleaveWith V2 (deinterleaveWith V2 (deinterleaveWith V2 (liftA3 V3 [B0, B1] [B0, B1] [B0, B1])))))
 
 instance MutableIndexed (V3 Bit) Oct where
-  insert (V3 I0 I0 I0) = set bln_
-  insert (V3 I1 I0 I0) = set brn_
-  insert (V3 I0 I1 I0) = set tln_
-  insert (V3 I1 I1 I0) = set trn_
-  insert (V3 I0 I0 I1) = set blf_
-  insert (V3 I1 I0 I1) = set brf_
-  insert (V3 I0 I1 I1) = set tlf_
-  insert (V3 I1 I1 I1) = set trf_
+  insert (V3 B0 B0 B0) = set bln_
+  insert (V3 B1 B0 B0) = set brn_
+  insert (V3 B0 B1 B0) = set tln_
+  insert (V3 B1 B1 B0) = set trn_
+  insert (V3 B0 B0 B1) = set blf_
+  insert (V3 B1 B0 B1) = set brf_
+  insert (V3 B0 B1 B1) = set tlf_
+  insert (V3 B1 B1 B1) = set trf_
 
 instance Linear.Finite Oct where
   type Size Oct = 8

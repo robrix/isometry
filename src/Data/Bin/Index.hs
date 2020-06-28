@@ -23,8 +23,8 @@ il :: Index 'S1
 il = Index 0
 
 ib :: Bit -> Index s -> Index ('S2x s)
-ib I0 (Index i) = Index (shift i 1)
-ib I1 (Index i) = Index (shift i 1 .|. 1)
+ib B0 (Index i) = Index (shift i 1)
+ib B1 (Index i) = Index (shift i 1 .|. 1)
 
 decompose :: Index ('S2x i) -> (Bit, Index i)
 decompose (Index i) = (toBit (testBit i 0), Index (shift i (-1)))

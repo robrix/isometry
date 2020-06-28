@@ -42,30 +42,30 @@ instance FunctorWithIndex (V2 Bit) Quad
 instance TraversableWithIndex (V2 Bit) Quad where
   itraverse f (Quad q) = Quad <$> itraverse (\ ix -> itraverse (\ iy -> f (indices^.el ix.el iy))) q
     where
-    indices = head (deinterleaveWith V2 (deinterleaveWith V2 (V2 <$> [I0, I1] <*> [I0, I1])))
+    indices = head (deinterleaveWith V2 (deinterleaveWith V2 (V2 <$> [B0, B1] <*> [B0, B1])))
 
 instance UnfoldableWithIndex (V2 Bit) Quad where
   iunfoldA f = quad
-    <$> f (V2 I0 I0)
-    <*> f (V2 I1 I0)
-    <*> f (V2 I0 I1)
-    <*> f (V2 I1 I1)
+    <$> f (V2 B0 B0)
+    <*> f (V2 B1 B0)
+    <*> f (V2 B0 B1)
+    <*> f (V2 B1 B1)
 
 instance Indexed (V2 Bit) Quad where
   q ! i = case i of
-    V2 I0 I0 -> q^.bl_
-    V2 I1 I0 -> q^.br_
-    V2 I0 I1 -> q^.tl_
-    V2 I1 I1 -> q^.tr_
+    V2 B0 B0 -> q^.bl_
+    V2 B1 B0 -> q^.br_
+    V2 B0 B1 -> q^.tl_
+    V2 B1 B1 -> q^.tr_
 
 instance BinaryIndexed V2 Quad where
-  indices = Quad (head (deinterleaveWith V2 (deinterleaveWith V2 (liftA2 V2 [I0, I1] [I0, I1]))))
+  indices = Quad (head (deinterleaveWith V2 (deinterleaveWith V2 (liftA2 V2 [B0, B1] [B0, B1]))))
 
 instance MutableIndexed (V2 Bit) Quad where
-  insert (V2 I0 I0) = set bl_
-  insert (V2 I1 I0) = set br_
-  insert (V2 I0 I1) = set tl_
-  insert (V2 I1 I1) = set tr_
+  insert (V2 B0 B0) = set bl_
+  insert (V2 B1 B0) = set br_
+  insert (V2 B0 B1) = set tl_
+  insert (V2 B1 B1) = set tr_
 
 instance Linear.Finite Quad where
   type Size Quad = 4
