@@ -74,6 +74,9 @@ instance SparseUnfoldableWithIndex V3 (Index 'S1) (Octree 'S1) where
   iunfoldSparseM _ leaf = L <$> leaf (pure il)
   {-# INLINABLE iunfoldSparseM #-}
 
+  iunfoldSparse _ leaf = L (leaf (pure il))
+  {-# INLINABLE iunfoldSparse #-}
+
 instance SparseUnfoldableWithIndex V3 (Index s) (Octree s) => SparseUnfoldableWithIndex V3 (Index ('S2x s)) (Octree ('S2x s)) where
   iunfoldSparseM branch leaf = makeB
     <$> go (V3 B0 B0 B0) <*> go (V3 B1 B0 B0)
@@ -83,6 +86,15 @@ instance SparseUnfoldableWithIndex V3 (Index s) (Octree s) => SparseUnfoldableWi
     where
     go i = branch i >>= \ b -> if b then iunfoldSparseM branch (leaf . (ib <$> i <*>)) else pure E
   {-# INLINABLE iunfoldSparseM #-}
+
+  iunfoldSparse branch leaf = makeB
+    (go (V3 B0 B0 B0)) (go (V3 B1 B0 B0))
+    (go (V3 B0 B1 B0)) (go (V3 B1 B1 B0))
+    (go (V3 B0 B0 B1)) (go (V3 B1 B0 B1))
+    (go (V3 B0 B1 B1)) (go (V3 B1 B1 B1))
+    where
+    go i = if branch i then iunfoldSparse branch (leaf . (ib <$> i <*>)) else E
+  {-# INLINABLE iunfoldSparse #-}
 
 instance Applicative (Octree 'S1) where
   pure = L
