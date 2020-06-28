@@ -10,6 +10,7 @@ module GL.Buffer
 ( Buffer(..)
 , realloc
 , copy
+, copyV
 , Type(..)
 , KnownType(..)
 , Update(..)
@@ -23,8 +24,9 @@ import           Control.Effect.Labelled
 import           Control.Monad.IO.Class.Lift
 import           Data.Functor.I
 import           Data.Functor.Interval
+import qualified Data.Vector.Storable as V
 import qualified Foreign.Marshal.Array.Lift as A
-import           Foreign.Ptr (castPtr, nullPtr)
+import           Foreign.Ptr (Ptr, castPtr, nullPtr)
 import           Foreign.Storable as S
 import           GL.Effect.Check
 import           GL.Enum as GL
@@ -49,6 +51,15 @@ realloc n update usage = askBuffer @ty >> runLiftIO (glBufferData (glEnum (typeV
 copy :: forall ty v m sig . (HasLabelled (Buffer ty) (Reader (Buffer ty v)) sig m, KnownType ty, S.Storable v, Has Check sig m, Has (Lift IO) sig m) => Int -> [v] -> m ()
 copy offset vertices = askBuffer @ty >> A.withArrayLen vertices
   (\ len -> let i = ((0...len) + point (I offset)) ^* S.sizeOf @v undefined in checking . runLiftIO . glBufferSubData (glEnum (typeVal @ty)) (fromIntegral (inf i)) (fromIntegral (size i)) . castPtr)
+
+copyV :: forall ty v m sig . (HasLabelled (Buffer ty) (Reader (Buffer ty v)) sig m, KnownType ty, S.Storable v, Has Check sig m, Has (Lift IO) sig m) => Int -> V.Vector v -> m ()
+copyV offset vertices = askBuffer @ty >> withVector vertices
+  (checking . runLiftIO . glBufferSubData (glEnum (typeVal @ty)) (fromIntegral (inf i)) (fromIntegral (size i)) . castPtr) where
+  i = ((0...V.length vertices) + point (I offset)) ^* S.sizeOf @v undefined
+
+withVector :: (Has (Lift IO) sig m, Storable a) => V.Vector a -> (Ptr a -> m b) -> m b
+withVector as with = liftWith $ \ hdl ctx -> V.unsafeWith as (hdl . (<$ ctx) . with)
+
 
 
 data Type
