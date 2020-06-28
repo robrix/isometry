@@ -8,7 +8,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
 module Data.Bin.Octree
-( Octree(..)
+( Octree
 ) where
 
 import Control.Lens.Indexed
