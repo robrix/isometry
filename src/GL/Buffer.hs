@@ -78,8 +78,7 @@ withStorableArrayLen as with = liftWith $ \ hdl ctx -> do
   withStorableArray as (hdl . (<$ ctx) . with (rangeSize bounds))
 
 copyWith :: forall ty t v m sig . (HasLabelled (Buffer ty) (Reader (Buffer ty v)) sig m, KnownType ty, S.Storable v, Has Check sig m, Has (Lift IO) sig m) => (t v -> (Int -> Ptr v -> m ()) -> m ()) -> Int -> t v -> m ()
-copyWith with offset vertices = askBuffer @ty >> with vertices
-  (\ len -> let i = ((0...len) + point (I offset)) ^* S.sizeOf @v undefined in checking . runLiftIO . glBufferSubData (glEnum (typeVal @ty)) (fromIntegral (inf i)) (fromIntegral (size i)) . castPtr)
+copyWith with offset vertices = with vertices (\ len -> copyPtr @ty ((0...len) + point (I offset)))
 
 copyPtr :: forall ty v m sig . (HasLabelled (Buffer ty) (Reader (Buffer ty v)) sig m, KnownType ty, S.Storable v, Has Check sig m, Has (Lift IO) sig m) => Interval I Int -> Ptr v -> m ()
 copyPtr i' ptr = do
