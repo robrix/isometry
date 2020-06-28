@@ -15,14 +15,17 @@ module Data.Bin.Index
 import Data.Bin.Bit
 import Data.Bin.Shape
 import Data.Bits
+import Data.Char (intToDigit)
 import Data.Coerce
+import Data.Functor.Classes (showsUnaryWith)
 import Data.Word
 import GHC.TypeLits
+import Numeric (showIntAtBase)
 
 type role Index representational
 
 newtype Index (i :: Shape) = Index { getIndex :: Word32 }
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord)
 
 instance KnownNat (Place i) => Bounded (Index i) where
   minBound = Index 0
@@ -56,6 +59,9 @@ instance KnownNat (Place i) => Bits (Index i) where
 
 instance KnownNat (Place i) => FiniteBits (Index i) where
   finiteBitSize = place
+
+instance Show (Index i) where
+  showsPrec p (Index i) = showsUnaryWith (const (fmap (('0':) . ('b':)) . showIntAtBase 2 intToDigit)) "Index" p i
 
 il :: Index 'S1
 il = Index 0
