@@ -11,10 +11,10 @@ module Data.Bin.Quad
 ( Quad(..)
 , quad
 , quad_
-, bl_
-, br_
-, tl_
-, tr_
+, lb_
+, rb_
+, lt_
+, rt_
 , Quadtree
 ) where
 
@@ -53,19 +53,19 @@ instance UnfoldableWithIndex (V2 Bit) Quad where
 
 instance Indexed (V2 Bit) Quad where
   q ! i = case i of
-    V2 B0 B0 -> q^.bl_
-    V2 B1 B0 -> q^.br_
-    V2 B0 B1 -> q^.tl_
-    V2 B1 B1 -> q^.tr_
+    V2 B0 B0 -> q^.lb_
+    V2 B1 B0 -> q^.rb_
+    V2 B0 B1 -> q^.lt_
+    V2 B1 B1 -> q^.rt_
 
 instance BinaryIndexed V2 Quad where
   indices = Quad (head (deinterleaveWith V2 (deinterleaveWith V2 (liftA2 V2 [B0, B1] [B0, B1]))))
 
 instance MutableIndexed (V2 Bit) Quad where
-  insert (V2 B0 B0) = set bl_
-  insert (V2 B1 B0) = set br_
-  insert (V2 B0 B1) = set tl_
-  insert (V2 B1 B1) = set tr_
+  insert (V2 B0 B0) = set lb_
+  insert (V2 B1 B0) = set rb_
+  insert (V2 B0 B1) = set lt_
+  insert (V2 B1 B1) = set rt_
 
 instance Linear.Finite Quad where
   type Size Quad = 4
@@ -73,22 +73,22 @@ instance Linear.Finite Quad where
   fromV (Linear.V v) = Quad (head (deinterleaveWith V2 (deinterleaveWith V2 (map (v V.!) [0..3]))))
 
 quad :: a -> a -> a -> a -> Quad a
-quad bl br tl tr = Quad $ V2 (V2 bl br) (V2 tl tr)
+quad lb rb lt rt = Quad $ V2 (V2 lb rb) (V2 lt rt)
 
 quad_ :: Iso' (Quad a) (V2 (V2 a))
 quad_ = iso getQuad Quad
 
-bl_ :: Lens' (Quad a) a
-bl_ = quad_._x._x
+lb_ :: Lens' (Quad a) a
+lb_ = quad_._x._x
 
-br_ :: Lens' (Quad a) a
-br_ = quad_._x._y
+rb_ :: Lens' (Quad a) a
+rb_ = quad_._x._y
 
-tl_ :: Lens' (Quad a) a
-tl_ = quad_._y._x
+lt_ :: Lens' (Quad a) a
+lt_ = quad_._y._x
 
-tr_ :: Lens' (Quad a) a
-tr_ = quad_._y._y
+rt_ :: Lens' (Quad a) a
+rt_ = quad_._y._y
 
 
 type Quadtree = B Quad

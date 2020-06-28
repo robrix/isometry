@@ -11,14 +11,14 @@ module Data.Bin.Oct
 ( Oct(..)
 , oct
 , oct_
-, bln_
-, brn_
-, tln_
-, trn_
-, blf_
-, brf_
-, tlf_
-, trf_
+, lbn_
+, rbn_
+, ltn_
+, rtn_
+, lbf_
+, rbf_
+, ltf_
+, rtf_
 , Octree
 ) where
 
@@ -62,27 +62,27 @@ instance UnfoldableWithIndex (V3 Bit) Oct where
 
 instance Indexed (V3 Bit) Oct where
   o ! i = case i of
-    V3 B0 B0 B0 -> o^.bln_
-    V3 B1 B0 B0 -> o^.brn_
-    V3 B0 B1 B0 -> o^.tln_
-    V3 B1 B1 B0 -> o^.trn_
-    V3 B0 B0 B1 -> o^.blf_
-    V3 B1 B0 B1 -> o^.brf_
-    V3 B0 B1 B1 -> o^.tlf_
-    V3 B1 B1 B1 -> o^.trf_
+    V3 B0 B0 B0 -> o^.lbn_
+    V3 B1 B0 B0 -> o^.rbn_
+    V3 B0 B1 B0 -> o^.ltn_
+    V3 B1 B1 B0 -> o^.rtn_
+    V3 B0 B0 B1 -> o^.lbf_
+    V3 B1 B0 B1 -> o^.rbf_
+    V3 B0 B1 B1 -> o^.ltf_
+    V3 B1 B1 B1 -> o^.rtf_
 
 instance BinaryIndexed V3 Oct where
   indices = Oct (head (deinterleaveWith V2 (deinterleaveWith V2 (deinterleaveWith V2 (liftA3 V3 [B0, B1] [B0, B1] [B0, B1])))))
 
 instance MutableIndexed (V3 Bit) Oct where
-  insert (V3 B0 B0 B0) = set bln_
-  insert (V3 B1 B0 B0) = set brn_
-  insert (V3 B0 B1 B0) = set tln_
-  insert (V3 B1 B1 B0) = set trn_
-  insert (V3 B0 B0 B1) = set blf_
-  insert (V3 B1 B0 B1) = set brf_
-  insert (V3 B0 B1 B1) = set tlf_
-  insert (V3 B1 B1 B1) = set trf_
+  insert (V3 B0 B0 B0) = set lbn_
+  insert (V3 B1 B0 B0) = set rbn_
+  insert (V3 B0 B1 B0) = set ltn_
+  insert (V3 B1 B1 B0) = set rtn_
+  insert (V3 B0 B0 B1) = set lbf_
+  insert (V3 B1 B0 B1) = set rbf_
+  insert (V3 B0 B1 B1) = set ltf_
+  insert (V3 B1 B1 B1) = set rtf_
 
 instance Linear.Finite Oct where
   type Size Oct = 8
@@ -90,34 +90,34 @@ instance Linear.Finite Oct where
   fromV (Linear.V v) = Oct (head (deinterleaveWith V2 (deinterleaveWith V2 (deinterleaveWith V2 (map (v V.!) [0..7])))))
 
 oct :: a -> a -> a -> a -> a -> a -> a -> a -> Oct a
-oct bln brn tln trn blf brf tlf trf = Oct $ V2 (V2 (V2 bln brn) (V2 tln trn)) (V2 (V2 blf brf) (V2 tlf trf))
+oct lbn rbn ltn rtn lbf rbf ltf rtf = Oct $ V2 (V2 (V2 lbn rbn) (V2 ltn rtn)) (V2 (V2 lbf rbf) (V2 ltf rtf))
 
 oct_ :: Iso' (Oct a) (V2 (V2 (V2 a)))
 oct_ = iso getOct Oct
 
-bln_ :: Lens' (Oct a) a
-bln_ = oct_._x._x._x
+lbn_ :: Lens' (Oct a) a
+lbn_ = oct_._x._x._x
 
-brn_ :: Lens' (Oct a) a
-brn_ = oct_._x._x._y
+rbn_ :: Lens' (Oct a) a
+rbn_ = oct_._x._x._y
 
-tln_ :: Lens' (Oct a) a
-tln_ = oct_._x._y._x
+ltn_ :: Lens' (Oct a) a
+ltn_ = oct_._x._y._x
 
-trn_ :: Lens' (Oct a) a
-trn_ = oct_._x._y._y
+rtn_ :: Lens' (Oct a) a
+rtn_ = oct_._x._y._y
 
-blf_ :: Lens' (Oct a) a
-blf_ = oct_._x._x._y
+lbf_ :: Lens' (Oct a) a
+lbf_ = oct_._x._x._y
 
-brf_ :: Lens' (Oct a) a
-brf_ = oct_._y._x._y
+rbf_ :: Lens' (Oct a) a
+rbf_ = oct_._y._x._y
 
-tlf_ :: Lens' (Oct a) a
-tlf_ = oct_._x._y._y
+ltf_ :: Lens' (Oct a) a
+ltf_ = oct_._x._y._y
 
-trf_ :: Lens' (Oct a) a
-trf_ = oct_._y._y._y
+rtf_ :: Lens' (Oct a) a
+rtf_ = oct_._y._y._y
 
 
 type Octree = B Oct
