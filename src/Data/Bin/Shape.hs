@@ -54,5 +54,5 @@ type family Size (b :: Shape) :: Nat where
   Size 'S1      = 1
   Size ('S2x s) = 2 * Size s
 
-size :: forall s t a . KnownNat (Size s) => t s a -> Integer
-size _ = natVal (Proxy @(Size s))
+size :: forall s t a . KnownNat (Size s) => t s a -> Int
+size _ = fromIntegral (natVal (Proxy @(Size s)))

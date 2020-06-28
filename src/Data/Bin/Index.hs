@@ -21,10 +21,10 @@ deriving instance Show (Index i)
 fromIndex :: Index ('S2x i) -> (Bit, Index i)
 fromIndex (IB b i) = (b, i)
 
-toFraction :: Index i -> (Integer, Integer)
+toFraction :: Index i -> (Int, Int)
 toFraction = go
   where
-  go :: Index i -> (Integer, Integer)
+  go :: Index i -> (Int, Int)
   go IL       = (0, 1)
   go (IB b i) = let (n, d) = go i in case b of
     I0 -> (n, d * 2)
