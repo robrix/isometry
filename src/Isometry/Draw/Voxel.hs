@@ -134,16 +134,16 @@ runDrawable m = do
 
 makeVoxels :: (KnownNat (Size s), Has (Lift IO) sig m) => World s Voxel -> m (V.IOVector (V3 (Distance Float)), V.IOVector (UI.Colour Float))
 makeVoxels World{ voxels } = sendIO $ do
-  os <- V.unsafeNew l
-  cs <- V.unsafeNew l
+  origins <- V.unsafeNew l
+  colours <- V.unsafeNew l
   index <- newIORef 0
   getAp (ifoldMap (\ !n (Voxel !c) -> Ap $ do
     let !v = fmap (fromIntegral . (+ offset) . fst . toFraction) n
     i <- readIORef index
-    V.unsafeWrite os i v
-    V.unsafeWrite cs i c
+    V.unsafeWrite origins i v
+    V.unsafeWrite colours i c
     writeIORef index (i + 1)) voxels)
-  pure (os, cs)
+  pure (origins, colours)
   where
   !offset = negate (s `div` 2)
   !s = Octree.size voxels
