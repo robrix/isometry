@@ -1,6 +1,9 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE TypeApplications #-}
 module Data.Bin.Index
 ( Index(..)
 , decompose
@@ -9,6 +12,8 @@ module Data.Bin.Index
 
 import Data.Bin.Bit
 import Data.Bin.Shape
+import Data.Proxy
+import GHC.TypeLits
 
 data Index i where
   IL :: Index 'S1
@@ -21,11 +26,13 @@ deriving instance Show (Index i)
 decompose :: Index ('S2x i) -> (Bit, Index i)
 decompose (IB b i) = (b, i)
 
-toInt :: Index i -> Int
-toInt = fst . go
+toInt :: forall i . KnownNat (Size i) => Index i -> Int
+toInt = go (fromIntegral (natVal (Proxy @(Size i))))
   where
-  go :: Index i -> (Int, Int)
-  go IL       = (0, 1)
-  go (IB b i) = let (n, d) = go i in case b of
-    I0 -> (n, d * 2)
-    I1 -> (n + d, d * 2)
+  go :: Int -> Index i' -> Int
+  go _ IL       = 0
+  go d (IB b i) = let n = go d' i in case b of
+    I0 -> n
+    I1 -> n + d'
+    where
+    d' = d `div` 2
