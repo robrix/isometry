@@ -26,15 +26,13 @@ import qualified Control.Effect.Reader.Labelled as Labelled
 import           Control.Effect.Trace
 import           Control.Lens (Lens')
 import           Control.Monad.IO.Class.Lift
+import           Data.Bin.Octree (withOctreeLen2)
 import           Data.Coerce
 import           Data.Functor.I
 import           Data.Functor.Interval hiding (range)
 import           Data.Generics.Product.Fields
-import           Data.IORef
-import           Data.Monoid (Ap(..))
-import qualified Data.Vector.Storable.Mutable as V
 import           Data.Word
-import           Foreign.Storable
+import           Foreign.Storable.Lift
 import           Geometry.Transform
 import           GHC.Generics
 import           GHC.Stack
@@ -98,20 +96,17 @@ runDrawable m = do
   originsB <- gen1 @(Buffer 'Buffer.Texture (V3 (Distance Float)))
   coloursB <- gen1 @(Buffer 'Buffer.Texture (UI.Colour Float))
   indicesB <- gen1 @(Buffer 'ElementArray Word32)
+  world <- Labelled.asks @World voxels
 
-  (origins, colours) <- measure "make voxels" $ do
-    (origins, colours) <- makeVoxels =<< Labelled.ask @World
-    trace ("origins length: " <> show (V.length origins))
-    trace ("colours length: " <> show (V.length colours))
-    pure (origins, colours)
+  measure "alloc & copy octree" $
+    withOctreeLen2 world ((,) <$> origin <*> Voxel.colour) $ \ len origins colours -> do
+    measure "alloc & copy origins" . bindBuffer originsB $ do
+      realloc @'Buffer.Texture len Static Read
+      copyPtr @'Buffer.Texture (0...len) origins
 
-  measure "alloc & copy origins" . bindBuffer originsB $ do
-    realloc @'Buffer.Texture (V.length origins) Static Read
-    copyMV @'Buffer.Texture 0 origins
-
-  measure "alloc & copy colours" . bindBuffer coloursB $ do
-    realloc @'Buffer.Texture (V.length colours) Static Read
-    copyMV @'Buffer.Texture 0 colours
+    measure "alloc & copy colours" . bindBuffer coloursB $ do
+      realloc @'Buffer.Texture len Static Read
+      copyPtr @'Buffer.Texture (0...len) colours
 
   measure "alloc & copy indices" . bindBuffer indicesB $ do
     realloc @'Buffer.ElementArray (length indices) Static Read
@@ -126,20 +121,6 @@ runDrawable m = do
   runLiftIO $ glTexBuffer GL_TEXTURE_BUFFER GL_RGBA32F (unBuffer coloursB)
 
   UI.loadingDrawable (\ drawable -> Drawable{ originsT, originsB, coloursT, coloursB, indicesB, drawable }) shader (coerce corners) m
-
-makeVoxels :: (Has (Lift IO) sig m) => World s Voxel -> m (V.IOVector (V3 (Distance Float)), V.IOVector (UI.Colour Float))
-makeVoxels World{ voxels } = sendIO $ do
-  origins <- V.unsafeNew l
-  colours <- V.unsafeNew l
-  index <- newIORef 0
-  getAp (foldMap (\ (Voxel !o !c) -> Ap $ do
-    i <- readIORef index
-    V.unsafeWrite origins i o
-    V.unsafeWrite colours i c
-    writeIORef index (i + 1)) voxels)
-  pure (origins, colours)
-  where
-  !l = length voxels
 
 
 data Drawable = Drawable
