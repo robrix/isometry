@@ -77,7 +77,7 @@ runFrame
   . (\ m -> now >>= \ start -> evalState start m)
   . (\ m -> do
     world <- measure "build" $ do
-      let world = makeWorld (tetra (\ v -> Voxel 0 & UI.colour_ .~ UI.Colour (ext ((/ fromIntegral (Shape.size world)). fromIntegral . toInt <$> v) 1)))
+      let world = makeWorld (tetra (\ v -> Voxel 0 & UI.colour_ .~ UI.Colour (ext ((/ fromIntegral (Shape.size world)) . fromIntegral . toInt <$> v) 1)))
       world <$ trace ("world length: " <> show (length world))
     runReader world m)
   . runLabelled
