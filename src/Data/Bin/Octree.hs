@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE FlexibleContexts #-}
@@ -11,11 +12,14 @@
 module Data.Bin.Octree
 ( Octree(..)
 , withOctreeLen
+, withOctreeLen2
 ) where
 
 import Control.Carrier.Lift
 import Control.Lens.Indexed
 import Data.Bin.Bit
+import Data.Foldable (for_)
+import Data.IORef
 import Data.Bin.Index
 import Data.Bin.Shape
 import Data.Bin.Tree (SparseUnfoldableWithIndex(..))
@@ -116,3 +120,16 @@ withOctreeLen o with = allocaArray len $ \ p -> do
       p8 <- go p7 a7
       go p8 a8
   len = length o
+
+withOctreeLen2 :: forall a b c r s m sig . (Has (Lift IO) sig m, Storable b, Storable c) => Octree s a -> (a -> (b, c)) -> (Int -> Ptr b -> Ptr c -> m r) -> m r
+withOctreeLen2 o prj with = allocaArray len $ \ pb -> allocaArray len $ \ pc -> do
+  ref <- sendIO $ newIORef 0
+  sendIO . for_ o $ \ a -> do
+    !off <- readIORef ref
+    let (!b, !c) = prj a
+    pokeElemOff pb off b
+    pokeElemOff pc off c
+    writeIORef ref $ off + 1
+  with len pb pc
+  where
+  !len = length o
