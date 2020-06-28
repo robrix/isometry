@@ -32,10 +32,10 @@ data Octree s a where
   E :: Octree s a
   L :: !a -> Octree 'S1 a
   B :: {-# UNPACK #-} !Int
-    -> Octree s a -> Octree s a
-    -> Octree s a -> Octree s a
-    -> Octree s a -> Octree s a
-    -> Octree s a -> Octree s a
+    -> !(Octree s a) -> !(Octree s a)
+    -> !(Octree s a) -> !(Octree s a)
+    -> !(Octree s a) -> !(Octree s a)
+    -> !(Octree s a) -> !(Octree s a)
     -> Octree ('S2x s) a
 
 instance Foldable (Octree s) where
