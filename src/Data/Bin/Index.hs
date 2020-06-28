@@ -27,10 +27,11 @@ instance KnownNat (Place i) => Bounded (Index i) where
   minBound = Index 0
   maxBound = let i = Index (bit (place i) - 1) in i
 
-instance Enum (Index 'S1) where
-  toEnum 0 = il
-  toEnum _ = error "Data.Bin.Index.Index 'S1.toEnum: bad argument"
-  fromEnum _ = 0
+instance KnownNat (Place i) => Enum (Index i) where
+  toEnum i | i' <- fromIntegral i
+           , i' <= getIndex (maxBound :: Index i) = Index i'
+           | otherwise = error "Data.Bin.Index.Index.toEnum: bad argument"
+  fromEnum = fromIntegral . getIndex
 
 il :: Index 'S1
 il = Index 0
