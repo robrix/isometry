@@ -12,7 +12,7 @@ import Data.Bin.Shape
 
 data Index i where
   IL :: Index 'S1
-  IB :: Bit -> Index i -> Index ('S2x i)
+  IB :: !Bit -> !(Index i) -> Index ('S2x i)
 
 deriving instance Eq   (Index i)
 deriving instance Ord  (Index i)
