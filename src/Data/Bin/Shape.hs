@@ -64,5 +64,10 @@ type family Place (b :: Shape) :: Nat where
   Place 'S1      = 0
   Place ('S2x s) = 1 + Place s
 
+-- | Produce the place of the bit for a given shape; equivalently, the power of two that the shape represents.
+--
+-- @
+-- size i = 2^place i
+-- @
 place :: forall s i . KnownNat (Place s) => i s -> Int
 place _ = fromIntegral (natVal (Proxy @(Place s)))
