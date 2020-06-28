@@ -62,6 +62,19 @@ instance SparseUnfoldableWithIndex V3 (Index s) (Octree s) => SparseUnfoldableWi
     go i = branch i >>= \ b -> if b then iunfoldSparseM branch (leaf . (IB <$> i <*>)) else pure E
   {-# INLINABLE iunfoldSparseM #-}
 
+instance Applicative (Octree 'S1) where
+  pure = L
+
+  E     <*> _ = E
+  L   f <*> a = fmap f a
+
+instance Applicative (Octree s) => Applicative (Octree ('S2x s)) where
+  pure = makeB . pure . pure
+
+  E     <*> _ = E
+  _     <*> E = E
+  B _ f <*> B _ a = makeB ((<*>) <$> f <*> a)
+
 makeB :: Oct (Octree s a) -> Octree ('S2x s) a
 makeB o = B (getSum (foldMap (Sum . length) o)) o
 {-# INLINABLE makeB #-}
