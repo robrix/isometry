@@ -62,7 +62,7 @@ size _ = fromIntegral (natVal (Proxy @(Size s)))
 
 type family Place (b :: Shape) :: Nat where
   Place 'S1      = 0
-  Place ('S2x s) = 1 + Size s
+  Place ('S2x s) = 1 + Place s
 
 place :: forall s i . KnownNat (Place s) => i s -> Int
 place _ = fromIntegral (natVal (Proxy @(Place s)))
