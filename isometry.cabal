@@ -73,6 +73,7 @@ library
     Foreign.Marshal.Alloc.Lift
     Foreign.Marshal.Array.Lift
     Foreign.Marshal.Utils.Lift
+    Foreign.Storable.Lift
     Geometry.Circle
     Geometry.Transform
     Geometry.Triangle
