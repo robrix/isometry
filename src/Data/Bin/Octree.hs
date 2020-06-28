@@ -103,22 +103,13 @@ makeB o1 o2 o3 o4 o5 o6 o7 o8 = B (length o1 + length o2 + length o3 + length o4
 
 withOctreeLen :: (Has (Lift IO) sig m, Storable a) => Octree s a -> (Int -> Ptr a -> m b) -> m b
 withOctreeLen o with = allocaArray len $ \ p -> do
-  _ <- sendIO $ go p o
+  ref <- sendIO $ newIORef 0
+  _ <- sendIO . for_ o $ \ a -> do
+    !off <- readIORef ref
+    pokeElemOff p off a
+    writeIORef ref $ off + 1
   with len p
   where
-  go :: Storable a => Ptr a -> Octree s a -> IO (Ptr a)
-  go p1 = \case
-    E   -> pure p1
-    L a -> plusPtr p1 (sizeOf a) <$ poke p1 a
-    B _ a1 a2 a3 a4 a5 a6 a7 a8 -> do
-      p2 <- go p1 a1
-      p3 <- go p2 a2
-      p4 <- go p3 a3
-      p5 <- go p4 a4
-      p6 <- go p5 a5
-      p7 <- go p6 a6
-      p8 <- go p7 a7
-      go p8 a8
   len = length o
 
 withOctreeLen2 :: forall a b c r s m sig . (Has (Lift IO) sig m, Storable b, Storable c) => Octree s a -> (a -> (b, c)) -> (Int -> Ptr b -> Ptr c -> m r) -> m r
