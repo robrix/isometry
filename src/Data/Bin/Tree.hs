@@ -107,7 +107,7 @@ instance (Applicative v, UnfoldableWithIndex (v Bit) f, SparseUnfoldableWithInde
 instance (Indexed (v Bit) f, Functor v) => SparseIndexed (v (Index s)) (B f s) where
   E     !? _ = Nothing
   L   a !? _ = Just a
-  B _ b !? v = b ! fmap (fst . fromIndex) v !? fmap (snd . fromIndex) v
+  B _ b !? v = b ! fmap (fst . decompose) v !? fmap (snd . decompose) v
 
 instance MutableIndexed (v Bit) f => MutableIndexed (v (Index 'S1)) (B f 'S1) where
   insert _ a _ = L a
@@ -117,8 +117,8 @@ instance (MutableIndexed (v Bit) f, Applicative f, Foldable f, Functor v, Mutabl
     E     -> (E, pure E)
     B _ f -> (f ! ihead, f)
     where
-    ihead = fst . fromIndex <$> i
-    itail = snd . fromIndex <$> i
+    ihead = fst . decompose <$> i
+    itail = snd . decompose <$> i
 
 instance Functor f => Applicative (B f 'S1) where
   pure = L

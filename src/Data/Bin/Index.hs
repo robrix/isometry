@@ -3,7 +3,7 @@
 {-# LANGUAGE StandaloneDeriving #-}
 module Data.Bin.Index
 ( Index(..)
-, fromIndex
+, decompose
 , toFraction
 ) where
 
@@ -18,8 +18,8 @@ deriving instance Eq   (Index i)
 deriving instance Ord  (Index i)
 deriving instance Show (Index i)
 
-fromIndex :: Index ('S2x i) -> (Bit, Index i)
-fromIndex (IB b i) = (b, i)
+decompose :: Index ('S2x i) -> (Bit, Index i)
+decompose (IB b i) = (b, i)
 
 toFraction :: Index i -> (Int, Int)
 toFraction = go
