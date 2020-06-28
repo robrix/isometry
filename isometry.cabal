@@ -150,6 +150,7 @@ library
     Paths_isometry
   build-depends:
     , adjunctions
+    , array
     , base
     , containers
     , direct-sqlite ^>= 2.3
