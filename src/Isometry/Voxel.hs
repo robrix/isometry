@@ -1,10 +1,13 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE TypeApplications #-}
 module Isometry.Voxel
 ( Voxel(..)
 , Side(..)
 ) where
 
 import           Data.Ix
+import           Foreign.Ptr
+import           Foreign.Storable
 import           GHC.Generics (Generic)
 import           Isometry.World
 import           Linear.V3
@@ -19,6 +22,12 @@ data Voxel = Voxel
   deriving (Generic)
 
 instance UI.HasColour Voxel
+
+instance Storable Voxel where
+ sizeOf _ = sizeOf @(V3 (Distance Float)) undefined + sizeOf @(UI.Colour Float) undefined
+ alignment _ = alignment @(V3 (Distance Float)) undefined
+ peek ptr = Voxel <$> peek (castPtr ptr) <*> peek (castPtr ptr `plusPtr` sizeOf @(V3 (Distance Float)) undefined)
+ poke ptr (Voxel o c) = poke (castPtr ptr) o *> poke (castPtr ptr `plusPtr` sizeOf @(V3 (Distance Float)) undefined) c
 
 data Side
   = L
