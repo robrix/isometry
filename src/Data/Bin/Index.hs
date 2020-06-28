@@ -4,7 +4,7 @@
 module Data.Bin.Index
 ( Index(..)
 , decompose
-, toFraction
+, toInt
 ) where
 
 import Data.Bin.Bit
@@ -21,8 +21,8 @@ deriving instance Show (Index i)
 decompose :: Index ('S2x i) -> (Bit, Index i)
 decompose (IB b i) = (b, i)
 
-toFraction :: Index i -> (Int, Int)
-toFraction = go
+toInt :: Index i -> Int
+toInt = fst . go
   where
   go :: Index i -> (Int, Int)
   go IL       = (0, 1)

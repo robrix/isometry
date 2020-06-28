@@ -27,7 +27,7 @@ import           Control.Lens (Lens', (&), (.~), (^.))
 import           Control.Monad (when)
 import           Control.Monad.IO.Class.Lift
 import           Data.Bin.Shape as Shape
-import           Data.Bin.Index (toFraction)
+import           Data.Bin.Index (toInt)
 import           Data.Bin.Tree (tetra)
 import           Data.Bits ((.|.))
 import           Data.Functor.I
@@ -77,7 +77,7 @@ runFrame
   . (\ m -> now >>= \ start -> evalState start m)
   . (\ m -> do
     world <- measure "build" $ do
-      let world = makeWorld (tetra (\ v -> Voxel 0 & UI.colour_ .~ UI.Colour (ext ((/ fromIntegral (Shape.size world)). fromIntegral . fst . toFraction <$> v) 1)))
+      let world = makeWorld (tetra (\ v -> Voxel 0 & UI.colour_ .~ UI.Colour (ext ((/ fromIntegral (Shape.size world)). fromIntegral . toInt <$> v) 1)))
       world <$ trace ("world length: " <> show (length world))
     runReader world m)
   . runLabelled

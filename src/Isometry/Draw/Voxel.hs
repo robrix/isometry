@@ -26,7 +26,7 @@ import qualified Control.Effect.Reader.Labelled as Labelled
 import           Control.Effect.Trace
 import           Control.Lens (Lens', ifoldMap)
 import           Control.Monad.IO.Class.Lift
-import           Data.Bin.Index (toFraction)
+import           Data.Bin.Index (toInt)
 import           Data.Bin.Shape (Size)
 import           Data.Bin.Tree as Octree (size)
 import           Data.Coerce
@@ -138,7 +138,7 @@ makeVoxels World{ voxels } = sendIO $ do
   colours <- V.unsafeNew l
   index <- newIORef 0
   getAp (ifoldMap (\ !n (Voxel !c) -> Ap $ do
-    let !v = fmap (fromIntegral . (+ offset) . fst . toFraction) n
+    let !v = fmap (fromIntegral . (+ offset) . toInt) n
     i <- readIORef index
     V.unsafeWrite origins i v
     V.unsafeWrite colours i c
