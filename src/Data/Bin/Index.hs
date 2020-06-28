@@ -13,6 +13,7 @@ module Data.Bin.Index
 
 import Data.Bin.Bit
 import Data.Bin.Shape
+import Data.Bits
 import Data.Proxy
 import GHC.TypeLits
 
@@ -36,4 +37,4 @@ toInt = go 0 (fromIntegral (natVal (Proxy @(Size i))))
     I0 -> n
     I1 -> n + d') d' i
     where
-    d' = d `div` 2
+    !d' = shift d (-1)
