@@ -79,9 +79,7 @@ makeB o = B (length o) o
 {-# INLINABLE makeB #-}
 
 
-data Oct s a = Oct
-  { lbf, rbf, ltf, rtf, lbn, rbn, ltn, rtn :: Octree s a
-  }
+data Oct s a = Oct { lbf, rbf, ltf, rtf, lbn, rbn, ltn, rtn :: Octree s a }
   deriving (Functor, Traversable)
 
 instance Foldable (Oct s) where
