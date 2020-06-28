@@ -187,6 +187,7 @@ class SparseUnfoldableWithIndex v i t | t -> v i where
   iunfoldSparseM :: Monad m => (v Bit -> m Bool) -> (v i -> m a) -> m (t a)
   iunfoldSparse :: (v Bit -> Bool) -> (v i -> a) -> t a
   iunfoldSparse branch (leaf :: v i -> a) = coerce (iunfoldSparseM :: (v Bit -> Identity Bool) -> (v i -> Identity a) -> Identity (t a)) branch leaf
+  {-# INLINABLE iunfoldSparse #-}
 
 
 class BinaryIndexed f t | t -> f where
