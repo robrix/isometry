@@ -33,7 +33,9 @@ import           Data.Coerce
 import           Data.Functor.I
 import           Data.Functor.Interval hiding (range)
 import           Data.Generics.Product.Fields
-import           Data.Monoid (Endo(..))
+import           Data.IORef
+import           Data.Monoid (Ap(..))
+import qualified Data.Vector.Storable.Mutable as V
 import           Data.Word
 import           Foreign.Storable
 import           Geometry.Transform
@@ -103,18 +105,18 @@ runDrawable m = do
   indicesB <- gen1 @(Buffer 'ElementArray Word32)
 
   (origins, colours) <- measure "make voxels" $ do
-    (origins, colours) <- Labelled.asks @World makeVoxels
-    trace ("origins length: " <> show (length origins))
-    trace ("colours length: " <> show (length colours))
+    (origins, colours) <- makeVoxels =<< Labelled.ask @World
+    trace ("origins length: " <> show (V.length origins))
+    trace ("colours length: " <> show (V.length colours))
     pure (origins, colours)
 
   measure "alloc & copy origins" . bindBuffer originsB $ do
-    realloc @'Buffer.Texture (length origins) Static Read
-    copy @'Buffer.Texture 0 origins
+    realloc @'Buffer.Texture (V.length origins) Static Read
+    copyMV @'Buffer.Texture 0 origins
 
   measure "alloc & copy colours" . bindBuffer coloursB $ do
-    realloc @'Buffer.Texture (length colours) Static Read
-    copy @'Buffer.Texture 0 colours
+    realloc @'Buffer.Texture (V.length colours) Static Read
+    copyMV @'Buffer.Texture 0 colours
 
   measure "alloc & copy indices" . bindBuffer indicesB $ do
     realloc @'Buffer.ElementArray (length indices) Static Read
@@ -130,10 +132,22 @@ runDrawable m = do
 
   UI.loadingDrawable (\ drawable -> Drawable{ originsT, originsB, coloursT, coloursB, indicesB, drawable }) shader (coerce corners) m
 
-makeVoxels :: KnownNat (Size s) => World s Voxel -> ([V3 (Distance Float)], [UI.Colour Float])
-makeVoxels World{ voxels } = appEndo (ifoldMap (\ !n (Voxel !c) -> Endo (\ (!os, !cs) -> let !v = fmap (fromIntegral . (+ offset) . fst . toFraction) n in (v:os, c:cs))) voxels) ([], [])
+makeVoxels :: (KnownNat (Size s), Has (Lift IO) sig m) => World s Voxel -> m (V.IOVector (V3 (Distance Float)), V.IOVector (UI.Colour Float))
+makeVoxels World{ voxels } = sendIO $ do
+  os <- V.unsafeNew l
+  cs <- V.unsafeNew l
+  index <- newIORef 0
+  getAp (ifoldMap (\ !n (Voxel !c) -> Ap $ do
+    let !v = fmap (fromIntegral . (+ offset) . fst . toFraction) n
+    i <- readIORef index
+    V.unsafeWrite os i v
+    V.unsafeWrite cs i c
+    writeIORef index (i + 1)) voxels)
+  pure (os, cs)
   where
-  !offset = negate (Octree.size voxels `div` 2)
+  !offset = negate (s `div` 2)
+  !s = Octree.size voxels
+  !l = length voxels
 
 
 data Drawable = Drawable
