@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GADTs #-}
@@ -27,12 +28,12 @@ decompose :: Index ('S2x i) -> (Bit, Index i)
 decompose (IB b i) = (b, i)
 
 toInt :: forall i . KnownNat (Size i) => Index i -> Int
-toInt = go (fromIntegral (natVal (Proxy @(Size i))))
+toInt = go 0 (fromIntegral (natVal (Proxy @(Size i))))
   where
-  go :: Int -> Index i' -> Int
-  go _ IL       = 0
-  go d (IB b i) = let n = go d' i in case b of
+  go :: Int -> Int -> Index i' -> Int
+  go !n !_ IL     = n
+  go !n !d (IB b i) = go (case b of
     I0 -> n
-    I1 -> n + d'
+    I1 -> n + d') d' i
     where
     d' = d `div` 2
