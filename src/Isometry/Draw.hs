@@ -147,6 +147,8 @@ frame = timed $ do
 
     measure "setLabel" $ setLabel target font "hello"
     measure "drawLabel" $ drawLabel target 10 UI.white Nothing
+
+    measure "glFinish" glFinish
   where
   turnRate :: (I :/: Seconds) Double
   turnRate = I pi ./. Seconds 1
