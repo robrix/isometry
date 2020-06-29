@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 module Data.Bin.Bintree
 ( Bintree(..)
 ) where
@@ -15,10 +16,13 @@ data Bintree s a where
     -> Bintree ('S2x s) a
 
 instance Foldable (Bintree s) where
-  foldMap f = \case
-    E       -> mempty
-    L a     -> f a
-    B _ l r -> foldMap f l <> foldMap f r
+  foldMap (f :: a -> m) = go
+    where
+    go :: Bintree s' a -> m
+    go = \case
+      E       -> mempty
+      L a     -> f a
+      B _ l r -> go l <> go r
   {-# INLINABLE foldMap #-}
 
   length = \case
