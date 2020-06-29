@@ -42,12 +42,11 @@ import           Data.Bin.Bit
 import           Data.Bin.Index
 import           Data.Bin.Shape
 import           Data.Bits
-import           Data.Coerce
 import           Data.Foldable (foldl')
 import           Data.Functor.C
-import           Data.Functor.Identity
 import           Data.Monoid (Sum(..))
 import           Data.Proxy
+import           Data.Unfoldable
 import           GHC.TypeLits
 import qualified Linear.V as Linear
 import           Linear.V1
@@ -181,13 +180,6 @@ instance UnfoldableWithIndex (E V3) V3 where
 
 iunfoldr :: UnfoldableWithIndex i f => (i -> s -> (s, b)) -> s -> f b
 iunfoldr f a = run . evalState a . iunfoldA $ state . f
-
--- | Unfolding of finite sparse structures with an index.
-class SparseUnfoldableWithIndex b i t | t -> b i where
-  iunfoldSparseM :: Monad m => (b -> m Bool) -> (i -> m a) -> m (t a)
-  iunfoldSparse :: (b -> Bool) -> (i -> a) -> t a
-  iunfoldSparse branch (leaf :: i -> a) = coerce (iunfoldSparseM :: (b -> Identity Bool) -> (i -> Identity a) -> Identity (t a)) branch leaf
-  {-# INLINABLE iunfoldSparse #-}
 
 
 class BinaryIndexed f t | t -> f where
