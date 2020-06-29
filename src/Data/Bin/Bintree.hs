@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE LambdaCase #-}
 module Data.Bin.Bintree
 ( Bintree(..)
 ) where
@@ -12,3 +13,16 @@ data Bintree s a where
   B :: {-# UNPACK #-} !Int
     -> !(Bintree s a) -> !(Bintree s a)
     -> Bintree ('S2x s) a
+
+instance Foldable (Bintree s) where
+  foldMap f = \case
+    E       -> mempty
+    L a     -> f a
+    B _ l r -> foldMap f l <> foldMap f r
+  {-# INLINABLE foldMap #-}
+
+  length = \case
+    E       -> 0
+    L _     -> 1
+    B l _ _ -> l
+  {-# INLINABLE length #-}
