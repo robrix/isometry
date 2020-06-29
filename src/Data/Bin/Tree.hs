@@ -41,8 +41,6 @@ import           Control.Lens.Indexed hiding (Indexed(..), indices)
 import           Data.Bin.Bit
 import           Data.Bin.Index
 import           Data.Bin.Shape
-import           Data.Bits
-import           Data.Foldable (foldl')
 import           Data.Functor.C
 import           Data.Monoid (Sum(..))
 import           Data.Proxy
@@ -157,11 +155,6 @@ makeB a = B (getSum (foldMap (Sum . length) a)) a
 
 capacity :: forall s f a . (KnownNat (Linear.Size f), KnownNat (Size s)) => B f s a -> Int
 capacity b = size b ^ (round (logBase @Float 2 (fromIntegral (natVal (Proxy @(Linear.Size f))))) :: Int)
-
-
-tetra :: (Foldable v, SparseUnfoldableWithIndex (v Bit) i t) => (i -> a) -> t a
-tetra = iunfoldSparse (fromBit . foldl' xor B0)
-{-# INLINABLE tetra #-}
 
 
 -- | Unfolding of finite dense structures with an index.
