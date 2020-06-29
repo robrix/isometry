@@ -58,6 +58,7 @@ library
     Control.Exception.Lift
     Control.Monad.IO.Class.Lift
     Data.Bin.Bin
+    Data.Bin.Bintree
     Data.Bin.Bit
     Data.Bin.Index
     Data.Bin.Octree
