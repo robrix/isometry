@@ -81,3 +81,4 @@ b lb rb lt rt
   | otherwise = E
   where
   !len = length lb + length rb + length lt + length rt
+{-# INLINABLE b #-}
