@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveTraversable #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -13,6 +14,7 @@ import Control.Lens.Indexed
 import Data.Bin.Bit
 import Data.Bin.Index
 import Data.Bin.Shape
+import Data.Bin.Tree (SparseUnfoldableWithIndex(..))
 
 data Bintree s a where
   E :: Bintree s a
@@ -49,3 +51,10 @@ instance FoldableWithIndex (Index s) (Bintree s) where
       where
       go b = ifoldMap (f . ib b)
   {-# INLINABLE ifoldMap #-}
+
+instance SparseUnfoldableWithIndex Bit (Index 'S1) (Bintree 'S1) where
+  iunfoldSparseM _ leaf = L <$> leaf il
+  {-# INLINABLE iunfoldSparseM #-}
+
+  iunfoldSparse _ leaf = L (leaf il)
+  {-# INLINABLE iunfoldSparse #-}
