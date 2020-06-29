@@ -2,12 +2,16 @@
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
 module Data.Bin.Bintree
 ( Bintree(..)
 ) where
 
+import Control.Lens.Indexed
+import Data.Bin.Bit
+import Data.Bin.Index
 import Data.Bin.Shape
 
 data Bintree s a where
@@ -35,3 +39,13 @@ instance Foldable (Bintree s) where
 
 deriving instance Functor     (Bintree s)
 deriving instance Traversable (Bintree s)
+
+instance FoldableWithIndex (Index s) (Bintree s) where
+  ifoldMap f = \case
+    E     -> mempty
+    L   a -> f il a
+    B _ l r
+      -> go B0 l <> go B1 r
+      where
+      go b = ifoldMap (f . ib b)
+  {-# INLINABLE ifoldMap #-}
