@@ -27,13 +27,13 @@ import           Control.Effect.Trace
 import           Control.Lens (Lens', (&), (.~), (^.))
 import           Control.Monad (when)
 import           Control.Monad.IO.Class.Lift
-import           Data.Bin.Shape as Shape
 import           Data.Bin.Index (toInt)
-import           Data.Bin.Tree (tetra)
+import           Data.Bin.Shape as Shape
 import           Data.Bits ((.|.))
 import           Data.Functor.I
 import           Data.Functor.Interval hiding (range)
 import           Data.Generics.Product.Fields
+import           Data.Unfoldable (tetra)
 import           GHC.Generics (Generic)
 import           GHC.Stack
 import           GL.Effect.Check

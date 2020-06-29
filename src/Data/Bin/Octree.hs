@@ -22,7 +22,7 @@ import Data.Foldable (for_)
 import Data.IORef
 import Data.Bin.Index
 import Data.Bin.Shape
-import Data.Bin.Tree (SparseUnfoldableWithIndex(..))
+import Data.Unfoldable (SparseUnfoldableWithIndex(..))
 import Foreign.Marshal.Array.Lift
 import Foreign.Ptr
 import Foreign.Storable

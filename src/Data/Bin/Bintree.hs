@@ -16,7 +16,7 @@ import Control.Lens.Indexed
 import Data.Bin.Bit
 import Data.Bin.Index
 import Data.Bin.Shape
-import Data.Bin.Tree (SparseUnfoldableWithIndex(..))
+import Data.Unfoldable (SparseUnfoldableWithIndex(..))
 
 data Bintree s a where
   E :: Bintree s a
