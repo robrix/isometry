@@ -75,6 +75,19 @@ instance SparseUnfoldableWithIndex (V2 Bit) (V2 (Index s)) (Quadtree s) => Spars
     go i = if branch i then iunfoldSparse branch (leaf . (ib <$> i <*>)) else E
   {-# INLINABLE iunfoldSparse #-}
 
+instance Applicative (Quadtree 'S1) where
+  pure = L
+
+  E     <*> _ = E
+  L   f <*> a = fmap f a
+
+instance Applicative (Quadtree s) => Applicative (Quadtree ('S2x s)) where
+  pure a = b (pure a) (pure a) (pure a) (pure a)
+
+  E     <*> _     = E
+  _     <*> E     = E
+  B _ f1 f2 f3 f4 <*> B _ a1 a2 a3 a4 = b (f1 <*> a1) (f2 <*> a2) (f3 <*> a3) (f4 <*> a4)
+
 b :: Quadtree s a -> Quadtree s a -> Quadtree s a -> Quadtree s a -> Quadtree ('S2x s) a
 b lb rb lt rt
   | len > 0   = B len lb rb lt rt
