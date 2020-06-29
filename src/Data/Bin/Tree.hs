@@ -100,10 +100,10 @@ instance (UnfoldableWithIndex (v Bit) f, Applicative v) => UnfoldableWithIndex (
 instance (UnfoldableWithIndex (v Bit) f, Applicative v, UnfoldableWithIndex (v (Index s)) (B f s), Foldable f) => UnfoldableWithIndex (v (Index ('S2x s))) (B f ('S2x s)) where
   iunfoldA f = makeB <$> iunfoldA (\ i -> iunfoldA (\ j -> f (ib <$> i <*> j)))
 
-instance (Applicative v, UnfoldableWithIndex (v Bit) f) => SparseUnfoldableWithIndex v (Index 'S1) (B f 'S1) where
+instance (Applicative v, UnfoldableWithIndex (v Bit) f) => SparseUnfoldableWithIndex (v Bit) (v (Index 'S1)) (B f 'S1) where
   iunfoldSparseM _ leaf = L <$> leaf (pure il)
 
-instance (Applicative v, UnfoldableWithIndex (v Bit) f, SparseUnfoldableWithIndex v (Index s) (B f s), Foldable f) => SparseUnfoldableWithIndex v (Index ('S2x s)) (B f ('S2x s)) where
+instance (Applicative v, UnfoldableWithIndex (v Bit) f, SparseUnfoldableWithIndex (v Bit) (v (Index s)) (B f s), Foldable f) => SparseUnfoldableWithIndex (v Bit) (v (Index ('S2x s))) (B f ('S2x s)) where
   iunfoldSparseM branch leaf = b <$> iunfoldA (\ i -> branch i >>= \ b -> if b then iunfoldSparseM branch (leaf . (ib <$> i <*>)) else pure E)
 
 instance (Indexed (v Bit) f, Functor v) => SparseIndexed (v (Index s)) (B f s) where
@@ -160,7 +160,7 @@ capacity :: forall s f a . (KnownNat (Linear.Size f), KnownNat (Size s)) => B f 
 capacity b = size b ^ (round (logBase @Float 2 (fromIntegral (natVal (Proxy @(Linear.Size f))))) :: Int)
 
 
-tetra :: (Foldable v, SparseUnfoldableWithIndex v i t) => (v i -> a) -> t a
+tetra :: (Foldable v, SparseUnfoldableWithIndex (v Bit) i t) => (i -> a) -> t a
 tetra = iunfoldSparse (fromBit . foldl' xor B0)
 {-# INLINABLE tetra #-}
 
@@ -183,10 +183,10 @@ iunfoldr :: UnfoldableWithIndex i f => (i -> s -> (s, b)) -> s -> f b
 iunfoldr f a = run . evalState a . iunfoldA $ state . f
 
 -- | Unfolding of finite sparse structures with an index.
-class SparseUnfoldableWithIndex v i t | t -> v i where
-  iunfoldSparseM :: Monad m => (v Bit -> m Bool) -> (v i -> m a) -> m (t a)
-  iunfoldSparse :: (v Bit -> Bool) -> (v i -> a) -> t a
-  iunfoldSparse branch (leaf :: v i -> a) = coerce (iunfoldSparseM :: (v Bit -> Identity Bool) -> (v i -> Identity a) -> Identity (t a)) branch leaf
+class SparseUnfoldableWithIndex b i t | t -> b i where
+  iunfoldSparseM :: Monad m => (b -> m Bool) -> (i -> m a) -> m (t a)
+  iunfoldSparse :: (b -> Bool) -> (i -> a) -> t a
+  iunfoldSparse branch (leaf :: i -> a) = coerce (iunfoldSparseM :: (b -> Identity Bool) -> (i -> Identity a) -> Identity (t a)) branch leaf
   {-# INLINABLE iunfoldSparse #-}
 
 

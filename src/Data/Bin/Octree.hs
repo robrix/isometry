@@ -70,14 +70,14 @@ instance FoldableWithIndex (V3 (Index s)) (Octree s) where
       go x y z = ifoldMap (f . (ib <$> V3 x y z <*>))
   {-# INLINABLE ifoldMap #-}
 
-instance SparseUnfoldableWithIndex V3 (Index 'S1) (Octree 'S1) where
+instance SparseUnfoldableWithIndex (V3 Bit) (V3 (Index 'S1)) (Octree 'S1) where
   iunfoldSparseM _ leaf = L <$> leaf (pure il)
   {-# INLINABLE iunfoldSparseM #-}
 
   iunfoldSparse _ leaf = L (leaf (pure il))
   {-# INLINABLE iunfoldSparse #-}
 
-instance SparseUnfoldableWithIndex V3 (Index s) (Octree s) => SparseUnfoldableWithIndex V3 (Index ('S2x s)) (Octree ('S2x s)) where
+instance SparseUnfoldableWithIndex (V3 Bit) (V3 (Index s)) (Octree s) => SparseUnfoldableWithIndex (V3 Bit) (V3 (Index ('S2x s))) (Octree ('S2x s)) where
   iunfoldSparseM branch leaf = b
     <$> go (V3 B0 B0 B0) <*> go (V3 B1 B0 B0)
     <*> go (V3 B0 B1 B0) <*> go (V3 B1 B1 B0)
