@@ -34,7 +34,6 @@ import           Data.Bits ((.|.))
 import           Data.Functor.I
 import           Data.Functor.Interval hiding (range)
 import           Data.Generics.Product.Fields
-import           Data.Time.Clock
 import           GHC.Generics (Generic)
 import           GHC.Stack
 import           GL.Effect.Check
@@ -67,7 +66,7 @@ runFrame
   => ReaderC Voxel.Drawable
     (ReaderC Axis.Drawable
     (Labelled World (ReaderC (World S128 Voxel))
-    (StateC UTCTime
+    (StateC Instant
     (StateC Player
     (EmptyC
     m))))) a
@@ -109,7 +108,7 @@ frame
      , Has (Reader Window.Window) sig m
      , Has (State Input) sig m
      , Has (State Player) sig m
-     , Has (State UTCTime) sig m
+     , Has (State Instant) sig m
      , HasLabelled World (Reader (World s Voxel)) sig m
      , HasCallStack
      )
