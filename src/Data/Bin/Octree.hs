@@ -45,7 +45,7 @@ instance Foldable (Octree s) where
     go = \case
       E   -> mempty
       L a -> f a
-      B _ lbf rbf ltf rtf lbn rbn ltn rtn -> foldMap f lbf <> foldMap f rbf <> foldMap f ltf <> foldMap f rtf <> foldMap f lbn <> foldMap f rbn <> foldMap f ltn <> foldMap f rtn
+      B _ lbf rbf ltf rtf lbn rbn ltn rtn -> go lbf <> go rbf <> go ltf <> go rtf <> go lbn <> go rbn <> go ltn <> go rtn
   {-# INLINABLE foldMap #-}
 
   length = \case
