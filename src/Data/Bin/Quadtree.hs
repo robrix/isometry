@@ -1,7 +1,9 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE StandaloneDeriving #-}
 module Data.Bin.Quadtree
 ( Quadtree(..)
 ) where
@@ -31,3 +33,6 @@ instance Foldable (Quadtree s) where
     L _         -> 1
     B l _ _ _ _ -> l
   {-# INLINABLE length #-}
+
+deriving instance Functor     (Quadtree s)
+deriving instance Traversable (Quadtree s)
