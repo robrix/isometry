@@ -1,5 +1,7 @@
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveTraversable #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE LambdaCase #-}
@@ -14,6 +16,7 @@ import Control.Lens.Indexed
 import Data.Bin.Bit
 import Data.Bin.Index
 import Data.Bin.Shape
+import Data.Bin.Tree (SparseUnfoldableWithIndex(..))
 import Linear.V2
 
 data Quadtree s a where
@@ -53,3 +56,28 @@ instance FoldableWithIndex (V2 (Index s)) (Quadtree s) where
       where
       go b = ifoldMap (f . (ib <$> b <*>))
   {-# INLINABLE ifoldMap #-}
+
+instance SparseUnfoldableWithIndex (V2 Bit) (V2 (Index 'S1)) (Quadtree 'S1) where
+  iunfoldSparseM _ leaf = L <$> leaf (pure il)
+  {-# INLINABLE iunfoldSparseM #-}
+
+  iunfoldSparse _ leaf = L (leaf (pure il))
+  {-# INLINABLE iunfoldSparse #-}
+
+instance SparseUnfoldableWithIndex (V2 Bit) (V2 (Index s)) (Quadtree s) => SparseUnfoldableWithIndex (V2 Bit) (V2 (Index ('S2x s))) (Quadtree ('S2x s)) where
+  iunfoldSparseM branch leaf = b <$> go (V2 B0 B0) <*> go (V2 B1 B0) <*> go (V2 B0 B1) <*> go (V2 B1 B1)
+    where
+    go i = branch i >>= \ b -> if b then iunfoldSparseM branch (leaf . (ib <$> i <*>)) else pure E
+  {-# INLINABLE iunfoldSparseM #-}
+
+  iunfoldSparse branch leaf = b (go (V2 B0 B0)) (go (V2 B1 B0)) (go (V2 B0 B1)) (go (V2 B1 B1))
+    where
+    go i = if branch i then iunfoldSparse branch (leaf . (ib <$> i <*>)) else E
+  {-# INLINABLE iunfoldSparse #-}
+
+b :: Quadtree s a -> Quadtree s a -> Quadtree s a -> Quadtree s a -> Quadtree ('S2x s) a
+b lb rb lt rt
+  | len > 0   = B len lb rb lt rt
+  | otherwise = E
+  where
+  !len = length lb + length rb + length lt + length rt
