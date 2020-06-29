@@ -1,7 +1,9 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE StandaloneDeriving #-}
 module Data.Bin.Bintree
 ( Bintree(..)
 ) where
@@ -30,3 +32,6 @@ instance Foldable (Bintree s) where
     L _     -> 1
     B l _ _ -> l
   {-# INLINABLE length #-}
+
+deriving instance Functor     (Bintree s)
+deriving instance Traversable (Bintree s)
