@@ -72,6 +72,19 @@ instance SparseUnfoldableWithIndex Bit (Index s) (Bintree s) => SparseUnfoldable
     go i = if branch i then iunfoldSparse branch (leaf . ib i) else E
   {-# INLINABLE iunfoldSparse #-}
 
+instance Applicative (Bintree 'S1) where
+  pure = L
+
+  E     <*> _ = E
+  L   f <*> a = fmap f a
+
+instance Applicative (Bintree s) => Applicative (Bintree ('S2x s)) where
+  pure a = b (pure a) (pure a)
+
+  E     <*> _     = E
+  _     <*> E     = E
+  B _ f1 f2 <*> B _ a1 a2 = b (f1 <*> a1) (f2 <*> a2)
+
 b :: Bintree s a -> Bintree s a -> Bintree ('S2x s) a
 b l r
   | len > 0   = B len l r
