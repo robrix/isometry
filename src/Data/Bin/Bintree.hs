@@ -1,5 +1,7 @@
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveTraversable #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE LambdaCase #-}
@@ -58,3 +60,22 @@ instance SparseUnfoldableWithIndex Bit (Index 'S1) (Bintree 'S1) where
 
   iunfoldSparse _ leaf = L (leaf il)
   {-# INLINABLE iunfoldSparse #-}
+
+instance SparseUnfoldableWithIndex Bit (Index s) (Bintree s) => SparseUnfoldableWithIndex Bit (Index ('S2x s)) (Bintree ('S2x s)) where
+  iunfoldSparseM branch leaf = b <$> go B0 <*> go B1
+    where
+    go i = branch i >>= \ b -> if b then iunfoldSparseM branch (leaf . ib i) else pure E
+  {-# INLINABLE iunfoldSparseM #-}
+
+  iunfoldSparse branch leaf = b (go B0) (go B1)
+    where
+    go i = if branch i then iunfoldSparse branch (leaf . ib i) else E
+  {-# INLINABLE iunfoldSparse #-}
+
+b :: Bintree s a -> Bintree s a -> Bintree ('S2x s) a
+b l r
+  | len > 0   = B len l r
+  | otherwise = E
+  where
+  !len = length l + length r
+{-# INLINABLE b #-}
