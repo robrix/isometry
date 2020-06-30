@@ -123,14 +123,12 @@ runDrawable m = do
   program <- build shader
   (_, array) <- load (coerce corners)
 
-  runReader Drawable{ originsT, originsB, coloursT, coloursB, indicesB, drawable = UI.Drawable{ program, array } } m
+  runReader Drawable{ originsT, coloursT, indicesB, drawable = UI.Drawable{ program, array } } m
 
 
 data Drawable = Drawable
   { originsT :: Texture 'TextureBuffer
-  , originsB :: Buffer 'Buffer.Texture (V3 (Distance Float))
   , coloursT :: Texture 'TextureBuffer
-  , coloursB :: Buffer 'Buffer.Texture (UI.Colour Float)
   , indicesB :: Buffer 'ElementArray Word32
   , drawable :: UI.Drawable U V Frag
   }
