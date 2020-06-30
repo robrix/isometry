@@ -39,6 +39,7 @@ import           GL.Array
 import           GL.Buffer as Buffer
 import           GL.Effect.Check
 import           GL.Object
+import           GL.Program
 import           GL.Shader.DSL as D hiding (get, (.*.), (./.), (^.), _x, _xy, _xz, _y, _yz, _z)
 import qualified GL.Shader.DSL as D
 import           GL.Texture
@@ -119,7 +120,10 @@ runDrawable m = do
   bind (Just coloursT)
   runLiftIO $ glTexBuffer GL_TEXTURE_BUFFER GL_RGBA32F (unBuffer coloursB)
 
-  UI.loadingDrawable (\ drawable -> Drawable{ originsT, originsB, coloursT, coloursB, indicesB, drawable }) shader (coerce corners) m
+  program <- build shader
+  (_, array) <- load (coerce corners)
+
+  runReader Drawable{ originsT, originsB, coloursT, coloursB, indicesB, drawable = UI.Drawable{ program, array } } m
 
 
 data Drawable = Drawable
