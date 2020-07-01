@@ -36,8 +36,9 @@ instance (Unit Mass u, KnownNat n) => Pow Mass (Mass :^: n) u n (u :^: n)
 
 
 newtype Grams a = Grams { getGrams :: a }
-  deriving (Column, Conjugate, Epsilon, Enum, Eq, Foldable, Floating, Fractional, Functor, Integral, Num, Ord, Random, Real, RealFloat, RealFrac, Row, Show, Storable, Traversable, GL.Type, Uniform)
+  deriving (Column, Conjugate, Epsilon, Enum, Eq, Foldable, Floating, Fractional, Functor, Integral, Num, Ord, Random, Real, RealFloat, RealFrac, Row, Storable, Traversable, GL.Type, Uniform)
   deriving (Additive, Applicative, Metric, Monad) via I
+  deriving Show via Formatting Grams a
 
 instance Unit Mass Grams where
   suffix = K ('g':)
