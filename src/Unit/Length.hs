@@ -37,8 +37,9 @@ instance (Unit Length u, KnownNat n) => Pow Length (Length :^: n) u n (u :^: n)
 
 
 newtype Metres a = Metres { getMetres :: a }
-  deriving (Column, Conjugate, Epsilon, Enum, Eq, Foldable, Floating, Fractional, Functor, Integral, Num, Ord, Random, Real, RealFloat, RealFrac, Row, Show, Storable, Traversable, GL.Type, Uniform)
+  deriving (Column, Conjugate, Epsilon, Enum, Eq, Foldable, Floating, Fractional, Functor, Integral, Num, Ord, Random, Real, RealFloat, RealFrac, Row, Storable, Traversable, GL.Type, Uniform)
   deriving (Additive, Applicative, Metric, Monad) via I
+  deriving Show via Formatting Metres a
 
 instance Unit Length Metres where
   suffix = K ('m':)
