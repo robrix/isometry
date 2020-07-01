@@ -152,6 +152,7 @@ superscript i
   sup = "⁰¹²³⁴⁵⁶⁷⁸⁹"
 
 
+-- | A newtype for deriving 'Show' & 'Show1' from the behaviour of 'format', suitable for use with @-XDerivingVia@.
 newtype Formatting u a = Formatting { getFormatting :: u a }
 
 instance (Unit d u, RealFloat (u a)) => Show (Formatting u a) where
