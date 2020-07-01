@@ -30,6 +30,7 @@ module Unit
 , formatExp
 , formatExpR
 , superscript
+, Formatting(..)
 ) where
 
 import Control.Lens.Iso
@@ -148,3 +149,6 @@ superscript i
   | otherwise      = go i where
   go = foldl' (\ s -> fmap s . (:) . (sup !!)) id . digits
   sup = "⁰¹²³⁴⁵⁶⁷⁸⁹"
+
+
+newtype Formatting u a = Formatting { getFormatting :: u a }
