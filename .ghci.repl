@@ -35,5 +35,6 @@
 
 -- We have this one on in the project but not in the REPL to reduce noise
 :seti -Wno-type-defaults
+:set -Wno-unused-packages
 
 :load Main
