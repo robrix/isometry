@@ -112,19 +112,19 @@ infix 4 .>=.
 
 -- ** Formatting
 
-formatWith :: forall u d a . Unit d u => (Maybe Int -> u a -> ShowS) -> Maybe Int -> u a -> String
-formatWith with n u = with n u (showChar ' ' (getK (suffix `asTypeOf` (u <$ K ('x':))) ""))
+formatWith :: forall u d a . Unit d u => (Maybe Int -> u a -> ShowS) -> Maybe Int -> u a -> ShowS
+formatWith with n u = with n u . showChar ' ' . getK (suffix `asTypeOf` (u <$ K ('x':)))
 
-format :: forall u d a . (Unit d u, RealFloat (u a)) => Maybe Int -> u a -> String
+format :: forall u d a . (Unit d u, RealFloat (u a)) => Maybe Int -> u a -> ShowS
 format = formatWith showGFloat
 
-formatDec :: forall u d a . (Unit d u, RealFloat (u a)) => Maybe Int -> u a -> String
+formatDec :: forall u d a . (Unit d u, RealFloat (u a)) => Maybe Int -> u a -> ShowS
 formatDec = formatWith showFFloat
 
-formatExp :: forall u d a . (Unit d u, RealFloat (u a)) => Maybe Int -> u a -> String
+formatExp :: forall u d a . (Unit d u, RealFloat (u a)) => Maybe Int -> u a -> ShowS
 formatExp = formatWith showEFloat
 
-formatExpR :: forall u d a . (Unit d u, RealFloat (u a)) => Maybe Int -> u a -> String
+formatExpR :: forall u d a . (Unit d u, RealFloat (u a)) => Maybe Int -> u a -> ShowS
 formatExpR = formatWith (\ prec x -> if
   | isNaN x                   -> showString "NaN"
   | isInfinite x              -> showString $ if x < 0 then "-Infinity" else "Infinity"
