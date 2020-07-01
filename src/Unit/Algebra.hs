@@ -36,7 +36,7 @@ module Unit.Algebra
   -- * Combinators
 , (:*:)(..)
 , (:/:)(..)
-, (:^:)
+, (:^:)(..)
 , I(..)
   -- * Type-level computation
 , N(..)
