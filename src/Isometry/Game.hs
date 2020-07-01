@@ -77,6 +77,7 @@ game = runGame $ do
   target <- measure "label" Label.label
 
   enabled_ Blend            .= True
+  enabled_ CullFace         .= True
   enabled_ DepthTest        .= True
   enabled_ LineSmooth       .= True
   enabled_ ProgramPointSize .= True
