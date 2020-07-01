@@ -36,8 +36,9 @@ instance (Unit Power u, KnownNat n) => Pow Power (Power :^: n) u n (u :^: n)
 
 
 newtype Watts a = Watts { getWatts :: a }
-  deriving (Column, Conjugate, Epsilon, Enum, Eq, Foldable, Floating, Fractional, Functor, Integral, Num, Ord, Random, Real, RealFloat, RealFrac, Row, Show, Storable, Traversable, GL.Type, Uniform)
+  deriving (Column, Conjugate, Epsilon, Enum, Eq, Foldable, Floating, Fractional, Functor, Integral, Num, Ord, Random, Real, RealFloat, RealFrac, Row, Storable, Traversable, GL.Type, Uniform)
   deriving (Additive, Applicative, Metric, Monad) via I
+  deriving Show via Formatting Watts a
 
 instance Unit Power Watts where
   suffix = K ('W':)
