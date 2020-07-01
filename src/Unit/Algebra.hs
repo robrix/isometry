@@ -8,6 +8,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilyDependencies #-}
 {-# LANGUAGE TypeOperators #-}
@@ -174,10 +175,12 @@ normalizeU = fmap I . normalize . fmap prj
 -- * Combinators
 
 newtype ((u :: Type -> Type) :*: (v :: Type -> Type)) a = Prd { getPrd :: a }
-  deriving (Column, Conjugate, Epsilon, Enum, Eq, Foldable, Floating, Fractional, Functor, Integral, Num, Ord, Random, Real, RealFloat, RealFrac, Row, Show, Storable, Traversable, GL.Type, Uniform)
+  deriving (Column, Conjugate, Epsilon, Enum, Eq, Foldable, Floating, Fractional, Functor, Integral, Num, Ord, Random, Real, RealFloat, RealFrac, Row, Storable, Traversable, GL.Type, Uniform)
   deriving (Additive, Applicative, Metric, Monad) via I
 
 infixl 7 :*:
+
+deriving via Formatting (u :*: v) a instance (Unit du u, Unit dv v, RealFloat a) => Show ((u :*: v) a)
 
 instance Dimension (du :*: dv)
 
@@ -189,10 +192,12 @@ instance (Unit du u, Unit dv v) => Unit (du :*: dv) (u :*: v) where
 
 
 newtype ((u :: Type -> Type) :/: (v :: Type -> Type)) a = Per { getPer :: a }
-  deriving (Column, Conjugate, Epsilon, Enum, Eq, Foldable, Floating, Fractional, Functor, Integral, Num, Ord, Random, Real, RealFloat, RealFrac, Row, Show, Storable, Traversable, GL.Type, Uniform)
+  deriving (Column, Conjugate, Epsilon, Enum, Eq, Foldable, Floating, Fractional, Functor, Integral, Num, Ord, Random, Real, RealFloat, RealFrac, Row, Storable, Traversable, GL.Type, Uniform)
   deriving (Additive, Applicative, Metric, Monad) via I
 
 infixl 7 :/:
+
+deriving via Formatting (u :/: v) a instance (Unit du u, Unit dv v, RealFloat a) => Show ((u :/: v) a)
 
 instance Dimension (du :/: dv)
 
@@ -204,10 +209,12 @@ instance (Unit du u, Unit dv v) => Unit (du :/: dv) (u :/: v) where
 
 
 newtype ((u :: Type -> Type) :^: (n :: Nat)) a = Exp { getExp :: a }
-  deriving (Column, Conjugate, Epsilon, Enum, Eq, Foldable, Floating, Fractional, Functor, Integral, Num, Ord, Random, Real, RealFloat, RealFrac, Row, Show, Storable, Traversable, GL.Type, Uniform)
+  deriving (Column, Conjugate, Epsilon, Enum, Eq, Foldable, Floating, Fractional, Functor, Integral, Num, Ord, Random, Real, RealFloat, RealFrac, Row, Storable, Traversable, GL.Type, Uniform)
   deriving (Additive, Applicative, Metric, Monad) via I
 
 infixr 8 :^:
+
+deriving via Formatting (u :^: n) a instance (Unit du u, RealFloat a, KnownNat n) => Show ((u :^: n) a)
 
 instance Dimension (du :^: m)
 
