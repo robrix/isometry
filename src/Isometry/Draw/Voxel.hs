@@ -14,6 +14,8 @@ module Isometry.Draw.Voxel
 ( draw
 , runDrawable
 , Drawable
+, corners
+, indices
 ) where
 
 import           Control.Carrier.Reader
