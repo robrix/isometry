@@ -9,6 +9,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
 module Unit
 ( -- * Units
@@ -152,3 +153,6 @@ superscript i
 
 
 newtype Formatting u a = Formatting { getFormatting :: u a }
+
+instance (Unit d u, RealFloat (u a)) => Show (Formatting u a) where
+  showsPrec _ = format Nothing . getFormatting
