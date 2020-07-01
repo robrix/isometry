@@ -33,8 +33,9 @@ type Angle = I
 
 
 newtype Radians a = Radians { getRadians :: a }
-  deriving (Column, Conjugate, Epsilon, Enum, Eq, Foldable, Floating, Fractional, Functor, Integral, Num, Ord, Random, Real, RealFloat, RealFrac, Row, Show, Storable, Traversable, GL.Type, Uniform)
+  deriving (Column, Conjugate, Epsilon, Enum, Eq, Foldable, Floating, Fractional, Functor, Integral, Num, Ord, Random, Real, RealFloat, RealFrac, Row, Storable, Traversable, GL.Type, Uniform)
   deriving (Additive, Applicative, Metric, Monad) via I
+  deriving Show via Formatting Radians a
 
 instance Unit I Radians where
   suffix = K ("rad"++)
@@ -44,8 +45,9 @@ radians = -pi...pi
 
 
 newtype Degrees a = Degrees { getDegrees :: a }
-  deriving (Column, Conjugate, Epsilon, Enum, Eq, Foldable, Floating, Fractional, Functor, Integral, Num, Ord, Random, Real, RealFloat, RealFrac, Row, Show, Storable, Traversable, GL.Type, Uniform)
+  deriving (Column, Conjugate, Epsilon, Enum, Eq, Foldable, Floating, Fractional, Functor, Integral, Num, Ord, Random, Real, RealFloat, RealFrac, Row, Storable, Traversable, GL.Type, Uniform)
   deriving (Additive, Applicative, Metric, Monad) via I
+  deriving Show via Formatting Degrees a
 
 instance Unit I Degrees where
   suffix = K ('°':)
