@@ -7,12 +7,9 @@
 module Isometry.View
 ( View(..)
 , contextSize
-, lengthToWindowPixels
 , withView
   -- * Transforms
 , transformToWindowSize
-, transformToWorld
-, transformToZoomed
   -- * Viewport
 , clipTo
   -- * Re-exports
@@ -35,19 +32,16 @@ import Unit.Algebra
 import Unit.Length
 
 data View = View
-  { ratio :: I Int    -- ^ Ratio of window pixels per context pixel.
-  , size  :: V2 (Window.Coords Int)
-  , zoom  :: I Double
-  , scale :: (Window.Coords :/: Distance) Double
-  , focus :: V3 (Distance Double)
-  , angle :: I Double
+  { ratio     :: I Int    -- ^ Ratio of window pixels per context pixel.
+  , size      :: V2 (Window.Coords Int)
+  , zoom      :: I Double
+  , scale     :: (Window.Coords :/: Distance) Double
+  , focus     :: V3 (Distance Double)
+  , transform :: Transform V4 Float Distance ClipUnits
   }
 
 contextSize :: View -> V2 (Context.Pixels Int)
 contextSize View{ ratio, size } = Context.Pixels . Window.getCoords <$> ratio .*^ size
-
-lengthToWindowPixels :: View -> (Window.Coords :/: Distance) Double
-lengthToWindowPixels View{ zoom, scale } = scale .*. zoom
 
 withView
   :: ( Has (Lift IO) sig m
@@ -64,8 +58,17 @@ withView angle m = do
       focus = 0
       -- how many pixels to draw something / one semimetre across
       scale = Window.Coords 5 ./. Semi (Metres 1)
+      transform
+        =   tmap realToFrac
+        $   transformToWindowSize size
+        <<< mkScale (pure scale)
+        <<< mkTranslation (negated focus)
+        <<< mkRotation
+            ( axisAngle (unit _x) (pi/4)
+            * axisAngle (unit _y) angle)
+        <<< mkScale (pure zoom)
 
-  runReader View{ ratio, size, zoom, scale, focus, angle } m
+  runReader View{ ratio, size, zoom, scale, focus, transform } m
 
 
 transformToWindowSize :: V2 (Window.Coords Int) -> Transform V4 Double Window.Coords ClipUnits
@@ -73,19 +76,6 @@ transformToWindowSize size
   -- NB: we *always* use 2/size, rather than ratio/size, because clip space always extends from -1...1, i.e. it always has diameter 2. this is true irrespective of the DPI ratio.
   = mkScale (pure 1 & _xy .~ ClipUnits 2 ./^ (fmap fromIntegral <$> size) & _z .~ -1/100000)
 
-transformToWorld :: View -> Transform V4 Double Distance ClipUnits
-transformToWorld View{ size, scale, focus, angle }
-  =   transformToWindowSize size
-  <<< mkScale (pure scale)
-  <<< mkTranslation (negated focus)
-  <<< mkRotation
-      ( axisAngle (unit _x) (pi/4)
-      * axisAngle (unit _y) angle)
-
-transformToZoomed :: View -> Transform V4 Double Distance ClipUnits
-transformToZoomed view@View{ zoom }
-  =   transformToWorld view
-  <<< mkScale (pure zoom)
 
 clipTo :: Has (Lift IO) sig m => View -> m ()
 clipTo view = do

@@ -65,7 +65,7 @@ draw
   => m ()
 draw = UI.using drawable $ do
   Drawable { originsT, coloursT, indicesB } <- ask
-  v <- ask
+  t <- asks transform
   world <- Labelled.ask @World
 
   setActiveTexture originsU
@@ -74,7 +74,7 @@ draw = UI.using drawable $ do
   setActiveTexture coloursU
   bind (Just coloursT)
 
-  matrix_  ?= tmap realToFrac (transformToZoomed v)
+  matrix_  ?= t
   origins_ ?= originsU
   colours_ ?= coloursU
   bindBuffer indicesB $

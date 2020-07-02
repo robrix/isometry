@@ -44,8 +44,8 @@ draw
      )
   => m ()
 draw = UI.using @Drawable id $ do
-  v <- ask
-  matrix_ ?= tmap realToFrac (transformToZoomed v)
+  t <- asks transform
+  matrix_ ?= t
   drawArrays Lines range
 
 
