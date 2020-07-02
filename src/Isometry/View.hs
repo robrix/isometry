@@ -36,7 +36,6 @@ data View = View
   , size      :: V2 (Window.Coords Int)
   , zoom      :: I Double
   , scale     :: (Window.Coords :/: Distance) Double
-  , focus     :: V3 (Distance Double)
   , transform :: Transform V4 Float Distance ClipUnits
   }
 
@@ -55,7 +54,7 @@ withView angle m = do
   size  <- Window.size
 
   let zoom = 1
-      focus = 0
+      focus = 0 :: V3 (Distance Double)
       -- how many pixels to draw something / one semimetre across
       scale = Window.Coords 5 ./. Semi (Metres 1)
       transform
@@ -68,7 +67,7 @@ withView angle m = do
             * axisAngle (unit _y) angle)
         <<< mkScale (pure zoom)
 
-  runReader View{ ratio, size, zoom, scale, focus, transform } m
+  runReader View{ ratio, size, zoom, scale, transform } m
 
 
 transformToWindowSize :: V2 (Window.Coords Int) -> Transform V4 Double Window.Coords ClipUnits
