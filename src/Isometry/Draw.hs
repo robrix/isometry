@@ -19,17 +19,18 @@ import           Control.Carrier.Reader
 import           Control.Carrier.State.Church
 import           Control.Effect.Finally
 import           Control.Effect.Labelled
-import           Control.Effect.Lens (use, (+=))
+import           Control.Effect.Lens (use, (%=), (+=))
 import           Control.Effect.Lift
 import           Control.Effect.Profile
 import           Control.Effect.Trace
 import           Control.Lens ((&), (.~), (^.))
-import           Control.Monad (when)
+import           Control.Monad (unless, when)
 import           Control.Monad.IO.Class.Lift
 import           Data.Bin.Index (toInt)
 import           Data.Bin.Shape as Shape
 import           Data.Bits ((.|.))
 import           Data.Functor.I
+import           Data.Functor.Interval (wrap)
 import           Data.Unfoldable (tetra)
 import           GHC.Stack
 import           GL.Effect.Check
@@ -112,6 +113,14 @@ frame = timed $ do
       turningR = input^.pressed_ SDL.KeycodeE
   when turningL $ angle_ += (-turnRate .*. dt)
   when turningR $ angle_ +=   turnRate .*. dt
+
+  current <- use angle_
+  let nearest = fromIntegral @Int (round ((current/pi) * 4)) / 4 * pi
+      delta = abs (wrap radians (current - nearest))
+
+  unless (turningL || turningR || delta == 0) $
+    -- animate angle to nearest π/4 radians increment
+    angle_ %= lerp (getI (min 1 ((turnRate .*. dt) / delta))) nearest
 
   angle <- use angle_
 
