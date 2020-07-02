@@ -48,6 +48,7 @@ import           Isometry.World
 import           Linear.Exts
 import qualified SDL
 import qualified UI.Colour as UI
+import           UI.Context
 import           UI.Label
 import           UI.Typeface
 import           UI.Window as Window
@@ -129,7 +130,7 @@ frame = timed $ do
     let font = Font face 18
     bind @Framebuffer Nothing
 
-    clipTo =<< ask
+    clipToContext
 
     glDepthMask GL_TRUE
 

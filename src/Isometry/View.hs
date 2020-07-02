@@ -1,17 +1,11 @@
-{-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE DisambiguateRecordFields #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE TypeOperators #-}
 module Isometry.View
 ( View(..)
-, contextSize
 , withView
   -- * Transforms
 , transformToWindowSize
-  -- * Viewport
-, clipTo
   -- * Re-exports
 , module Geometry.Transform
 ) where
@@ -20,13 +14,10 @@ import Control.Carrier.Reader
 import Control.Effect.Lift
 import Control.Lens ((&), (.~))
 import Data.Functor.I
-import Data.Functor.Interval
 import Geometry.Transform
 import GL.Shader.DSL (ClipUnits(..))
-import GL.Viewport
 import Isometry.World
 import Linear.Exts
-import UI.Context as Context
 import UI.Window as Window
 import Unit.Algebra
 import Unit.Length
@@ -38,9 +29,6 @@ data View = View
   , scale     :: (Window.Coords :/: Distance) Double
   , transform :: Transform V4 Float Distance ClipUnits
   }
-
-contextSize :: View -> V2 (Context.Pixels Int)
-contextSize View{ ratio, size } = Context.Pixels . Window.getCoords <$> ratio .*^ size
 
 withView
   :: ( Has (Lift IO) sig m
@@ -74,10 +62,3 @@ transformToWindowSize :: V2 (Window.Coords Int) -> Transform V4 Double Window.Co
 transformToWindowSize size
   -- NB: we *always* use 2/size, rather than ratio/size, because clip space always extends from -1...1, i.e. it always has diameter 2. this is true irrespective of the DPI ratio.
   = mkScale (pure 1 & _xy .~ ClipUnits 2 ./^ (fmap fromIntegral <$> size) & _z .~ -1/100000)
-
-
-clipTo :: Has (Lift IO) sig m => View -> m ()
-clipTo view = do
-  let dsize = contextSize view
-  viewport $ Interval 0 dsize
-  scissor  $ Interval 0 dsize
