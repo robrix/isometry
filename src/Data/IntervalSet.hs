@@ -3,6 +3,7 @@ module Data.IntervalSet
 ( IntervalSet(..)
 , empty
 , singleton
+, bounds
 , insert
   -- * Re-exports
 , Interval(..)
@@ -10,6 +11,7 @@ module Data.IntervalSet
 
 import Data.Functor.I
 import Data.Functor.Interval
+import Data.Maybe (fromMaybe)
 
 data IntervalSet a
   = Empty
@@ -20,6 +22,11 @@ empty = Empty
 
 singleton :: Interval I a -> IntervalSet a
 singleton a = Branch empty a empty
+
+
+bounds :: Ord a => IntervalSet a -> Maybe (Interval I a)
+bounds Empty          = Nothing
+bounds (Branch l i g) = Just (fromMaybe i (bounds l) `union` fromMaybe i (bounds g))
 
 
 insert :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
