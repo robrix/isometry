@@ -150,4 +150,4 @@ frame = timed $ do
     measure "glFinish" glFinish
   where
   turnRate :: (I :/: Seconds) Double
-  turnRate = I pi ./. Seconds 1
+  turnRate = I pi ./. Seconds 1.5
