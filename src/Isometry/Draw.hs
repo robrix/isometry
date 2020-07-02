@@ -20,11 +20,11 @@ import           Control.Carrier.Reader
 import           Control.Carrier.State.Church
 import           Control.Effect.Finally
 import           Control.Effect.Labelled
-import           Control.Effect.Lens (use, (%=))
+import           Control.Effect.Lens (use, (+=))
 import           Control.Effect.Lift
 import           Control.Effect.Profile
 import           Control.Effect.Trace
-import           Control.Lens (Lens', (&), (.~), (^.))
+import           Control.Lens (Lens', iso, (&), (.~), (^.))
 import           Control.Monad (when)
 import           Control.Monad.IO.Class.Lift
 import           Data.Bin.Index (toInt)
@@ -95,7 +95,7 @@ newtype Player = Player
   deriving (Generic)
 
 angle_ :: Lens' Player (I Double)
-angle_ = field @"angle"
+angle_ = field @"angle".iso id (wrap radians)
 
 frame
   :: ( Has Check sig m
@@ -121,8 +121,8 @@ frame = timed $ do
 
   let turningL = input^.pressed_ SDL.KeycodeQ
       turningR = input^.pressed_ SDL.KeycodeE
-  when turningL $ angle_ %= wrap radians . (+ (-turnRate .*. dt))
-  when turningR $ angle_ %= wrap radians . (+   turnRate .*. dt)
+  when turningL $ angle_ += (-turnRate .*. dt)
+  when turningR $ angle_ +=   turnRate .*. dt
 
   angle <- use angle_
 
