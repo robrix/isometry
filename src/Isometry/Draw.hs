@@ -9,14 +9,12 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeOperators #-}
 module Isometry.Draw
-( frame
+( draw
 ) where
 
 import           Control.Carrier.Empty.Church
 import           Control.Carrier.Reader
-import           Control.Carrier.State.Church
 import           Control.Effect.Labelled
-import           Control.Effect.Lens (use)
 import           Control.Effect.Lift
 import           Control.Effect.Profile
 import           Control.Monad.IO.Class.Lift
@@ -27,9 +25,6 @@ import           GL.Framebuffer
 import           Graphics.GL.Core41
 import qualified Isometry.Draw.Axis as Axis
 import qualified Isometry.Draw.Voxel as Voxel
-import           Isometry.Input as Input
-import           Isometry.Player
-import           Isometry.Time
 import           Isometry.UI
 import           Isometry.View as View
 import           Isometry.Voxel as Voxel
@@ -39,28 +34,6 @@ import           UI.Context
 import           UI.Label
 import           UI.Typeface
 import           UI.Window as Window
-
-frame
-  :: ( Has Check sig m
-     , Has Empty sig m
-     , Has (Lift IO) sig m
-     , Has Profile sig m
-     , Has (Reader Axis.Drawable) sig m
-     , Has (Reader Voxel.Drawable) sig m
-     , Has (Reader UI) sig m
-     , Has (Reader Window.Window) sig m
-     , Has (State Input) sig m
-     , Has (State Instant) sig m
-     , Has (State Player) sig m
-     , HasLabelled World (Reader (World s Voxel)) sig m
-     , HasCallStack
-     )
-  => m ()
-frame = timed $ do
-  measure "input" Input.input
-  angle <- use angle_
-
-  withView angle $ measure "draw" draw
 
 draw
   :: ( Has Check sig m
