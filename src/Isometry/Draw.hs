@@ -19,18 +19,15 @@ import           Control.Carrier.Reader
 import           Control.Carrier.State.Church
 import           Control.Effect.Finally
 import           Control.Effect.Labelled
-import           Control.Effect.Lens (use, (%=), (+=))
+import           Control.Effect.Lens (use)
 import           Control.Effect.Lift
 import           Control.Effect.Profile
 import           Control.Effect.Trace
-import           Control.Lens ((&), (.~), (^.))
-import           Control.Monad (unless, when)
+import           Control.Lens ((&), (.~))
 import           Control.Monad.IO.Class.Lift
 import           Data.Bin.Index (toInt)
 import           Data.Bin.Shape as Shape
 import           Data.Bits ((.|.))
-import           Data.Functor.I
-import           Data.Functor.Interval (wrap)
 import           Data.Unfoldable (tetra)
 import           GHC.Stack
 import           GL.Effect.Check
@@ -46,14 +43,11 @@ import           Isometry.View as View
 import           Isometry.Voxel as Voxel
 import           Isometry.World
 import           Linear.Exts
-import qualified SDL
 import qualified UI.Colour as UI
 import           UI.Context
 import           UI.Label
 import           UI.Typeface
 import           UI.Window as Window
-import           Unit.Angle
-import           Unit.Time
 
 runFrame
   :: ( Has Check sig m
@@ -66,13 +60,11 @@ runFrame
     (ReaderC Axis.Drawable
     (Labelled World (ReaderC (World S128 Voxel))
     (StateC Instant
-    (StateC Player
     (EmptyC
-    m))))) a
+    m)))) a
   -> m ()
 runFrame
   = evalEmpty
-  . evalState Player{ angle = -pi/4 }
   . (\ m -> now >>= \ start -> evalState start m)
   . (\ m -> do
     world <- measure "build" $ do
@@ -98,31 +90,14 @@ frame
      , Has (Reader UI) sig m
      , Has (Reader Window.Window) sig m
      , Has (State Input) sig m
-     , Has (State Player) sig m
      , Has (State Instant) sig m
+     , Has (State Player) sig m
      , HasLabelled World (Reader (World s Voxel)) sig m
      , HasCallStack
      )
   => m ()
 frame = timed $ do
   measure "input" Input.input
-
-  dt <- ask @(Seconds _)
-  input <- get @Input
-
-  let turningL = input^.pressed_ SDL.KeycodeQ
-      turningR = input^.pressed_ SDL.KeycodeE
-  when turningL $ angle_ += (-turnRate .*. dt)
-  when turningR $ angle_ +=   turnRate .*. dt
-
-  current <- use angle_
-  let nearest = fromIntegral @Int (round ((current/pi) * 4)) / 4 * pi
-      delta = abs (wrap radians (current - nearest))
-
-  unless (turningL || turningR || delta == 0) $
-    -- animate angle to nearest π/4 radians increment
-    angle_ %= lerp (getI (min 1 ((turnRate .*. dt) / delta))) nearest
-
   angle <- use angle_
 
   withView angle . measure "draw" . runLiftIO $ do
@@ -148,6 +123,3 @@ frame = timed $ do
     measure "drawLabel" $ drawLabel target 10 UI.white Nothing
 
     measure "glFinish" glFinish
-  where
-  turnRate :: (I :/: Seconds) Double
-  turnRate = I pi ./. Seconds 1.5
