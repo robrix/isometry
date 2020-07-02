@@ -9,4 +9,4 @@ import Data.Functor.Interval
 
 data IntervalSet a
   = Empty
-  | Leaf (Interval I a)
+  | Branch (IntervalSet a) (Interval I a) (IntervalSet a)
