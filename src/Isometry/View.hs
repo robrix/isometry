@@ -1,4 +1,3 @@
-{-# LANGUAGE DisambiguateRecordFields #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE TypeOperators #-}
 module Isometry.View
@@ -22,10 +21,8 @@ import UI.Window as Window
 import Unit.Algebra
 import Unit.Length
 
-data View = View
-  { zoom      :: I Double
-  , scale     :: (Window.Coords :/: Distance) Double
-  , transform :: Transform V4 Float Distance ClipUnits
+newtype View = View
+  { transform :: Transform V4 Float Distance ClipUnits
   }
 
 withView
@@ -36,12 +33,12 @@ withView
   -> ReaderC View m a
   -> m a
 withView angle m = do
-  size  <- Window.size
+  size <- Window.size
 
-  let zoom = 1
+  let zoom = 1 :: I Double
       focus = 0 :: V3 (Distance Double)
       -- how many pixels to draw something / one semimetre across
-      scale = Window.Coords 5 ./. Semi (Metres 1)
+      scale = Window.Coords 5 ./. Semi (Metres 1) :: (Window.Coords :/: Distance) Double
       transform
         =   tmap realToFrac
         $   transformToWindowSize size
@@ -52,7 +49,7 @@ withView angle m = do
             * axisAngle (unit _y) angle)
         <<< mkScale (pure zoom)
 
-  runReader View{ zoom, scale, transform } m
+  runReader View{ transform } m
 
 
 transformToWindowSize :: V2 (Window.Coords Int) -> Transform V4 Double Window.Coords ClipUnits
