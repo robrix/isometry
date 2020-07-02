@@ -60,26 +60,41 @@ frame = timed $ do
   measure "input" Input.input
   angle <- use angle_
 
-  withView angle . measure "draw" . runLiftIO $ do
-    UI{ target, face } <- ask
-    let font = Font face 18
-    bind @Framebuffer Nothing
+  withView angle $ measure "draw" draw
 
-    clipToContext
+draw
+  :: ( Has Check sig m
+     , Has (Lift IO) sig m
+     , Has Profile sig m
+     , Has (Reader Axis.Drawable) sig m
+     , Has (Reader Voxel.Drawable) sig m
+     , Has (Reader UI) sig m
+     , Has (Reader View) sig m
+     , Has (Reader Window.Window) sig m
+     , HasLabelled World (Reader (World s Voxel)) sig m
+     , HasCallStack
+     )
+     => m ()
+draw = runLiftIO $ do
+  UI{ target, face } <- ask
+  let font = Font face 18
+  bind @Framebuffer Nothing
 
-    glDepthMask GL_TRUE
+  clipToContext
 
-    UI.setClearColour UI.black
-    glClear $ GL_COLOR_BUFFER_BIT .|. GL_DEPTH_BUFFER_BIT
+  glDepthMask GL_TRUE
 
-    glBlendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+  UI.setClearColour UI.black
+  glClear $ GL_COLOR_BUFFER_BIT .|. GL_DEPTH_BUFFER_BIT
 
-    measure "Axis.draw" Axis.draw
-    measure "Voxel.draw" Voxel.draw
+  glBlendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 
-    glDepthMask GL_FALSE
+  measure "Axis.draw" Axis.draw
+  measure "Voxel.draw" Voxel.draw
 
-    measure "setLabel" $ setLabel target font "hello"
-    measure "drawLabel" $ drawLabel target 10 UI.white Nothing
+  glDepthMask GL_FALSE
 
-    measure "glFinish" glFinish
+  measure "setLabel" $ setLabel target font "hello"
+  measure "drawLabel" $ drawLabel target 10 UI.white Nothing
+
+  measure "glFinish" glFinish
