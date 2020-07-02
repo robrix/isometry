@@ -1,6 +1,5 @@
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE DisambiguateRecordFields #-}
 {-# LANGUAGE FlexibleContexts #-}
@@ -24,17 +23,14 @@ import           Control.Effect.Lens (use, (+=))
 import           Control.Effect.Lift
 import           Control.Effect.Profile
 import           Control.Effect.Trace
-import           Control.Lens (Lens', iso, (&), (.~), (^.))
+import           Control.Lens ((&), (.~), (^.))
 import           Control.Monad (when)
 import           Control.Monad.IO.Class.Lift
 import           Data.Bin.Index (toInt)
 import           Data.Bin.Shape as Shape
 import           Data.Bits ((.|.))
 import           Data.Functor.I
-import           Data.Functor.Interval hiding (range)
-import           Data.Generics.Product.Fields
 import           Data.Unfoldable (tetra)
-import           GHC.Generics (Generic)
 import           GHC.Stack
 import           GL.Effect.Check
 import           GL.Framebuffer
@@ -42,6 +38,7 @@ import           Graphics.GL.Core41
 import qualified Isometry.Draw.Axis as Axis
 import qualified Isometry.Draw.Voxel as Voxel
 import           Isometry.Input as Input
+import           Isometry.Player
 import           Isometry.Time
 import           Isometry.UI
 import           Isometry.View as View
@@ -88,14 +85,6 @@ runFrame
   . runLabelled
   . Axis.runDrawable
   . Voxel.runDrawable
-
-newtype Player = Player
-  { angle :: I Double
-  }
-  deriving (Generic)
-
-angle_ :: Lens' Player (I Double)
-angle_ = field @"angle".iso id (wrap radians)
 
 frame
   :: ( Has Check sig m
