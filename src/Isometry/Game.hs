@@ -100,7 +100,7 @@ game = runGame $ do
       when turningR $ angle_ +=   turnRate .*. dt
 
       current <- use angle_
-      let nearest = fromIntegral @Int (round ((current/pi) * 4)) / 4 * pi
+      let nearest = fromIntegral @Int (round (current / pi * 4)) / 4 * pi
           delta = abs (wrap radians (current - nearest))
 
       unless (turningL || turningR || delta == 0) $
