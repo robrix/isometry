@@ -29,6 +29,7 @@ import           Data.Functor.Interval
 import           GL
 import           GL.Effect.Check
 import           Isometry.Draw
+import           Isometry.Frame
 import           Isometry.Input
 import           Isometry.Player
 import           Isometry.Time
