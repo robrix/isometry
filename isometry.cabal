@@ -104,6 +104,7 @@ library
     Isometry.Input
     Isometry.Language
     Isometry.Main
+    Isometry.Player
     Isometry.Time
     Isometry.UI
     Isometry.View
