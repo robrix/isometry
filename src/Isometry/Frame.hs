@@ -63,8 +63,7 @@ runFrame
       world <$ trace ("world length: " <> show (length world))
     runReader world m)
   . runLabelled
-  . Axis.runDrawable
-  . Voxel.runDrawable
+  . runDrawables
 
 
 frame

@@ -9,14 +9,17 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeOperators #-}
 module Isometry.Draw
-( draw
+( runDrawables
+, draw
 ) where
 
 import           Control.Carrier.Empty.Church
 import           Control.Carrier.Reader
+import           Control.Effect.Finally
 import           Control.Effect.Labelled
 import           Control.Effect.Lift
 import           Control.Effect.Profile
+import           Control.Effect.Trace
 import           Control.Monad.IO.Class.Lift
 import           Data.Bits ((.|.))
 import           GHC.Stack
@@ -34,6 +37,22 @@ import           UI.Context
 import           UI.Label
 import           UI.Typeface
 import           UI.Window as Window
+
+runDrawables
+  :: ( Has Check sig m
+     , Has Finally sig m
+     , Has (Lift IO) sig m
+     , Has Profile sig m
+     , HasLabelled World (Reader (World s Voxel)) sig m
+     , Has Trace sig m
+     )
+  => ReaderC Voxel.Drawable
+    (ReaderC Axis.Drawable
+    m) a
+  -> m a
+runDrawables
+  = Axis.runDrawable
+  . Voxel.runDrawable
 
 draw
   :: ( Has Check sig m
