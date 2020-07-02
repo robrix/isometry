@@ -1,6 +1,7 @@
 module Data.IntervalSet
 ( IntervalSet(..)
 , empty
+, singleton
   -- * Re-exports
 , Interval(..)
 ) where
@@ -14,3 +15,6 @@ data IntervalSet a
 
 empty :: IntervalSet a
 empty = Empty
+
+singleton :: Interval I a -> IntervalSet a
+singleton a = Branch empty a empty
