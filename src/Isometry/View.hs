@@ -23,9 +23,7 @@ import Unit.Algebra
 import Unit.Length
 
 data View = View
-  { ratio     :: I Int    -- ^ Ratio of window pixels per context pixel.
-  , size      :: V2 (Window.Coords Int)
-  , zoom      :: I Double
+  { zoom      :: I Double
   , scale     :: (Window.Coords :/: Distance) Double
   , transform :: Transform V4 Float Distance ClipUnits
   }
@@ -38,7 +36,6 @@ withView
   -> ReaderC View m a
   -> m a
 withView angle m = do
-  ratio <- Window.ratio
   size  <- Window.size
 
   let zoom = 1
@@ -55,7 +52,7 @@ withView angle m = do
             * axisAngle (unit _y) angle)
         <<< mkScale (pure zoom)
 
-  runReader View{ ratio, size, zoom, scale, transform } m
+  runReader View{ zoom, scale, transform } m
 
 
 transformToWindowSize :: V2 (Window.Coords Int) -> Transform V4 Double Window.Coords ClipUnits
