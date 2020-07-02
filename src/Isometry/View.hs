@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE TypeOperators #-}
 module Isometry.View
@@ -32,14 +33,14 @@ withView
   => I Double
   -> ReaderC View m a
   -> m a
-withView angle m = do
-  size <- Window.size
+withView !angle m = do
+  !size <- Window.size
 
-  let zoom = 1 :: I Double
-      focus = 0 :: V3 (Distance Double)
+  let !zoom = 1 :: I Double
+      !focus = 0 :: V3 (Distance Double)
       -- how many pixels to draw something / one semimetre across
-      scale = Window.Coords 5 ./. Semi (Metres 1) :: (Window.Coords :/: Distance) Double
-      transform
+      !scale = Window.Coords 5 ./. Semi (Metres 1) :: (Window.Coords :/: Distance) Double
+      !transform
         =   tmap realToFrac
         $   transformToWindowSize size
         <<< mkScale (pure scale)
