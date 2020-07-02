@@ -1,2 +1,5 @@
 module Data.IntervalSet
-() where
+( Interval(..)
+) where
+
+import Data.Functor.Interval
