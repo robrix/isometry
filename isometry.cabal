@@ -65,6 +65,7 @@ library
     Data.Functor.I
     Data.Functor.Interval
     Data.Functor.K
+    Data.IntervalSet
     Data.Unfoldable
     Foreign.C.String.Lift
     Foreign.Marshal.Alloc.Lift
