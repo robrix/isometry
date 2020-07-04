@@ -1,2 +1,7 @@
 module Data.Nat
-() where
+( N(..)
+) where
+
+data N
+  = Z
+  | S N
