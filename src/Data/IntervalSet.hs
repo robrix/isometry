@@ -35,7 +35,7 @@ insert i = \case
   Branch l i' g
     | sup i < inf i' -> Branch (insert i l) i' g
     | inf i < sup i' -> Branch l i' (insert i g)
-    | otherwise      -> mkBranch l (i `union` i') g
+    | otherwise      -> merge l (i `union` i') g
 
-mkBranch :: IntervalSet a -> Interval I a -> IntervalSet a -> IntervalSet a
-mkBranch = Branch
+merge :: IntervalSet a -> Interval I a -> IntervalSet a -> IntervalSet a
+merge = Branch
