@@ -32,9 +32,10 @@ insert :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
 insert i = \case
   Empty -> singleton i
   Branch b l i' g
-    | sup i < inf i' -> Branch b' (insert i l) i' g
-    | inf i < sup i' -> Branch b' l i' (insert i g)
-    | otherwise      -> merge b' l (i `union` i') g
+    | i `isSubintervalOf` i' -> Branch b l i' g
+    | sup i < inf i'         -> Branch b' (insert i l) i' g
+    | inf i < sup i'         -> Branch b' l i' (insert i g)
+    | otherwise              -> merge b' l (i `union` i') g
     where
     b' = i `union` b
 
