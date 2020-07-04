@@ -30,13 +30,13 @@ import Linear.V3
 
 data Octree s a where
   E :: Octree s a
-  L :: !a -> Octree 'S1 a
+  L :: !a -> Octree 'Z a
   B :: {-# UNPACK #-} !Int
     -> !(Octree s a) -> !(Octree s a)
     -> !(Octree s a) -> !(Octree s a)
     -> !(Octree s a) -> !(Octree s a)
     -> !(Octree s a) -> !(Octree s a)
-    -> Octree ('S2x s) a
+    -> Octree ('S s) a
 
 instance Foldable (Octree s) where
   foldMap (f :: a -> m) = go
@@ -70,14 +70,14 @@ instance FoldableWithIndex (V3 (Index s)) (Octree s) where
       go x y z = ifoldMap (f . (ib <$> V3 x y z <*>))
   {-# INLINABLE ifoldMap #-}
 
-instance SparseUnfoldableWithIndex (V3 Bit) (V3 (Index 'S1)) (Octree 'S1) where
+instance SparseUnfoldableWithIndex (V3 Bit) (V3 (Index 'Z)) (Octree 'Z) where
   iunfoldSparseM _ leaf = L <$> leaf (pure il)
   {-# INLINABLE iunfoldSparseM #-}
 
   iunfoldSparse _ leaf = L (leaf (pure il))
   {-# INLINABLE iunfoldSparse #-}
 
-instance SparseUnfoldableWithIndex (V3 Bit) (V3 (Index s)) (Octree s) => SparseUnfoldableWithIndex (V3 Bit) (V3 (Index ('S2x s))) (Octree ('S2x s)) where
+instance SparseUnfoldableWithIndex (V3 Bit) (V3 (Index s)) (Octree s) => SparseUnfoldableWithIndex (V3 Bit) (V3 (Index ('S s))) (Octree ('S s)) where
   iunfoldSparseM branch leaf = b
     <$> go (V3 B0 B0 B0) <*> go (V3 B1 B0 B0)
     <*> go (V3 B0 B1 B0) <*> go (V3 B1 B1 B0)
@@ -96,20 +96,20 @@ instance SparseUnfoldableWithIndex (V3 Bit) (V3 (Index s)) (Octree s) => SparseU
     go i = if branch i then iunfoldSparse branch (leaf . (ib <$> i <*>)) else E
   {-# INLINABLE iunfoldSparse #-}
 
-instance Applicative (Octree 'S1) where
+instance Applicative (Octree 'Z) where
   pure = L
 
   E     <*> _ = E
   L   f <*> a = fmap f a
 
-instance Applicative (Octree s) => Applicative (Octree ('S2x s)) where
+instance Applicative (Octree s) => Applicative (Octree ('S s)) where
   pure a = b (pure a) (pure a) (pure a) (pure a) (pure a) (pure a) (pure a) (pure a)
 
   E     <*> _     = E
   _     <*> E     = E
   B _ f1 f2 f3 f4 f5 f6 f7 f8 <*> B _ a1 a2 a3 a4 a5 a6 a7 a8 = b (f1 <*> a1) (f2 <*> a2) (f3 <*> a3) (f4 <*> a4) (f5 <*> a5) (f6 <*> a6) (f7 <*> a7) (f8 <*> a8)
 
-b :: Octree s a -> Octree s a -> Octree s a -> Octree s a -> Octree s a -> Octree s a -> Octree s a -> Octree s a -> Octree ('S2x s) a
+b :: Octree s a -> Octree s a -> Octree s a -> Octree s a -> Octree s a -> Octree s a -> Octree s a -> Octree s a -> Octree ('S s) a
 b lbf rbf ltf rtf lbn rbn ltn rtn
   | len > 0   = B len lbf rbf ltf rtf lbn rbn ltn rtn
   | otherwise = E

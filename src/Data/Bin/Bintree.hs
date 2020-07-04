@@ -20,10 +20,10 @@ import Data.Unfoldable (SparseUnfoldableWithIndex(..))
 
 data Bintree s a where
   E :: Bintree s a
-  L :: !a -> Bintree 'S1 a
+  L :: !a -> Bintree 'Z a
   B :: {-# UNPACK #-} !Int
     -> !(Bintree s a) -> !(Bintree s a)
-    -> Bintree ('S2x s) a
+    -> Bintree ('S s) a
 
 instance Foldable (Bintree s) where
   foldMap (f :: a -> m) = go
@@ -54,14 +54,14 @@ instance FoldableWithIndex (Index s) (Bintree s) where
       go b = ifoldMap (f . ib b)
   {-# INLINABLE ifoldMap #-}
 
-instance SparseUnfoldableWithIndex Bit (Index 'S1) (Bintree 'S1) where
+instance SparseUnfoldableWithIndex Bit (Index 'Z) (Bintree 'Z) where
   iunfoldSparseM _ leaf = L <$> leaf il
   {-# INLINABLE iunfoldSparseM #-}
 
   iunfoldSparse _ leaf = L (leaf il)
   {-# INLINABLE iunfoldSparse #-}
 
-instance SparseUnfoldableWithIndex Bit (Index s) (Bintree s) => SparseUnfoldableWithIndex Bit (Index ('S2x s)) (Bintree ('S2x s)) where
+instance SparseUnfoldableWithIndex Bit (Index s) (Bintree s) => SparseUnfoldableWithIndex Bit (Index ('S s)) (Bintree ('S s)) where
   iunfoldSparseM branch leaf = b <$> go B0 <*> go B1
     where
     go i = branch i >>= \ b -> if b then iunfoldSparseM branch (leaf . ib i) else pure E
@@ -72,20 +72,20 @@ instance SparseUnfoldableWithIndex Bit (Index s) (Bintree s) => SparseUnfoldable
     go i = if branch i then iunfoldSparse branch (leaf . ib i) else E
   {-# INLINABLE iunfoldSparse #-}
 
-instance Applicative (Bintree 'S1) where
+instance Applicative (Bintree 'Z) where
   pure = L
 
   E     <*> _ = E
   L   f <*> a = fmap f a
 
-instance Applicative (Bintree s) => Applicative (Bintree ('S2x s)) where
+instance Applicative (Bintree s) => Applicative (Bintree ('S s)) where
   pure a = b (pure a) (pure a)
 
   E     <*> _     = E
   _     <*> E     = E
   B _ f1 f2 <*> B _ a1 a2 = b (f1 <*> a1) (f2 <*> a2)
 
-b :: Bintree s a -> Bintree s a -> Bintree ('S2x s) a
+b :: Bintree s a -> Bintree s a -> Bintree ('S s) a
 b l r
   | len > 0   = B len l r
   | otherwise = E

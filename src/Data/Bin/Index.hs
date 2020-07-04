@@ -26,7 +26,7 @@ import Numeric (showIntAtBase)
 
 type role Index representational
 
-newtype Index (i :: Shape) = Index { getIndex :: Word32 }
+newtype Index (i :: N) = Index { getIndex :: Word32 }
   deriving (Eq, Ord)
 
 instance KnownNat (Place i) => Bounded (Index i) where
@@ -84,22 +84,22 @@ instance Show (Index i) where
   showsPrec p (Index i) = showsUnaryWith (const (fmap (('0':) . ('b':)) . showIntAtBase 2 intToDigit)) "Index" p i
   {-# INLINABLE showsPrec #-}
 
-il :: Index 'S1
+il :: Index 'Z
 il = Index 0
 {-# INLINABLE il #-}
 
-ib :: Bit -> Index s -> Index ('S2x s)
+ib :: Bit -> Index s -> Index ('S s)
 ib B0 (Index i) = Index (shift i 1)
 ib B1 (Index i) = Index (shift i 1 .|. 1)
 {-# INLINABLE ib #-}
 
-i0, i1 :: Index s -> Index ('S2x s)
+i0, i1 :: Index s -> Index ('S s)
 i0 = ib B0
 {-# INLINABLE i0 #-}
 i1 = ib B1
 {-# INLINABLE i1 #-}
 
-decompose :: Index ('S2x i) -> (Bit, Index i)
+decompose :: Index ('S i) -> (Bit, Index i)
 decompose (Index i) = (toBit (testBit i 0), Index (shift i (-1)))
 {-# INLINABLE decompose #-}
 
