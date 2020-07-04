@@ -117,6 +117,9 @@ instance (Applicative f, Floating a) => Floating (Interval f a) where
   acosh = fmap acosh
   {-# INLINE acosh #-}
 
+instance (Applicative f, Ord a) => Semigroup (Interval f a) where
+  (<>) = union
+
 
 (...) :: Applicative f => a -> a -> Interval f a
 inf...sup = Interval (pure inf) (pure sup)
