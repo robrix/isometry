@@ -5,3 +5,4 @@ module Data.Nat
 data N
   = Z
   | S N
+  deriving (Eq, Ord, Show)
