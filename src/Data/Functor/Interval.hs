@@ -1,7 +1,9 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DeriveTraversable #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
 module Data.Functor.Interval
@@ -33,6 +35,7 @@ import           Control.Lens hiding (imap, (...))
 import           Control.Monad (join)
 import           Control.Monad.Trans.Class
 import           Data.Coerce (coerce)
+import           Data.FingerTree (Measured(..))
 import           Data.Fixed (mod')
 import           Data.Functor.I
 import           Data.Generics.Product.Fields
@@ -119,6 +122,9 @@ instance (Applicative f, Floating a) => Floating (Interval f a) where
 
 instance (Applicative f, Ord a) => Semigroup (Interval f a) where
   (<>) = union
+
+instance (Applicative f, Ord a) => Measured (Maybe (Interval f a)) (Interval f a) where
+  measure = Just
 
 
 (...) :: Applicative f => a -> a -> Interval f a
