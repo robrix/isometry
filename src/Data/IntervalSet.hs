@@ -31,8 +31,8 @@ bounds (Branch b _ _ _) = Just b
 insert :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
 insert i = \case
   Empty -> singleton i
-  Branch b l i' g
-    | i `isSubintervalOf` i' -> Branch b l i' g
+  s@(Branch b l i' g)
+    | i `isSubintervalOf` i' -> s
     | b `isSubintervalOf` i  -> singleton i
     | sup i < inf i'         -> Branch b' (insert i l) i' g
     | inf i < sup i'         -> Branch b' l i' (insert i g)
