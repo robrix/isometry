@@ -22,8 +22,11 @@ import GL.Uniform
 import System.Random (Random)
 
 newtype I a = I { getI :: a }
-  deriving (Column, Conjugate, Epsilon, Enum, Eq, Foldable, Floating, Fractional, Functor, Integral, Num, Ord, Random, Real, RealFloat, RealFrac, Row, Show, Storable, Traversable, GL.Type, Uniform)
+  deriving (Column, Conjugate, Epsilon, Enum, Eq, Foldable, Floating, Fractional, Functor, Integral, Num, Ord, Random, Real, RealFloat, RealFrac, Row, Storable, Traversable, GL.Type, Uniform)
   deriving (Additive, Applicative, Metric, Monad) via Identity
 
 instance Show1 I where
   liftShowsPrec sp _ p = showsUnaryWith sp "I" p . getI
+
+instance Show a => Show (I a) where
+  showsPrec = showsPrec1
