@@ -46,7 +46,10 @@ data Interval f a = Interval
   { inf :: !(f a)
   , sup :: !(f a)
   }
-  deriving (Eq, Foldable, Functor, Generic, Ord, Show, Traversable)
+  deriving (Eq, Foldable, Functor, Generic, Ord, Traversable)
+
+instance Show (f a) => Show (Interval f a) where
+  showsPrec p i = showParen (p > 3) $ showsPrec 4 (inf i) . showString "..." . showsPrec 4 (sup i)
 
 instance Applicative f => Applicative (Interval f) where
   pure = point . pure
