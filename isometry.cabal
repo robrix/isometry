@@ -193,6 +193,8 @@ test-suite test
   type: exitcode-stdio-1.0
   hs-source-dirs: test
   main-is: Test.hs
+  other-modules:
+    Data.IntervalSet.Test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
     , base
