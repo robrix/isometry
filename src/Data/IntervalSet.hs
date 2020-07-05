@@ -42,9 +42,11 @@ insert new set
     Just l
       | l `isSubintervalOf` new -> new <| gt
       | sup l < inf new         -> lt >< new <| gt
-      | otherwise               -> case split smaller lt of
+      | otherwise               -> case split (smaller new) lt of
         (lt', t) -> lt' >< maybe new (union new) (measure t) <| gt
     where
-    (lt, gt) = split larger set
-  larger = maybe False ((> sup new) . sup)
-  smaller = maybe False ((<= inf new) . sup)
+    (lt, gt) = split (larger new) set
+
+larger, smaller :: Ord a => Interval I a -> Maybe (Interval I a) -> Bool
+larger  new = maybe False ((> sup new) . sup)
+smaller new = maybe False ((<= inf new) . sup)
