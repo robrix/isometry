@@ -198,7 +198,10 @@ test-suite test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
     , base
+    , hedgehog
+    , isometry
     , tasty
+    , tasty-hedgehog
 
 source-repository head
   type:     git
