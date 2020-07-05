@@ -40,4 +40,4 @@ insert i set
   (lt, gt) = F.split (\case
     Just i' -> sup i' < inf i
     Nothing -> False) (getIntervalSet set)
-  go gt = i F.<| gt
+  go set = i F.<| set
