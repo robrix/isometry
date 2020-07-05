@@ -35,8 +35,9 @@ null = F.null . getIntervalSet
 insert :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
 insert i set
   | null set  = singleton i
-  | otherwise = IntervalSet (lt F.>< i F.<| gt)
+  | otherwise = IntervalSet (lt F.>< go gt)
   where
   (lt, gt) = F.split (\case
     Just i' -> sup i' < inf i
     Nothing -> False) (getIntervalSet set)
+  go gt = i F.<| gt
