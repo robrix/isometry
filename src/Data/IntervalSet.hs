@@ -39,7 +39,7 @@ insert new = IntervalSet . go . getIntervalSet
   go set = case measure set of
     Nothing -> F.singleton new
     Just i
-      | inf i < sup new -> new <| set
+      | sup new < inf i -> new <| set
       | otherwise       -> lt >< new <| gt
     where
     (lt, gt) = split (\case
