@@ -1,2 +1,9 @@
 module Data.IntervalSet.Test
-() where
+( tests
+) where
+
+import Test.Tasty
+
+tests :: TestTree
+tests = testGroup "IntervalSet"
+  []
