@@ -45,5 +45,5 @@ insert new set
       | otherwise       -> new <| gt
     where
     (lt, gt) = split (\case
-      Just i -> sup i < inf new
+      Just i -> sup new < inf i
       Nothing -> False) set
