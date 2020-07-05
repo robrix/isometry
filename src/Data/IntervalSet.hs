@@ -40,7 +40,7 @@ insert new = IntervalSet . go . getIntervalSet
     Nothing -> F.singleton new
     Just i
       | inf i < sup new -> new <| set
-      | otherwise       -> lt >< go gt
+      | otherwise       -> lt >< new <| gt
     where
     (lt, gt) = split (\case
       Just i -> sup i < inf new
