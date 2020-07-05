@@ -4,6 +4,7 @@ module Data.IntervalSet
 , empty
 , singleton
 , bounds
+, null
 , insert
   -- * Re-exports
 , Interval(..)
@@ -12,6 +13,7 @@ module Data.IntervalSet
 import qualified Data.FingerTree as F
 import           Data.Functor.I
 import           Data.Functor.Interval
+import           Prelude hiding (null)
 
 newtype IntervalSet a = IntervalSet { getIntervalSet :: F.FingerTree (Maybe (Interval I a)) (Interval I a) }
   deriving (Eq, Ord, Show)
@@ -25,6 +27,9 @@ singleton i = IntervalSet $ F.singleton i
 
 bounds :: Ord a => IntervalSet a -> Maybe (Interval I a)
 bounds = F.measure . getIntervalSet
+
+null :: IntervalSet a -> Bool
+null = F.null . getIntervalSet
 
 
 insert :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
