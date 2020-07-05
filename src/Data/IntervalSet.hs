@@ -1,4 +1,3 @@
-{-# LANGUAGE LambdaCase #-}
 module Data.IntervalSet
 ( IntervalSet(IntervalSet)
 , empty
@@ -38,13 +37,14 @@ insert new set
   | null set  = singleton new
   | otherwise = IntervalSet (go (getIntervalSet set))
   where
-  go set = lt >< case measure gt of
-    Nothing -> F.singleton new
-    Just i
-      | i `isSubintervalOf` new -> F.singleton new
-      | sup new < inf i         -> new <| gt
-      | otherwise               -> new <| gt
+  go set = case measure lt of
+    Nothing -> new <| gt
+    Just l
+      | l `isSubintervalOf` new -> new <| gt
+      | sup l < inf new         -> lt >< new <| gt
+      | otherwise               -> case split smaller lt of
+        (lt', t) -> lt' >< maybe new (union new) (measure t) <| gt
     where
-    (lt, gt) = split (\case
-      Just i -> sup new < inf i
-      Nothing -> False) set
+    (lt, gt) = split larger set
+  larger = maybe False ((> sup new) . sup)
+  smaller = maybe False ((<= inf new) . sup)
