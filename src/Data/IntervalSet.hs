@@ -14,6 +14,7 @@ import           Data.Functor.I
 import           Data.Functor.Interval
 
 newtype IntervalSet a = IntervalSet { getIntervalSet :: F.FingerTree (Maybe (Interval I a)) (Interval I a) }
+  deriving (Eq, Ord, Show)
 
 empty :: Ord a => IntervalSet a
 empty = IntervalSet F.empty
