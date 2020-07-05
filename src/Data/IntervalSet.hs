@@ -40,4 +40,6 @@ insert i set
   (lt, gt) = F.split (\case
     Just i' -> sup i' < inf i
     Nothing -> False) (getIntervalSet set)
-  go set = i F.<| set
+  go set
+    | F.null set = F.singleton i
+    | otherwise  = i F.<| set
