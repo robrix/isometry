@@ -3,6 +3,7 @@ module Data.IntervalSet.Test
 ( tests
 ) where
 
+import Control.Monad (when)
 import Data.Foldable (foldl')
 import Data.Functor.I
 import Data.Functor.Interval
@@ -22,6 +23,13 @@ tests = testGroup "IntervalSet"
       i <- forAll gi
       s <- insert i <$> forAll gs
       insert i s === s
+    ]
+  , testGroup "larger"
+    [ testProperty "monotone" . property $ do
+      i1 <- forAll gi
+      i2 <- forAll gi
+      i3 <- forAll gi
+      when (larger i1 (Just i2)) $ larger i1 (Just (i2 <> i3)) === True
     ]
   ]
   where
