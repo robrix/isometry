@@ -34,13 +34,15 @@ null = F.null . getIntervalSet
 
 
 insert :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
-insert new = IntervalSet . go . getIntervalSet
+insert new set
+  | null set  = singleton new
+  | otherwise = IntervalSet (go (getIntervalSet set))
   where
-  go set = case measure set of
+  go set = lt >< case measure gt of
     Nothing -> F.singleton new
     Just i
-      | sup new < inf i -> new <| set
-      | otherwise       -> lt >< new <| gt
+      | sup new < inf i -> new <| gt
+      | otherwise       -> new <| gt
     where
     (lt, gt) = split (\case
       Just i -> sup i < inf new
