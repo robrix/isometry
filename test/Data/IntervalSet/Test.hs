@@ -27,5 +27,5 @@ tests = testGroup "IntervalSet"
 interval :: MonadGen m => m a -> m (Interval I a)
 interval p = (...) <$> p <*> p
 
-intervalSet :: (MonadGen m, Ord a) => m a -> m (IntervalSet a)
-intervalSet p = foldl' (flip insert) empty <$> Gen.list (Range.linear 0 100) (interval p)
+intervalSet :: (MonadGen m, Ord a) => m (Interval I a) -> m (IntervalSet a)
+intervalSet i = foldl' (flip insert) empty <$> Gen.list (Range.linear 0 100) i
