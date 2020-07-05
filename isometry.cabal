@@ -188,6 +188,15 @@ executable isometry
     , base
     , isometry
 
+test-suite test
+  import: common
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is: Test.hs
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+    , base
+
 source-repository head
   type:     git
   location: https://github.com/robrix/isometry
