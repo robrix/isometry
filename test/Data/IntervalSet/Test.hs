@@ -18,14 +18,15 @@ tests = testGroup "IntervalSet"
   [ testProperty "empty is null" . property $ I.null (empty @Int) === True
   , testGroup "insert"
     [ testProperty "idempotence" . property $ do
-      let gp = Gen.int (Range.linear 0 100)
-          gi = interval gp
+      let gi = interval gp
           gs = intervalSet gi
       i <- forAll gi
       s <- insert i <$> forAll gs
       insert i s === s
     ]
   ]
+  where
+  gp = Gen.int (Range.linear 0 100)
 
 interval :: (MonadGen m, Ord a) => m a -> m (Interval I a)
 interval p = mk <$> p <*> p
