@@ -28,7 +28,9 @@ bounds = F.measure . getIntervalSet
 
 
 insert :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
-insert i (IntervalSet set) = IntervalSet (lt F.>< i F.<| gt)
+insert i (IntervalSet set)
+  | F.null set = singleton i
+  | otherwise  = IntervalSet (lt F.>< i F.<| gt)
   where
   (lt, gt) = F.split (\case
     Just i' -> sup i' < inf i
