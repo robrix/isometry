@@ -13,6 +13,7 @@ module Data.Functor.I
 ( I(..)
 ) where
 
+import Data.Functor.Classes
 import Data.Functor.Identity
 import Linear
 import Foreign.Storable
@@ -23,3 +24,6 @@ import System.Random (Random)
 newtype I a = I { getI :: a }
   deriving (Column, Conjugate, Epsilon, Enum, Eq, Foldable, Floating, Fractional, Functor, Integral, Num, Ord, Random, Real, RealFloat, RealFrac, Row, Show, Storable, Traversable, GL.Type, Uniform)
   deriving (Additive, Applicative, Metric, Monad) via Identity
+
+instance Show1 I where
+  liftShowsPrec sp _ p = showsUnaryWith sp "I" p . getI
