@@ -41,6 +41,7 @@ function flags {
   # .hs source dirs
   echo "-iapp"
   echo "-isrc"
+  echo "-itest"
 
   # disable automatic selection of packages
   echo "-hide-all-packages"
