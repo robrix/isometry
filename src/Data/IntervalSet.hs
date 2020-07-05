@@ -5,6 +5,8 @@ module Data.IntervalSet
 , bounds
 , null
 , insert
+, larger
+, smaller
   -- * Re-exports
 , Interval(..)
 ) where
