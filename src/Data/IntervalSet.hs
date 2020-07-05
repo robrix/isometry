@@ -41,8 +41,9 @@ insert new set
   go set = lt >< case measure gt of
     Nothing -> F.singleton new
     Just i
-      | sup new < inf i -> new <| gt
-      | otherwise       -> new <| gt
+      | i `isSubintervalOf` new -> F.singleton new
+      | sup new < inf i         -> new <| gt
+      | otherwise               -> new <| gt
     where
     (lt, gt) = split (\case
       Just i -> sup new < inf i
