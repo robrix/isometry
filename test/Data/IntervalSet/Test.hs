@@ -18,8 +18,11 @@ tests = testGroup "IntervalSet"
   [ testProperty "empty is null" . property $ I.null (empty @Int) === True
   , testGroup "insert"
     [ testProperty "idempotence" . property $ do
-      i <- forAll (interval (Gen.int (Range.linear 0 100)))
-      let s = insert i empty
+      let gp = Gen.int (Range.linear 0 100)
+          gi = interval gp
+          gs = intervalSet gi
+      i <- forAll gi
+      s <- insert i <$> forAll gs
       insert i s === s
     ]
   ]
