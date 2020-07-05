@@ -1,6 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 module Data.IntervalSet
-( IntervalSet(..)
+( IntervalSet(IntervalSet)
 , empty
 , singleton
 , bounds
@@ -9,36 +9,26 @@ module Data.IntervalSet
 , Interval(..)
 ) where
 
-import Data.Functor.I
-import Data.Functor.Interval
+import qualified Data.FingerTree as F
+import           Data.Functor.I
+import           Data.Functor.Interval
 
-data IntervalSet a
-  = Empty
-  | Branch (Interval I a) (IntervalSet a) (Interval I a) (IntervalSet a)
+newtype IntervalSet a = IntervalSet { getIntervalSet :: F.FingerTree (Maybe (Interval I a)) (Interval I a) }
 
-empty :: IntervalSet a
-empty = Empty
+empty :: Ord a => IntervalSet a
+empty = IntervalSet F.empty
 
-singleton :: Interval I a -> IntervalSet a
-singleton i = Branch i empty i empty
+singleton :: Ord a => Interval I a -> IntervalSet a
+singleton i = IntervalSet $ F.singleton i
 
 
-bounds :: IntervalSet a -> Maybe (Interval I a)
-bounds Empty            = Nothing
-bounds (Branch b _ _ _) = Just b
+bounds :: Ord a => IntervalSet a -> Maybe (Interval I a)
+bounds = F.measure . getIntervalSet
 
 
 insert :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
-insert i = \case
-  Empty -> singleton i
-  s@(Branch b l i' g)
-    | i `isSubintervalOf` i' -> s
-    | b `isSubintervalOf` i  -> singleton i
-    | sup i < inf i'         -> Branch b' (insert i l) i' g
-    | inf i < sup i'         -> Branch b' l i' (insert i g)
-    | otherwise              -> merge b' l (i `union` i') g
-    where
-    b' = i `union` b
-
-merge :: Interval I a -> IntervalSet a -> Interval I a -> IntervalSet a -> IntervalSet a
-merge = Branch
+insert i (IntervalSet set) = IntervalSet (lt F.>< i F.<| gt)
+  where
+  (lt, gt) = F.split (\case
+    Just i' -> sup i' < inf i
+    Nothing -> False) set
