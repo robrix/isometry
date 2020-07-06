@@ -31,6 +31,13 @@ tests = testGroup "IntervalSet"
       i3 <- forAll gi
       when (larger i1 (Just i2) && larger i1 (Just i3)) $ larger i1 (Just (i2 <> i3)) === True
     ]
+  , testGroup "smaller"
+    [ testProperty "monotone" . property $ do
+      i1 <- forAll gi
+      i2 <- forAll gi
+      i3 <- forAll gi
+      when (smaller i1 (Just i2) && smaller i1 (Just i3)) $ smaller i1 (Just (i2 <> i3)) === True
+    ]
   ]
   where
   gp = Gen.int (Range.linear 0 100)
