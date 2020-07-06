@@ -1,9 +1,9 @@
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeApplications #-}
 module Data.IntervalSet.Test
 ( tests
 ) where
 
-import Control.Monad (when)
 import Data.Foldable (foldl')
 import Data.Functor.I
 import Data.Functor.Interval
@@ -29,14 +29,22 @@ tests = testGroup "IntervalSet"
       i1 <- forAll gi
       i2 <- forAll gi
       i3 <- forAll gi
-      when (larger i1 (Just i2) && larger i1 (Just i3)) $ larger i1 (Just (i2 <> i3)) === True
+      if larger i1 (Just i2) && larger i1 (Just i3) then do
+        label "i1 > i2 ∧ i1 > i3"
+        larger i1 (Just (i2 <> i3)) === True
+      else
+        label "i1 < i2 ∨ i1 < i3"
     ]
   , testGroup "smaller"
     [ testProperty "monotonicity" . property $ do
       i1 <- forAll gi
       i2 <- forAll gi
       i3 <- forAll gi
-      when (smaller i1 (Just i2) && smaller i1 (Just i3)) $ smaller i1 (Just (i2 <> i3)) === True
+      if smaller i1 (Just i2) && smaller i1 (Just i3) then do
+        label "i1 < i2 ∧ i1 < i3"
+        smaller i1 (Just (i2 <> i3)) === True
+      else
+        label "i1 > i2 ∨ i1 > i3"
     ]
   ]
   where
