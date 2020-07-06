@@ -8,6 +8,7 @@ import Data.Foldable (foldl')
 import Data.Functor.I
 import Data.Functor.Interval
 import Data.IntervalSet as I
+import Data.Maybe (fromMaybe)
 import Hedgehog
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
@@ -19,10 +20,14 @@ tests = testGroup "IntervalSet"
   [ testProperty "empty is null" . property $ I.null (empty @Int) === True
   , testGroup "insert"
     [ testProperty "idempotence" . property $ do
-      let gs = intervalSet gi
       i <- forAll gi
       s <- insert i <$> forAll gs
       insert i s === s
+    , testProperty "monotonicity" . property $ do
+      i <- forAll gi
+      s <- forAll gs
+      assert . fromMaybe False $ isSubintervalOf <$> bounds s <*> bounds (insert i s)
+      assert . fromMaybe False $ (i `isSubintervalOf`) <$> bounds (insert i s)
     ]
   , testGroup "larger"
     [ testProperty "monotonicity" . property $ do
@@ -50,6 +55,7 @@ tests = testGroup "IntervalSet"
   where
   gp = Gen.int (Range.linear 0 100)
   gi = interval gp
+  gs = intervalSet gi
 
 interval :: (MonadGen m, Ord a) => m a -> m (Interval I a)
 interval p = mk <$> p <*> p
