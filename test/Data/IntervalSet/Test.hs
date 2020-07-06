@@ -29,7 +29,7 @@ tests = testGroup "IntervalSet"
       i1 <- forAll gi
       i2 <- forAll gi
       i3 <- forAll gi
-      when (larger i1 (Just i2)) $ larger i1 (Just (i2 <> i3)) === True
+      when (larger i1 (Just i2) && larger i1 (Just i3)) $ larger i1 (Just (i2 <> i3)) === True
     ]
   ]
   where
