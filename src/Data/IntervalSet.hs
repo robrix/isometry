@@ -52,5 +52,5 @@ split :: Ord a => (Maybe (Interval I a) -> Bool) -> IntervalSet a -> (IntervalSe
 split p (IntervalSet set) = let (lt, gt) = F.split p set in (IntervalSet lt, IntervalSet gt)
 
 larger, smaller :: Ord a => Interval I a -> Maybe (Interval I a) -> Bool
-larger  new = maybe False ((> sup new) . sup)
-smaller new = maybe False ((<= inf new) . sup)
+larger  a = maybe False (\ b -> sup a < sup b)
+smaller a = maybe False (\ b -> inf a >= sup b)
