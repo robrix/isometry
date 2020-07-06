@@ -5,13 +5,14 @@ module Data.IntervalSet
 , bounds
 , null
 , insert
+, split
 , larger
 , smaller
   -- * Re-exports
 , Interval(..)
 ) where
 
-import           Data.FingerTree hiding (empty, null, singleton)
+import           Data.FingerTree hiding (empty, null, singleton, split)
 import qualified Data.FingerTree as F
 import           Data.Functor.I
 import           Data.Functor.Interval
@@ -44,10 +45,13 @@ insert new set
     Just l
       | l `isSubintervalOf` new -> new <| gt
       | sup l < inf new         -> lt >< new <| gt
-      | otherwise               -> case split (smaller new) lt of
+      | otherwise               -> case F.split (smaller new) lt of
         (lt', t) -> lt' >< maybe new (union new) (measure t) <| gt
     where
-    (lt, gt) = split (larger new) set
+    (lt, gt) = F.split (larger new) set
+
+split :: Ord a => (Maybe (Interval I a) -> Bool) -> IntervalSet a -> (IntervalSet a, IntervalSet a)
+split p (IntervalSet set) = let (lt, gt) = F.split p set in (IntervalSet lt, IntervalSet gt)
 
 larger, smaller :: Ord a => Interval I a -> Maybe (Interval I a) -> Bool
 larger  new = maybe False ((> sup new) . sup)
