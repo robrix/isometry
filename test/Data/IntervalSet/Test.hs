@@ -25,14 +25,14 @@ tests = testGroup "IntervalSet"
       insert i s === s
     ]
   , testGroup "larger"
-    [ testProperty "monotone" . property $ do
+    [ testProperty "monotonicity" . property $ do
       i1 <- forAll gi
       i2 <- forAll gi
       i3 <- forAll gi
       when (larger i1 (Just i2) && larger i1 (Just i3)) $ larger i1 (Just (i2 <> i3)) === True
     ]
   , testGroup "smaller"
-    [ testProperty "monotone" . property $ do
+    [ testProperty "monotonicity" . property $ do
       i1 <- forAll gi
       i2 <- forAll gi
       i3 <- forAll gi
