@@ -38,17 +38,17 @@ null = F.null . getIntervalSet
 insert :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
 insert new set
   | null set  = singleton new
-  | otherwise = IntervalSet (go (getIntervalSet set))
+  | otherwise = go set
   where
-  go set = case measure lt of
-    Nothing -> new <| gt
+  go set = IntervalSet $ case bounds lt of
+    Nothing -> new <| getIntervalSet gt
     Just l
-      | l `isSubintervalOf` new -> new <| gt
-      | sup l < inf new         -> lt >< new <| gt
-      | otherwise               -> case F.split (smaller new) lt of
-        (lt', t) -> lt' >< maybe new (union new) (measure t) <| gt
+      | l `isSubintervalOf` new -> new <| getIntervalSet gt
+      | sup l < inf new         -> getIntervalSet lt >< new <| getIntervalSet gt
+      | otherwise               -> case split (smaller new) lt of
+        (lt', t) -> getIntervalSet lt' >< maybe new (union new) (bounds t) <| getIntervalSet gt
     where
-    (lt, gt) = F.split (larger new) set
+    (lt, gt) = split (larger new) set
 
 split :: Ord a => (Maybe (Interval I a) -> Bool) -> IntervalSet a -> (IntervalSet a, IntervalSet a)
 split p (IntervalSet set) = let (lt, gt) = F.split p set in (IntervalSet lt, IntervalSet gt)
