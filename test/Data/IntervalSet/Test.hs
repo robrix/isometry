@@ -30,10 +30,10 @@ tests = testGroup "IntervalSet"
       i2 <- forAll gi
       i3 <- forAll gi
       if larger i1 (Just i2) && larger i1 (Just i3) then do
-        label "i1 > i2 ∧ i1 > i3"
+        label "holds for both"
         larger i1 (Just (i2 <> i3)) === True
       else
-        label "i1 < i2 ∨ i1 < i3"
+        label "fails for one or both"
     ]
   , testGroup "smaller"
     [ testProperty "monotonicity" . property $ do
@@ -41,10 +41,10 @@ tests = testGroup "IntervalSet"
       i2 <- forAll gi
       i3 <- forAll gi
       if smaller i1 (Just i2) && smaller i1 (Just i3) then do
-        label "i1 < i2 ∧ i1 < i3"
+        label "holds for both"
         smaller i1 (Just (i2 <> i3)) === True
       else
-        label "i1 > i2 ∨ i1 > i3"
+        label "fails for one or both"
     ]
   ]
   where
