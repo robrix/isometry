@@ -38,9 +38,7 @@ null = F.null . getIntervalSet
 insert :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
 insert new set
   | null set  = singleton new
-  | otherwise = go set
-  where
-  go set = IntervalSet $ case bounds lt of
+  | otherwise = IntervalSet $ case bounds lt of
     Nothing -> new <| getIntervalSet gt
     Just l
       | l `isSubintervalOf` new -> new <| getIntervalSet gt
