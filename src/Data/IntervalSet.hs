@@ -56,12 +56,12 @@ toList = ($ []) . go id
 
 
 insert :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
-insert new t = l >< new <| r
+insert inserted t = l >< inserted <| r
   where
   (l, m) = split before t
   (_, r) = split after m
-  before i = sup i < inf new
-  after i  = sup new < inf i
+  before i = sup i < inf inserted
+  after i  = sup inserted < inf i
 
 
 -- Internal
