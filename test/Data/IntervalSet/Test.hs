@@ -37,7 +37,8 @@ tests = map checkParallel
       assert $ inf i <= sup i)
     , ("coverage", verifiedTermination . withConfidence (10^(6 :: Int)) . property $ do
       i <- forAll gi
-      cover 5 "point" (inf i == sup i))
+      cover 5 "point" (inf i == sup i)
+      cover 20 "span" (inf i < sup i))
     ]
   ]
   where
