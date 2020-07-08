@@ -45,7 +45,8 @@ tests = map checkParallel
     [ ("coverage", property $ do
       s <- forAll gs
       cover 10 "empty" (I.null s)
-      cover 10 "point" (maybe False ((== 0) . size) (bounds s)))
+      cover 10 "point" (maybe False ((== 0) . size) (bounds s))
+      cover 10 "span" (maybe False ((> 0) . size) (bounds s)))
     ]
   ]
   where
