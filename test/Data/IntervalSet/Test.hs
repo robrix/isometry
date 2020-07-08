@@ -26,8 +26,8 @@ tests = testGroup "IntervalSet"
     , testProperty "monotonicity" . property $ do
       i <- forAll gi
       s <- forAll gs
-      assert . fromMaybe False $ isSubintervalOf <$> bounds s <*> bounds (insert i s)
-      assert . fromMaybe False $ (i `isSubintervalOf`) <$> bounds (insert i s)
+      assert . fromMaybe True $ isSubintervalOf <$> bounds s <*> bounds (insert i s)
+      assert . fromMaybe True $ (i `isSubintervalOf`) <$> bounds (insert i s)
     ]
   ]
   where
