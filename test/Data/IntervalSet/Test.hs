@@ -27,6 +27,8 @@ tests = map checkParallel
       assert . fromMaybe True $ isSubintervalOf <$> bounds s <*> bounds (insert i s)
       assert . fromMaybe True $ (i `isSubintervalOf`) <$> bounds (insert i s))
     ]
+  , Group "delete"
+    []
   , Group "fromList"
     [ ("inverse", property $ do
       s <- forAll gs
