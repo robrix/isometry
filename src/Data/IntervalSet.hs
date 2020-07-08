@@ -36,18 +36,12 @@ null _     = False
 
 
 insert :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
-insert new = \case
-  Empty -> singleton new
-  Node b l i r
-    | b `isSubintervalOf` new -> singleton new
-    | sup new < inf b -> new <| Node b l i r
-    | sup b < inf new -> Node b l i r |> new
-    | sup new < inf i -> Node (b `union` new) (insert new l) i r
-    | sup i < inf new -> Node (b `union` new) l i (insert new r)
-    | new `isSubintervalOf` i -> Node b l i r
-    | maybe True ((< inf new) . sup) (bounds l)
-    , maybe True ((> sup new) . inf) (bounds r)
-    -> Node (b `union` new) l (new `union` i) r
+insert new t = l >< new <| r
+  where
+  (l, m) = split before t
+  (_, r) = split after m
+  before i = sup i < inf new
+  after i  = sup new < inf i
 
 
 -- Internal
