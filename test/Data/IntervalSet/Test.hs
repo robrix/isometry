@@ -33,6 +33,13 @@ tests = testGroup "IntervalSet"
       s <- forAll gs
       fromList (toList s) === s
     ]
+  , testGroup "generators"
+    [ testGroup "interval"
+      [ testProperty "validity" . property $ do
+        i <- forAll gi
+        assert $ inf i <= sup i
+      ]
+    ]
   ]
   where
   gp = Gen.int (Range.linear 0 100)
