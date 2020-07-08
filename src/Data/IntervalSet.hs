@@ -50,11 +50,17 @@ insert new = \case
 -- Internal
 
 (<|) :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
-i <| t = Node (maybe i (union i) (bounds t)) Empty i t
+i <| t = singleton i >< t
 
 infixr 5 <|
 
 (|>) :: Ord a => IntervalSet a -> Interval I a -> IntervalSet a
-t |> i = Node (maybe i (union i) (bounds t)) t i Empty
+t |> i = t >< singleton i
 
 infixl 5 |>
+
+(><) :: Ord a => IntervalSet a -> IntervalSet a -> IntervalSet a
+Empty        >< r = r
+Node b l i m >< r = Node (maybe b (union b) (bounds r)) l i (m >< r)
+
+infixr 5 ><
