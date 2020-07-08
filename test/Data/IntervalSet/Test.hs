@@ -28,6 +28,11 @@ tests = testGroup "IntervalSet"
       assert . fromMaybe True $ isSubintervalOf <$> bounds s <*> bounds (insert i s)
       assert . fromMaybe True $ (i `isSubintervalOf`) <$> bounds (insert i s)
     ]
+  , testGroup "fromList"
+    [ testProperty "inverse" . property $ do
+      s <- forAll gs
+      fromList (toList s) === s
+    ]
   ]
   where
   gp = Gen.int (Range.linear 0 100)
