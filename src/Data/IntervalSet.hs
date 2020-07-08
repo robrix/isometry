@@ -1,5 +1,5 @@
 module Data.IntervalSet
-( IntervalSet(..)
+( IntervalSet
 , empty
 , singleton
 , fromList
