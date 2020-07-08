@@ -4,7 +4,6 @@ module Data.IntervalSet.Test
 ( tests
 ) where
 
-import Data.Foldable (foldl')
 import Data.Functor.I
 import Data.Functor.Interval
 import Data.IntervalSet as I
@@ -41,4 +40,4 @@ interval p = mk <$> p <*> p
   mk a b = min a b ... max a b
 
 intervalSet :: (MonadGen m, Ord a) => m (Interval I a) -> m (IntervalSet a)
-intervalSet i = foldl' (flip insert) empty <$> Gen.list (Range.linear 0 100) i
+intervalSet i = fromList <$> Gen.list (Range.linear 0 100) i
