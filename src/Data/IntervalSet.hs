@@ -44,6 +44,7 @@ insert new = \case
     | sup b < inf new -> Node b l i r |> new
     | sup new < inf i -> Node (b `union` new) (insert new l) i r
     | sup i < inf new -> Node (b `union` new) l i (insert new r)
+    | new `isSubintervalOf` i -> Node b l i r
 
 
 -- Internal
