@@ -12,6 +12,7 @@ module Data.IntervalSet
 ) where
 
 import Data.Foldable (foldl')
+import Data.Function (on)
 import Data.Functor.Classes (showsUnaryWith)
 import Data.Functor.I
 import Data.Functor.Interval
@@ -20,7 +21,10 @@ import Prelude hiding (null)
 data IntervalSet a
   = Empty
   | Node (Interval I a) (IntervalSet a) (Interval I a) (IntervalSet a)
-  deriving (Eq, Ord)
+
+instance Eq a => Eq (IntervalSet a) where (==) = (==) `on` toList
+
+instance Ord a => Ord (IntervalSet a) where compare = compare `on` toList
 
 instance Show a => Show (IntervalSet a) where
   showsPrec p = showsUnaryWith showsPrec "fromList" p . toList
