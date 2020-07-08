@@ -35,6 +35,9 @@ tests = map checkParallel
     [ ("validity", property $ do
       i <- forAll gi
       assert $ inf i <= sup i)
+    , ("coverage", verifiedTermination . withConfidence (10^(6 :: Int)) . property $ do
+      i <- forAll gi
+      cover 5 "point" (inf i == sup i))
     ]
   ]
   where
