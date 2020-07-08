@@ -6,8 +6,8 @@ module Data.IntervalSet
 , null
 , insert
 , split
-, larger
-, smaller
+, before
+, after
   -- * Re-exports
 , Interval(..)
 ) where
@@ -36,21 +36,15 @@ null = F.null . getIntervalSet
 
 
 insert :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
-insert new set
-  | null set  = singleton new
-  | otherwise = IntervalSet $ case bounds lt of
-    Nothing -> new <| getIntervalSet gt
-    Just l
-      | l `isSubintervalOf` new -> new <| getIntervalSet gt
-      | sup l < inf new         -> getIntervalSet lt >< new <| getIntervalSet gt
-      | otherwise               -> case split (smaller new) lt of
-        (lt', t) -> getIntervalSet lt' >< maybe new (union new) (bounds t) <| getIntervalSet gt
-    where
-    (lt, gt) = split (larger new) set
+insert new (IntervalSet set) = IntervalSet $ case F.split (before new) set of
+  (lt, rest) -> lt >< case F.split (after new) rest of
+    (mid, gt) -> maybe new (union new) (measure mid) <| gt
 
 split :: Ord a => (Maybe (Interval I a) -> Bool) -> IntervalSet a -> (IntervalSet a, IntervalSet a)
 split p (IntervalSet set) = let (lt, gt) = F.split p set in (IntervalSet lt, IntervalSet gt)
 
-larger, smaller :: Ord a => Interval I a -> Maybe (Interval I a) -> Bool
-larger  a = maybe False (\ b -> sup a < sup b)
-smaller a = maybe False (\ b -> inf a >= sup b)
+before :: Ord a => Interval I a -> Maybe (Interval I a) -> Bool
+before a = maybe False (\ b -> inf a <= sup b)
+
+after :: Ord a => Interval I a -> Maybe (Interval I a) -> Bool
+after a = maybe False (\ b -> sup a < sup b)
