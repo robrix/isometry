@@ -61,7 +61,7 @@ insert inserted t = l >< inserted <| r
   where
   (l, m) = split before t
   (_, r) = split after m
-  before i = sup inserted <= inf i
+  before i = sup inserted <= sup i
   after  i = sup inserted <  inf i
 
 
