@@ -45,6 +45,9 @@ insert new = \case
     | sup new < inf i -> Node (b `union` new) (insert new l) i r
     | sup i < inf new -> Node (b `union` new) l i (insert new r)
     | new `isSubintervalOf` i -> Node b l i r
+    | maybe True ((< inf new) . sup) (bounds l)
+    , maybe True ((> sup new) . inf) (bounds r)
+    -> Node (b `union` new) l new r
 
 
 -- Internal
