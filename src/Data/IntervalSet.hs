@@ -52,6 +52,13 @@ insert new = \case
 
 -- Internal
 
+split :: Ord a => (Interval I a -> Bool) -> IntervalSet a -> (IntervalSet a, IntervalSet a)
+split _ Empty          = (Empty, Empty)
+split p (Node b l i r)
+  | p b = (Empty, Node b l i r)
+  | p i, (ll, lr) <- split p l = (ll, lr >< i <| r)
+  | otherwise, (rl, rr) <- split p r = ((l |> i) >< rl, rr)
+
 (<|) :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
 i <| t = singleton i >< t
 
