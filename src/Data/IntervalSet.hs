@@ -7,13 +7,10 @@ module Data.IntervalSet
 , bounds
 , null
 , insert
-, split
-, before
   -- * Re-exports
 , Interval(..)
 ) where
 
-import           Data.Coerce (coerce)
 import qualified Data.FingerTree as F
 import qualified Data.Foldable as Foldable (foldl', toList)
 import           Data.Function (on)
@@ -52,30 +49,12 @@ toList = Foldable.toList . getIntervalSet
 
 
 insert :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
-insert inserted t = l >< go inserted (getIntervalSet r)
+insert inserted (IntervalSet t) = IntervalSet $ l F.>< go inserted r
   where
-  (l, r) = split (before inserted) t
+  (l, r) = F.split (maybe False before) t
   go inserted s = case F.viewl s of
-    F.EmptyL -> singleton inserted
+    F.EmptyL -> F.singleton inserted
     h F.:< t
-      | sup inserted < inf h -> inserted <| IntervalSet s
+      | sup inserted < inf h -> inserted F.<| s
       | otherwise            -> go (inserted <> h) t
-
-before :: Ord a => Interval I a -> Interval I a -> Bool
-before inserted i = inf inserted <= sup i
-
-
--- Internal
-
-split :: Ord a => (Interval I a -> Bool) -> IntervalSet a -> (IntervalSet a, IntervalSet a)
-split p = coerce . F.split (maybe False p) . getIntervalSet
-
-(<|) :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
-(<|) = coerce ((F.<|) :: Ord a => Interval I a -> F.FingerTree (Maybe (Interval I a)) (Interval I a) -> F.FingerTree (Maybe (Interval I a)) (Interval I a))
-
-infixr 5 <|
-
-(><) :: Ord a => IntervalSet a -> IntervalSet a -> IntervalSet a
-(><) = coerce ((F.><) :: Ord a => F.FingerTree (Maybe (Interval I a)) (Interval I a) -> F.FingerTree (Maybe (Interval I a)) (Interval I a) -> F.FingerTree (Maybe (Interval I a)) (Interval I a))
-
-infixr 5 ><
+  before i = inf inserted <= sup i
