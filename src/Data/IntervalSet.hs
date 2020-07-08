@@ -3,6 +3,7 @@ module Data.IntervalSet
 ( IntervalSet()
 , empty
 , singleton
+, fromList
 , bounds
 , null
 , insert
@@ -10,6 +11,7 @@ module Data.IntervalSet
 , Interval(..)
 ) where
 
+import Data.Foldable (foldl')
 import Data.Functor.I
 import Data.Functor.Interval
 import Prelude hiding (null)
@@ -24,6 +26,9 @@ empty = Empty
 
 singleton :: Interval I a -> IntervalSet a
 singleton i = Node i Empty i Empty
+
+fromList :: Ord a => [Interval I a] -> IntervalSet a
+fromList = foldl' (flip insert) empty
 
 
 bounds :: IntervalSet a -> Maybe (Interval I a)
