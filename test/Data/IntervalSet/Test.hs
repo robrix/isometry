@@ -41,6 +41,11 @@ tests = map checkParallel
       cover 5 "point" (inf i == sup i)
       cover 20 "span" (inf i < sup i))
     ]
+  , Group "intervalSet"
+    [ ("coverage", property $ do
+      s <- forAll gs
+      cover 10 "empty" (I.null s))
+    ]
   ]
   where
   gp = Gen.int (Range.linear 0 100)
