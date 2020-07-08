@@ -1,6 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 module Data.IntervalSet
-( IntervalSet()
+( IntervalSet(..)
 , empty
 , singleton
 , fromList
@@ -8,20 +8,21 @@ module Data.IntervalSet
 , null
 , insert
 , split
+, before
   -- * Re-exports
 , Interval(..)
 ) where
 
-import Data.Foldable (foldl')
-import Data.Function (on)
-import Data.Functor.Classes (showsUnaryWith)
-import Data.Functor.I
-import Data.Functor.Interval
-import Prelude hiding (null)
+import           Data.Coerce (coerce)
+import qualified Data.FingerTree as F
+import qualified Data.Foldable as Foldable (foldl', toList)
+import           Data.Function (on)
+import           Data.Functor.Classes (showsUnaryWith)
+import           Data.Functor.I
+import           Data.Functor.Interval
+import           Prelude hiding (null)
 
-data IntervalSet a
-  = Empty
-  | Node (Interval I a) (IntervalSet a) (Interval I a) (IntervalSet a)
+newtype IntervalSet a = IntervalSet { getIntervalSet :: F.FingerTree (Maybe (Interval I a)) (Interval I a) }
 
 instance Eq a => Eq (IntervalSet a) where (==) = (==) `on` toList
 
@@ -30,62 +31,51 @@ instance Ord a => Ord (IntervalSet a) where compare = compare `on` toList
 instance Show a => Show (IntervalSet a) where
   showsPrec p = showsUnaryWith showsPrec "fromList" p . toList
 
-empty :: IntervalSet a
-empty = Empty
+empty :: Ord a => IntervalSet a
+empty = IntervalSet F.empty
 
-singleton :: Interval I a -> IntervalSet a
-singleton i = Node i Empty i Empty
+singleton :: Ord a => Interval I a -> IntervalSet a
+singleton = IntervalSet . F.singleton
 
 fromList :: Ord a => [Interval I a] -> IntervalSet a
-fromList = foldl' (flip insert) empty
+fromList = Foldable.foldl' (flip insert) empty
 
 
-bounds :: IntervalSet a -> Maybe (Interval I a)
-bounds Empty          = Nothing
-bounds (Node b _ _ _) = Just b
+bounds :: Ord a => IntervalSet a -> Maybe (Interval I a)
+bounds = F.measure . getIntervalSet
 
 null :: IntervalSet a -> Bool
-null Empty = True
-null _     = False
+null = F.null . getIntervalSet
 
 toList :: IntervalSet a -> [Interval I a]
-toList = ($ []) . go id
-  where
-  go f = \case
-    Empty -> f
-    Node _ l i r -> go f l . (i:) . go f r
+toList = Foldable.toList . getIntervalSet
 
 
 insert :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
-insert inserted t = l >< inserted <| r
+insert inserted t = l >< go inserted (getIntervalSet r)
   where
-  (l, m) = split before t
-  (_, r) = split after m
-  before i = inf inserted <= sup i
-  after  i = sup inserted <  inf i
+  (l, r) = split (before inserted) t
+  go inserted s = case F.viewl s of
+    F.EmptyL -> singleton inserted
+    h F.:< t
+      | sup inserted < inf h -> inserted <| IntervalSet s
+      | otherwise            -> go (inserted <> h) t
+
+before :: Ord a => Interval I a -> Interval I a -> Bool
+before inserted i = inf inserted <= sup i
 
 
 -- Internal
 
 split :: Ord a => (Interval I a -> Bool) -> IntervalSet a -> (IntervalSet a, IntervalSet a)
-split _ Empty          = (Empty, Empty)
-split p (Node b l i r)
-  | p b = (Empty, Node b l i r)
-  | p i, (ll, lr) <- split p l = (ll, lr >< i <| r)
-  | otherwise, (rl, rr) <- split p r = ((l |> i) >< rl, rr)
+split p = coerce . F.split (maybe False p) . getIntervalSet
 
 (<|) :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
-i <| t = singleton i >< t
+(<|) = coerce ((F.<|) :: Ord a => Interval I a -> F.FingerTree (Maybe (Interval I a)) (Interval I a) -> F.FingerTree (Maybe (Interval I a)) (Interval I a))
 
 infixr 5 <|
 
-(|>) :: Ord a => IntervalSet a -> Interval I a -> IntervalSet a
-t |> i = t >< singleton i
-
-infixl 5 |>
-
 (><) :: Ord a => IntervalSet a -> IntervalSet a -> IntervalSet a
-Empty        >< r = r
-Node b l i m >< r = Node (maybe b (union b) (bounds r)) l i (m >< r)
+(><) = coerce ((F.><) :: Ord a => F.FingerTree (Maybe (Interval I a)) (Interval I a) -> F.FingerTree (Maybe (Interval I a)) (Interval I a) -> F.FingerTree (Maybe (Interval I a)) (Interval I a))
 
 infixr 5 ><
