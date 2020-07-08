@@ -53,7 +53,7 @@ interval p = Gen.choice
   , mk <$> p <*> p
   ]
   where
-  mk a b = a ... a + b
+  mk a b = a ... a + b + 1
 
 intervalSet :: (MonadGen m, Ord a) => m (Interval I a) -> m (IntervalSet a)
 intervalSet i = fromList <$> Gen.list (Range.linear 0 100) i
