@@ -29,28 +29,6 @@ tests = testGroup "IntervalSet"
       assert . fromMaybe False $ isSubintervalOf <$> bounds s <*> bounds (insert i s)
       assert . fromMaybe False $ (i `isSubintervalOf`) <$> bounds (insert i s)
     ]
-  , testGroup "larger"
-    [ testProperty "monotonicity" . property $ do
-      i1 <- forAll gi
-      i2 <- forAll gi
-      i3 <- forAll gi
-      if larger i1 (Just i2) && larger i1 (Just i3) then do
-        label "holds for both"
-        larger i1 (Just (i2 <> i3)) === True
-      else
-        label "fails for one or both"
-    ]
-  , testGroup "smaller"
-    [ testProperty "monotonicity" . property $ do
-      i1 <- forAll gi
-      i2 <- forAll gi
-      i3 <- forAll gi
-      if smaller i1 (Just i2) && smaller i1 (Just i3) then do
-        label "holds for both"
-        smaller i1 (Just (i2 <> i3)) === True
-      else
-        label "fails for one or both"
-    ]
   ]
   where
   gp = Gen.int (Range.linear 0 100)
