@@ -12,6 +12,7 @@ module Data.IntervalSet
 ) where
 
 import Data.Foldable (foldl')
+import Data.Functor.Classes (showsUnaryWith)
 import Data.Functor.I
 import Data.Functor.Interval
 import Prelude hiding (null)
@@ -19,7 +20,10 @@ import Prelude hiding (null)
 data IntervalSet a
   = Empty
   | Node (Interval I a) (IntervalSet a) (Interval I a) (IntervalSet a)
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord)
+
+instance Show a => Show (IntervalSet a) where
+  showsPrec p = showsUnaryWith showsPrec "fromList" p . toList
 
 empty :: IntervalSet a
 empty = Empty
@@ -38,6 +42,13 @@ bounds (Node b _ _ _) = Just b
 null :: IntervalSet a -> Bool
 null Empty = True
 null _     = False
+
+toList :: IntervalSet a -> [Interval I a]
+toList = ($ []) . go id
+  where
+  go f = \case
+    Empty -> f
+    Node _ l i r -> go f l . (i:) . go f r
 
 
 insert :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
