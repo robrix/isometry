@@ -7,6 +7,7 @@ module Data.IntervalSet
 , bounds
 , null
 , insert
+, split
   -- * Re-exports
 , Interval(..)
 ) where
@@ -60,8 +61,8 @@ insert inserted t = l >< inserted <| r
   where
   (l, m) = split before t
   (_, r) = split after m
-  before i = sup i < inf inserted
-  after i  = sup inserted < inf i
+  before i = sup inserted <= inf i
+  after  i = sup inserted <  inf i
 
 
 -- Internal
