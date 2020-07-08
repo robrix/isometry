@@ -5,6 +5,7 @@ module Data.IntervalSet
 , fromList
 , bounds
 , null
+, toList
 , insert
   -- * Re-exports
 , Interval(..)
