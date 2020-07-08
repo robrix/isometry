@@ -1,4 +1,3 @@
-{-# LANGUAGE LambdaCase #-}
 module Data.IntervalSet
 ( IntervalSet(..)
 , empty
