@@ -40,5 +40,18 @@ insert new = \case
   Empty -> singleton new
   Node b l i r
     | b `isSubintervalOf` new -> singleton new
-    | sup new < inf b -> Node (new <> b) Empty new (Node b l i r)
-    | sup b < inf new -> Node (b <> new) (Node b l i r) new Empty
+    | sup new < inf b -> new <| Node b l i r
+    | sup b < inf new -> Node b l i r |> new
+
+
+-- Internal
+
+(<|) :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
+i <| t = Node (maybe i (union i) (bounds t)) Empty i t
+
+infixr 5 <|
+
+(|>) :: Ord a => IntervalSet a -> Interval I a -> IntervalSet a
+t |> i = Node (maybe i (union i) (bounds t)) t i Empty
+
+infixl 5 |>
