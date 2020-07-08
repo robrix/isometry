@@ -3,9 +3,7 @@ module Main
 ) where
 
 import qualified Data.IntervalSet.Test as IntervalSet
-import           Test.Tasty
+import           Hedgehog.Main
 
 main :: IO ()
-main = defaultMain $ testGroup "unit tests"
-  [ IntervalSet.tests
-  ]
+main = defaultMain IntervalSet.tests

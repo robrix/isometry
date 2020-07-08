@@ -4,41 +4,37 @@ module Data.IntervalSet.Test
 ( tests
 ) where
 
-import Data.Functor.I
-import Data.Functor.Interval
-import Data.IntervalSet as I
-import Data.Maybe (fromMaybe)
-import Hedgehog
+import           Data.Functor.I
+import           Data.Functor.Interval
+import           Data.IntervalSet as I
+import           Data.Maybe (fromMaybe)
+import           Hedgehog
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
-import Test.Tasty
-import Test.Tasty.Hedgehog
 
-tests :: TestTree
-tests = testGroup "IntervalSet"
-  [ testProperty "empty is null" . property $ I.null (empty @Int) === True
-  , testGroup "insert"
-    [ testProperty "idempotence" . property $ do
+tests :: [IO Bool]
+tests = map checkParallel
+  [ Group "empty" [ ("empty is null", property $ I.null (empty @Int) === True) ]
+  , Group "insert"
+    [ ("idempotence", property $ do
       i <- forAll gi
       s <- insert i <$> forAll gs
-      insert i s === s
-    , testProperty "monotonicity" . property $ do
+      insert i s === s)
+    , ("monotonicity", property $ do
       i <- forAll gi
       s <- forAll gs
       assert . fromMaybe True $ isSubintervalOf <$> bounds s <*> bounds (insert i s)
-      assert . fromMaybe True $ (i `isSubintervalOf`) <$> bounds (insert i s)
+      assert . fromMaybe True $ (i `isSubintervalOf`) <$> bounds (insert i s))
     ]
-  , testGroup "fromList"
-    [ testProperty "inverse" . property $ do
+  , Group "fromList"
+    [ ("inverse", property $ do
       s <- forAll gs
-      fromList (toList s) === s
+      fromList (toList s) === s)
     ]
-  , testGroup "generators"
-    [ testGroup "interval"
-      [ testProperty "validity" . property $ do
-        i <- forAll gi
-        assert $ inf i <= sup i
-      ]
+  , Group "interval"
+    [ ("validity", property $ do
+      i <- forAll gi
+      assert $ inf i <= sup i)
     ]
   ]
   where
