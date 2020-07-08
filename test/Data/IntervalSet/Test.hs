@@ -47,6 +47,7 @@ tests = map checkParallel
       let is = I.toList s
       cover 10 "empty" (I.null s)
       cover 10 "singleton" (length is == 1)
+      cover 10 "disjoint" (length is > 1)
       cover 10 "point" (maybe False ((== 0) . size) (bounds s))
       cover 10 "span" (maybe False ((> 0) . size) (bounds s)))
     ]
