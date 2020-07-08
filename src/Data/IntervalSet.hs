@@ -13,17 +13,13 @@ module Data.IntervalSet
 
 import qualified Data.FingerTree as F
 import qualified Data.Foldable as Foldable (foldl', toList)
-import           Data.Function (on)
 import           Data.Functor.Classes (showsUnaryWith)
 import           Data.Functor.I
 import           Data.Functor.Interval
 import           Prelude hiding (null)
 
 newtype IntervalSet a = IntervalSet { getIntervalSet :: F.FingerTree (Maybe (Interval I a)) (Interval I a) }
-
-instance Eq a => Eq (IntervalSet a) where (==) = (==) `on` toList
-
-instance Ord a => Ord (IntervalSet a) where compare = compare `on` toList
+  deriving (Eq, Ord)
 
 instance Show a => Show (IntervalSet a) where
   showsPrec p = showsUnaryWith showsPrec "fromList" p . toList
