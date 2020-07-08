@@ -4,6 +4,7 @@ module Data.IntervalSet.Test
 ( tests
 ) where
 
+import           Control.Monad (join)
 import           Data.Functor.I
 import           Data.Functor.Interval
 import           Data.IntervalSet as I
@@ -47,7 +48,10 @@ tests = map checkParallel
   gs = intervalSet gi
 
 interval :: (MonadGen m, Num a) => m a -> m (Interval I a)
-interval p = mk <$> p <*> p
+interval p = Gen.choice
+  [ join (...) <$> p
+  , mk <$> p <*> p
+  ]
   where
   mk a b = a ... a + b
 
