@@ -15,7 +15,7 @@ import qualified Hedgehog.Range as Range
 
 tests :: [IO Bool]
 tests = map checkParallel
-  [ Group "empty" [ ("empty is null", property $ I.null (empty @Int) === True) ]
+  [ Group "empty" [ ("empty is null", withTests 1 . property $ I.null (empty @Int) === True) ]
   , Group "insert"
     [ ("idempotence", property $ do
       i <- forAll gi
