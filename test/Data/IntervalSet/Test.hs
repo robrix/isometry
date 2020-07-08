@@ -44,7 +44,9 @@ tests = map checkParallel
   , Group "intervalSet"
     [ ("coverage", property $ do
       s <- forAll gs
+      let is = I.toList s
       cover 10 "empty" (I.null s)
+      cover 10 "singleton" (Prelude.null is)
       cover 10 "point" (maybe False ((== 0) . size) (bounds s))
       cover 10 "span" (maybe False ((> 0) . size) (bounds s)))
     ]
