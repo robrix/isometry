@@ -46,10 +46,10 @@ tests = map checkParallel
   gi = interval gp
   gs = intervalSet gi
 
-interval :: (MonadGen m, Ord a) => m a -> m (Interval I a)
+interval :: (MonadGen m, Num a) => m a -> m (Interval I a)
 interval p = mk <$> p <*> p
   where
-  mk a b = min a b ... max a b
+  mk a b = a ... a + b
 
 intervalSet :: (MonadGen m, Ord a) => m (Interval I a) -> m (IntervalSet a)
 intervalSet i = fromList <$> Gen.list (Range.linear 0 100) i
