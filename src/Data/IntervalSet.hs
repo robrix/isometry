@@ -69,10 +69,15 @@ delete deleted t = l >< r'
     _ -> r
 
 splitAround :: Ord a => Interval I a -> IntervalSet a -> (IntervalSet a, IntervalSet a, IntervalSet a)
-splitAround i (IntervalSet s) = (IntervalSet l, IntervalSet n, IntervalSet r)
+splitAround i (IntervalSet s) = (IntervalSet l, IntervalSet n', IntervalSet r')
   where
   (l, m) = F.split (maybe False (before i)) s
   (n, r) = F.split (maybe False (after  i)) m
+  (n', r') = case F.viewl r of
+    F.EmptyL -> (n, r)
+    h F.:< t
+      | sup i < inf h -> (n, r)
+      | otherwise     -> (n F.|> h, t)
 
 before :: Ord a => Interval I a -> Interval I a -> Bool
 before subject i = inf subject <= sup i
