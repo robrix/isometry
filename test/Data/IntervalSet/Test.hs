@@ -59,9 +59,7 @@ tests = map checkParallel
       all ((\ x -> inf x <= sup x) . intersection i) (toList c) === True)
     ]
   , Group "interval"
-    [ ("validity", property $ do
-      i <- forAll gi
-      assert $ inf i <= sup i)
+    [ ("validity", property (forAll gi >>= assert . isValid))
     , ("coverage", verifiedTermination . withConfidence (10^(6 :: Int)) . property $ do
       i <- forAll gi
       cover 20 "point" (inf i == sup i)
@@ -82,6 +80,9 @@ tests = map checkParallel
   gp = Gen.int (Range.linear 0 100)
   gi = interval gp
   gs = intervalSet gi
+
+isValid :: Ord a => Interval I a -> Bool
+isValid i = inf i <= sup i
 
 interval :: (MonadGen m, Num a) => m a -> m (Interval I a)
 interval p = Gen.choice
