@@ -194,6 +194,7 @@ test-suite test
   hs-source-dirs: test
   main-is: Test.hs
   other-modules:
+    Data.Functor.Interval.Test
     Data.IntervalSet.Test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
