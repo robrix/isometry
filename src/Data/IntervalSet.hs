@@ -65,5 +65,5 @@ delete deleted (IntervalSet t) = IntervalSet $ l F.>< go r
     h F.:< t
       | sup deleted < inf h         -> s
       | h `isSubintervalOf` deleted -> go t
-      | otherwise                   -> go t
+      | otherwise                   -> h `intersection` deleted F.<| go t
   before i = inf deleted <= sup i
