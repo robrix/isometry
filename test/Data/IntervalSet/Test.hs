@@ -81,9 +81,6 @@ tests = map checkParallel
   gi = interval gp
   gs = intervalSet gi
 
-isValid :: Ord a => Interval I a -> Bool
-isValid i = inf i <= sup i
-
 interval :: (MonadGen m, Num a) => m a -> m (Interval I a)
 interval p = Gen.choice
   [ join (...) <$> p
