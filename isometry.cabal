@@ -158,7 +158,7 @@ library
     , direct-sqlite ^>= 2.3
     , filepath ^>= 1.4
     , fingertree
-    , fused-effects      ^>= 1
+    , fused-effects      ^>= 1.1
     , fused-effects-lens ^>= 1.2
     , fused-effects-profile
     , fused-effects-random

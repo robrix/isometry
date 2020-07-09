@@ -2,18 +2,18 @@ packages: .
 
 source-repository-package
   type: git
-  location: https://github.com/fused-effects/fused-effects.git
-  tag: e677228b1f9c69a9378c3f33ea9ca798b06831d3
-
-source-repository-package
-  type: git
   location: https://github.com/fused-effects/fused-effects-profile.git
-  tag: 381030db2afadf94e4e00ee4347e3fb2e9c4984e
+  tag: 66bcb461b3571636748f03806fefc48608a387ee
 
 source-repository-package
   type: git
   location: https://github.com/fused-effects/fused-effects-random.git
-  tag: 175b1d1a296ed2608bfd3fbdcb9200987b708700
+  tag: d110e86a0b5e4bea536aac0d48d54625b4fb0d69
+
+source-repository-package
+  type: git
+  location: https://github.com/fused-effects/fused-effects-lens.git
+  tag: 08cf20ad410362ecadaf56555b404ab7457fefee
 
 source-repository-package
   type: git
