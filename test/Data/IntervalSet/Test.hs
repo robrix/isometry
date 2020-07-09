@@ -34,7 +34,7 @@ tests = map checkParallel
       insert i (delete i s) === insert i s)
     , ("annihilation", property $ do
       s <- forAll gs
-      maybe id delete (bounds s) s === s)
+      maybe id delete (bounds s) s === empty)
     ]
   , Group "fromList"
     [ ("inverse", property $ do
