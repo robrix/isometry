@@ -47,6 +47,11 @@ tests = map checkParallel
       i <- forAll gi
       let (l, _, _) = splitAround i s
       ((sup <$> bounds l) < Just (inf i)) === True)
+    , ("right is greater than supremum", property $ do
+      s <- forAll gs
+      i <- forAll gi
+      let (_, _, r) = splitAround i s
+      (sup i < maybe (succ (sup i)) inf (bounds r)) === True)
     ]
   , Group "interval"
     [ ("validity", property $ do
