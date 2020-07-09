@@ -46,7 +46,7 @@ tests = map checkParallel
       s <- forAll gs
       i <- forAll gi
       let (l, _, _) = splitAround i s
-      ((sup <$> bounds l) < Just (inf i)) === True)
+      (maybe (pred (inf i)) sup (bounds l) < inf i) === True)
     , ("right is greater than supremum", property $ do
       s <- forAll gs
       i <- forAll gi
