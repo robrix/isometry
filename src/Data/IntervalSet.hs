@@ -15,6 +15,7 @@ module Data.IntervalSet
 import qualified Data.FingerTree as F
 import qualified Data.Foldable as Foldable (foldl', toList)
 import           Data.Functor.Classes (showsUnaryWith)
+import           Data.Coerce
 import           Data.Functor.I
 import           Data.Functor.Interval
 import           Prelude hiding (null)
@@ -56,20 +57,36 @@ insert inserted (IntervalSet t) = IntervalSet $ l F.>< go inserted r
       | otherwise            -> go (inserted <> h) t
 
 delete :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
-delete deleted (IntervalSet t) = IntervalSet $ l F.>< r'
+delete deleted t = l >< r'
   where
-  (l, m) = F.split (maybe False (before deleted)) t
-  (n, r) = F.split (maybe False (after  deleted)) m
-  r' = case F.measure n of
+  (l, m, r) = splitAround deleted t
+  r' = case bounds m of
     Just h
       | inf h < inf deleted
-      , sup deleted < sup h -> Interval (inf h) (inf deleted) F.<| Interval (sup deleted) (sup h) F.<| r
-      | inf h < inf deleted -> Interval (inf h) (inf deleted) F.<| r
-      | sup deleted < sup h -> Interval (sup deleted) (sup h) F.<| r
+      , sup deleted < sup h -> Interval (inf h) (inf deleted) <| Interval (sup deleted) (sup h) <| r
+      | inf h < inf deleted -> Interval (inf h) (inf deleted) <| r
+      | sup deleted < sup h -> Interval (sup deleted) (sup h) <| r
     _ -> r
+
+splitAround :: Ord a => Interval I a -> IntervalSet a -> (IntervalSet a, IntervalSet a, IntervalSet a)
+splitAround i (IntervalSet s) = (IntervalSet l, IntervalSet n, IntervalSet r)
+  where
+  (l, m) = F.split (maybe False (before i)) s
+  (n, r) = F.split (maybe False (after  i)) m
 
 before :: Ord a => Interval I a -> Interval I a -> Bool
 before subject i = inf subject <= sup i
 
 after :: Ord a => Interval I a -> Interval I a -> Bool
 after subject i = sup subject < sup i
+
+
+-- Internal
+
+infixr 5 ><, <|
+
+(><) :: Ord a => IntervalSet a -> IntervalSet a -> IntervalSet a
+(><) = coerce ((F.><) :: Ord a => F.FingerTree (Maybe (Interval I a)) (Interval I a) -> F.FingerTree (Maybe (Interval I a)) (Interval I a) -> F.FingerTree (Maybe (Interval I a)) (Interval I a))
+
+(<|) :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
+(<|) = coerce ((F.<|) :: Ord a => Interval I a -> F.FingerTree (Maybe (Interval I a)) (Interval I a) -> F.FingerTree (Maybe (Interval I a)) (Interval I a))
