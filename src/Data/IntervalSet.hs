@@ -48,14 +48,9 @@ toList = Foldable.toList . getIntervalSet
 
 
 insert :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
-insert inserted (IntervalSet t) = IntervalSet $ l F.>< go inserted r
+insert inserted t = l >< maybe inserted (union inserted) (bounds m) <| r
   where
-  (l, r) = F.split (maybe False (before inserted)) t
-  go inserted s = case F.viewl s of
-    F.EmptyL -> F.singleton inserted
-    h F.:< t
-      | sup inserted < inf h -> inserted F.<| s
-      | otherwise            -> go (inserted <> h) t
+  (l, m, r) = splitAround inserted t
 
 delete :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
 delete deleted t = l >< r'
