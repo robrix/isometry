@@ -41,6 +41,13 @@ tests = map checkParallel
       s <- forAll gs
       fromList (toList s) === s)
     ]
+  , Group "splitAround"
+    [ ("left is less than infimum", property $ do
+      s <- forAll gs
+      i <- forAll gi
+      let (l, _, _) = splitAround i s
+      ((sup <$> bounds l) < Just (inf i)) === True)
+    ]
   , Group "interval"
     [ ("validity", property $ do
       i <- forAll gi
