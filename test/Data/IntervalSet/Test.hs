@@ -56,7 +56,7 @@ tests = map checkParallel
       s <- forAll gs
       i <- forAll gi
       let (_, c, _) = splitAround i s
-      all ((\ x -> inf x <= sup x) . intersection i) (toList c) === True)
+      all (isValid . intersection i) (toList c) === True)
     ]
   , Group "interval"
     [ ("validity", property (forAll gi >>= assert . isValid))
