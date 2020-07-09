@@ -8,6 +8,7 @@ module Data.IntervalSet
 , toList
 , insert
 , delete
+, splitAround
   -- * Re-exports
 , Interval(..)
 ) where
