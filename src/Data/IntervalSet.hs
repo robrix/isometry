@@ -63,6 +63,7 @@ delete deleted (IntervalSet t) = IntervalSet $ l F.>< go r
   go s = case F.viewl s of
     F.EmptyL -> F.empty
     h F.:< t
+      | sup deleted < inf h         -> s
       | h `isSubintervalOf` deleted -> go t
       | otherwise                   -> go t
   before i = inf deleted <= sup i
