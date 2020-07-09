@@ -1,2 +1,9 @@
 module Data.Functor.Interval.Test
-() where
+( tests
+) where
+
+import Hedgehog
+
+tests :: [IO Bool]
+tests = map checkParallel
+  []
