@@ -7,6 +7,7 @@ module Data.IntervalSet
 , null
 , toList
 , insert
+, delete
   -- * Re-exports
 , Interval(..)
 ) where
@@ -54,3 +55,14 @@ insert inserted (IntervalSet t) = IntervalSet $ l F.>< go inserted r
       | sup inserted < inf h -> inserted F.<| s
       | otherwise            -> go (inserted <> h) t
   before i = inf inserted <= sup i
+
+delete :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
+delete deleted (IntervalSet t) = IntervalSet $ l F.>< go r
+  where
+  (l, r) = F.split (maybe False before) t
+  go s = case F.viewl s of
+    F.EmptyL -> F.empty
+    h F.:< t
+      | h `isSubintervalOf` deleted -> go t
+      | otherwise                   -> go t
+  before i = inf deleted <= sup i
