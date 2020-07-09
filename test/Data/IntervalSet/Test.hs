@@ -4,9 +4,9 @@ module Data.IntervalSet.Test
 ( tests
 ) where
 
-import           Control.Monad (join)
 import           Data.Functor.I
 import           Data.Functor.Interval
+import           Data.Functor.Interval.Test (interval)
 import           Data.IntervalSet as I
 import           Data.Maybe (fromMaybe)
 import           Hedgehog
@@ -58,13 +58,6 @@ tests = map checkParallel
       let (_, c, _) = splitAround i s
       all (intersects i) (toList c) === True)
     ]
-  , Group "interval"
-    [ ("validity", property (forAll gi >>= assert . isValid))
-    , ("coverage", verifiedTermination . withConfidence (10^(6 :: Int)) . property $ do
-      i <- forAll gi
-      cover 20 "point" (inf i == sup i)
-      cover 20 "span" (inf i < sup i))
-    ]
   , Group "intervalSet"
     [ ("coverage", property $ do
       s <- forAll gs
@@ -80,14 +73,6 @@ tests = map checkParallel
   gp = Gen.int (Range.linear 0 100)
   gi = interval gp
   gs = intervalSet gi
-
-interval :: (MonadGen m, Num a) => m a -> m (Interval I a)
-interval p = Gen.choice
-  [ join (...) <$> p
-  , mk <$> p <*> p
-  ]
-  where
-  mk a b = a ... a + b + 1
 
 intervalSet :: (MonadGen m, Ord a) => m (Interval I a) -> m (IntervalSet a)
 intervalSet i = Gen.choice
