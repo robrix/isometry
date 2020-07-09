@@ -52,6 +52,11 @@ tests = map checkParallel
       i <- forAll gi
       let (_, _, r) = splitAround i s
       all ((sup i <) . inf) (toList r) === True)
+    , ("centre is overlapping", property $ do
+      s <- forAll gs
+      i <- forAll gi
+      let (_, c, _) = splitAround i s
+      all ((\ x -> inf x <= sup x) . intersection i) (toList c) === True)
     ]
   , Group "interval"
     [ ("validity", property $ do
