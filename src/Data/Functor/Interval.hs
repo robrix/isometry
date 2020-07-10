@@ -26,6 +26,7 @@ module Data.Functor.Interval
 , isSubintervalOf
 , isSuperintervalOf
 , isProperSubintervalOf
+, isProperSuperintervalOf
 , before
 , after
 , uniformI
@@ -207,6 +208,9 @@ isSuperintervalOf = flip isSubintervalOf
 
 isProperSubintervalOf :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> Bool
 isProperSubintervalOf a b = isSubintervalOf a b && or (liftA2 (/=) a b)
+
+isProperSuperintervalOf :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> Bool
+isProperSuperintervalOf a b = isSuperintervalOf a b && or (liftA2 (/=) a b)
 
 
 before :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> Bool
