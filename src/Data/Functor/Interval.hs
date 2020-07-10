@@ -16,6 +16,7 @@ module Data.Functor.Interval
 , toUnit
 , fromUnit
 , range
+, ranges
 , wrap
 , inf_
 , sup_
@@ -164,6 +165,9 @@ fromUnit i x = dimensionwise (\ i x -> getI  (I x * size i  + inf  i)) i <*> x
 
 range :: Enum (f a) => Interval f a -> [f a]
 range = enumFromTo . inf <*> sup
+
+ranges :: (Applicative f, Enum a) => Interval f a -> f [a]
+ranges = liftI enumFromTo
 
 
 wrap :: (Applicative f, Real a) => Interval f a -> f a -> f a
