@@ -87,3 +87,9 @@ infixr 5 ><, <|
 
 (<|) :: Ord a => Interval I a -> IntervalSet I a -> IntervalSet I a
 (<|) = coerce ((F.<|) :: Ord a => Interval I a -> F.FingerTree (Maybe (Interval I a)) (Interval I a) -> F.FingerTree (Maybe (Interval I a)) (Interval I a))
+
+
+newtype Leaf f a = Leaf { getLeaf :: Interval f a }
+
+instance (Applicative f, Ord a) =>  F.Measured (Maybe (Interval f a)) (Leaf f a) where
+  measure = Just . getLeaf
