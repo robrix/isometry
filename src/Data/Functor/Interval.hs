@@ -150,7 +150,7 @@ point :: f a -> Interval f a
 point = join Interval
 
 dimensionwise :: Applicative f => (Interval I a -> b) -> Interval f a -> f b
-dimensionwise f i = fmap f . (...) <$> inf i <*> sup i
+dimensionwise f = liftI (fmap f . (...))
 
 liftI :: Applicative f => (a -> a -> b) -> Interval f a -> f b
 liftI f i = f <$> inf i <*> sup i
