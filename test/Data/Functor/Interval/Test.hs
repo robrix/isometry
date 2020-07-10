@@ -19,6 +19,11 @@ tests = map checkParallel
       member p (point p :: Interval I Int) === True
       )
     ]
+  , Group "isSubintervalOf"
+    [ ("reflexivity", property $ do
+      i <- forAll gi
+      assert $ i `isSubintervalOf` i)
+    ]
   , Group "union"
     [ ("reflexivity", property $ do
       i <- forAll gi
