@@ -37,7 +37,7 @@ fromList :: Ord a => [Interval I a] -> IntervalSet I a
 fromList = Foldable.foldl' (flip insert) empty
 
 
-bounds :: Ord a => IntervalSet I a -> Maybe (Interval I a)
+bounds :: (Applicative f, Ord a) => IntervalSet f a -> Maybe (Interval f a)
 bounds = F.measure . getIntervalSet
 
 null :: IntervalSet I a -> Bool
