@@ -42,7 +42,7 @@ fromList :: Ord a => [Interval I a] -> IntervalSet I a
 fromList = Foldable.foldl' (flip insert) empty
 
 
-null :: IntervalSet I a -> Bool
+null :: IntervalSet f a -> Bool
 null = F.null . getIntervalSet
 
 toList :: IntervalSet f a -> [Interval f a]
