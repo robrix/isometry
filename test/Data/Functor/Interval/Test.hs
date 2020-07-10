@@ -59,6 +59,9 @@ tests = map checkParallel
       cover 20 "point" (inf i == sup i)
       cover 20 "span" (inf i < sup i))
     ]
+  , Group "superinterval"
+    [ ("validity", property (forAll gi >>= forAll . superinterval dp >>= assert . isValid))
+    ]
   ]
   where
   gp = Gen.int (Range.linear 0 100)
