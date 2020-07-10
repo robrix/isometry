@@ -236,6 +236,7 @@ newtype Intersection f a = Intersection { getIntersection :: Interval f a }
 
 instance (Applicative f, Ord a) => Semigroup (Intersection f a) where
   Intersection i1 <> Intersection i2 = Intersection ((max...min) <*> i1 <*> i2)
+  stimes = stimesIdempotent
 
 intersection :: forall f a . (Applicative f, Ord a) => Interval f a -> Interval f a -> Interval f a
 intersection = coerce ((<>) :: Intersection f a -> Intersection f a -> Intersection f a)
