@@ -102,6 +102,18 @@ tests = map checkParallel
       i1 `union` i2 === (i2 `union` i1)
     ]
 
+  , Group "intersection"
+    [ (,) "idempotence" $ property $ do
+      i <- forAll gi
+      i `intersection` i === i
+    , (,) "associativity" $ property $ do
+      (i1, i2, i3) <- forAll ((,,) <$> gi <*> gi <*> gi)
+      (i1 `intersection` i2) `intersection` i3 === i1 `intersection` (i2 `intersection` i3)
+    , (,) "commutativity" $ property $ do
+      (i1, i2) <- forAll ((,) <$> gi <*> gi)
+      i1 `intersection` i2 === (i2 `intersection` i1)
+    ]
+
   , Group "interval"
     [ (,) "validity" $ property (forAll gi >>= assert . isValid)
     , (,) "coverage" $ verifiedTermination . withConfidence (10^(6 :: Int)) . property $ do
