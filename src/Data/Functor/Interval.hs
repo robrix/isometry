@@ -63,6 +63,7 @@ instance Show (f a) => Show (Interval f a) where
 instance Applicative f => Applicative (Interval f) where
   pure = point . pure
   f <*> a = Interval (inf f <*> inf a) (sup f <*> sup a)
+  liftA2 f a b = Interval (liftA2 f (inf a) (inf b)) (liftA2 f (sup a) (sup b))
 
 instance Monad f => Monad (Interval f) where
   m >>= f = Interval (inf m >>= inf . f) (sup m >>= sup . f)
