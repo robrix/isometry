@@ -66,7 +66,7 @@ delete deleted t = l >< r'
       | sup deleted < sup h -> Interval (sup deleted) (sup h) <| r
     _ -> r
 
-splitAround :: Ord a => Interval I a -> IntervalSet I a -> (IntervalSet I a, IntervalSet I a, IntervalSet I a)
+splitAround :: (Applicative f, Foldable f, Ord a) => Interval f a -> IntervalSet f a -> (IntervalSet f a, IntervalSet f a, IntervalSet f a)
 splitAround i (IntervalSet s) = (IntervalSet l, IntervalSet n', IntervalSet r')
   where
   (l, m) = F.split (maybe False (before i)) s
@@ -74,8 +74,15 @@ splitAround i (IntervalSet s) = (IntervalSet l, IntervalSet n', IntervalSet r')
   (n', r') = case F.viewl r of
     F.EmptyL -> (n, r)
     h F.:< t
-      | sup i < inf h -> (n, r)
-      | otherwise     -> (n F.|> h, t)
+      | sup i `lt` inf h -> (n, r)
+      | otherwise        -> (n F.|> h, t)
+
+
+liftRelation :: (Applicative f, Foldable f) => (a -> b -> Bool) -> f a -> f b -> Bool
+liftRelation rel a b = and (rel <$> a <*> b)
+
+lt :: (Applicative f, Foldable f, Ord a) => f a -> f a -> Bool
+lt = liftRelation (<)
 
 
 -- Internal
