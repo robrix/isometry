@@ -13,21 +13,20 @@ import           Data.Functor.Interval
 import           Hedgehog
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
-import           Test.Utils
 
 tests :: [IO Bool]
 tests = map checkParallel
   [ Group "point"
-    [ prop "membership" $ do
+    [ (,) "membership" $ property $ do
       p <- pure <$> forAll gp
       member p (point p :: Interval I Int) === True
 
     ]
   , Group "isSubintervalOf"
-    [ prop "reflexivity" $ do
+    [ (,) "reflexivity" $ property $ do
       i <- forAll gi
       assert $ i `isSubintervalOf` i
-    , prop "transitivity" $ do
+    , (,) "transitivity" $ property $ do
       i1 <- forAll gi
       i2 <- forAll (superinterval delta i1)
       i3 <- forAll (superinterval delta i2)
@@ -35,40 +34,40 @@ tests = map checkParallel
       assert (i1 `isSubintervalOf` i3)
     ]
   , Group "isProperSubintervalOf"
-    [ prop "antireflexivity" $ do
+    [ (,) "antireflexivity" $ property $ do
       i <- forAll gi
       assert . not $ i `isProperSubintervalOf` i
-    , prop "transitivity" $ do
+    , (,) "transitivity" $ property $ do
       i1 <- forAll gi
       i2 <- forAll (superinterval nonZeroDelta i1)
       i3 <- forAll (superinterval nonZeroDelta i2)
       assert (i1 `isProperSubintervalOf` i3)
     ]
   , Group "union"
-    [ prop "reflexivity" $ do
+    [ (,) "reflexivity" $ property $ do
       i <- forAll gi
       i `union` i === i
-    , prop "idempotence" $ do
+    , (,) "idempotence" $ property $ do
       (i1, i2) <- forAll ((,) <$> gi <*> gi)
       let u = i1 `union` i2
       u `union` i1 === u
       u `union` i2 === u
-    , prop "associativity" $ do
+    , (,) "associativity" $ property $ do
       (i1, i2, i3) <- forAll ((,,) <$> gi <*> gi <*> gi)
       (i1 `union` i2) `union` i3 === i1 `union` (i2 `union` i3)
-    , prop "commutativity" $ do
+    , (,) "commutativity" $ property $ do
       (i1, i2) <- forAll ((,) <$> gi <*> gi)
       i1 `union` i2 === (i2 `union` i1)
     ]
   , Group "interval"
-    [ prop "validity" (forAll gi >>= assert . isValid)
+    [ (,) "validity" $ property (forAll gi >>= assert . isValid)
     , ("coverage", verifiedTermination . withConfidence (10^(6 :: Int)) . property $ do
       i <- forAll gi
       cover 20 "point" (inf i == sup i)
       cover 20 "span" (inf i < sup i))
     ]
   , Group "superinterval"
-    [ prop "validity" (forAll gi >>= forAll . superinterval delta >>= assert . isValid)
+    [ (,) "validity" $ property (forAll gi >>= forAll . superinterval delta >>= assert . isValid)
     , ("coverage", verifiedTermination . withConfidence (10^(6 :: Int)) . property $ do
       i <- forAll gi >>= forAll . superinterval delta
       cover 20 "point" (inf i == sup i)
