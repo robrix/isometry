@@ -156,7 +156,7 @@ liftI :: Applicative f => (a -> a -> b) -> Interval f a -> f b
 liftI f i = liftA2 f (inf i) (sup i)
 
 size :: (Applicative f, Num a) => Interval f a -> f a
-size = liftA2 (-) . sup <*> inf
+size = liftI (flip (-))
 
 toUnit, fromUnit :: (Applicative f, Fractional a) => Interval f a -> f a -> f a
 toUnit   i x = dimensionwise (\ i x -> getI ((I x - inf  i) / size i)) i <*> x
