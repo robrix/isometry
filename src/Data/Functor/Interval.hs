@@ -232,3 +232,5 @@ liftRelation rel a b = and (rel <$> a <*> b)
 
 lt :: (Applicative f, Foldable f, Ord a) => f a -> f a -> Bool
 lt = liftRelation (<)
+
+infix 4 `lt`
