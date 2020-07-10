@@ -197,7 +197,7 @@ before :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> 
 before subject i = inf subject `lte` sup i
 
 after :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> Bool
-after subject i = and ((<) <$> sup subject <*> sup i)
+after subject i = sup subject `lt` sup i
 
 
 uniformI :: (R.Random a, Applicative f, Traversable f, Has Random sig m) => Interval f a -> m (f a)
