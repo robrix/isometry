@@ -205,7 +205,7 @@ after subject i = sup subject `lt` sup i
 
 
 uniformI :: (R.Random a, Applicative f, Traversable f, Has Random sig m) => Interval f a -> m (f a)
-uniformI i = traverse uniformR ((,) <$> inf i <*> sup i)
+uniformI i = traverse uniformR (liftI (,) i)
 
 
 newtype Union f a = Union { getUnion :: Interval f a }
