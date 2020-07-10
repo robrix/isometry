@@ -10,7 +10,7 @@ module Data.Functor.Interval
 ( Interval(..)
 , (...)
 , point
-, pointwise
+, dimensionwise
 , size
 , toUnit
 , fromUnit
@@ -148,15 +148,15 @@ infix 3 ...
 point :: f a -> Interval f a
 point = join Interval
 
-pointwise :: Applicative f => (Interval I a -> b) -> Interval f a -> f b
-pointwise f i = fmap f . (...) <$> inf i <*> sup i
+dimensionwise :: Applicative f => (Interval I a -> b) -> Interval f a -> f b
+dimensionwise f i = fmap f . (...) <$> inf i <*> sup i
 
 size :: (Applicative f, Num a) => Interval f a -> f a
 size = liftA2 (-) . sup <*> inf
 
 toUnit, fromUnit :: (Applicative f, Fractional a) => Interval f a -> f a -> f a
-toUnit   i x = pointwise (\ i x -> getI ((I x - inf  i) / size i)) i <*> x
-fromUnit i x = pointwise (\ i x -> getI  (I x * size i  + inf  i)) i <*> x
+toUnit   i x = dimensionwise (\ i x -> getI ((I x - inf  i) / size i)) i <*> x
+fromUnit i x = dimensionwise (\ i x -> getI  (I x * size i  + inf  i)) i <*> x
 
 
 range :: Enum (f a) => Interval f a -> [f a]
@@ -164,7 +164,7 @@ range = enumFromTo . inf <*> sup
 
 
 wrap :: (Applicative f, Real a) => Interval f a -> f a -> f a
-wrap i x = pointwise (\ i x -> getI (((I x + sup i) `mod'` size i) + inf i)) i <*> x
+wrap i x = dimensionwise (\ i x -> getI (((I x + sup i) `mod'` size i) + inf i)) i <*> x
 
 
 inf_ :: Lens' (Interval f a) (f a)
