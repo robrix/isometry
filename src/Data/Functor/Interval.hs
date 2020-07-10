@@ -183,7 +183,7 @@ member = isSubintervalOf . point
 
 
 isValid :: (Applicative f, Foldable f, Ord a) => Interval f a -> Bool
-isValid i = and ((<=) <$> inf i <*> sup i)
+isValid i = inf i `lte` sup i
 
 
 isSubintervalOf :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> Bool
