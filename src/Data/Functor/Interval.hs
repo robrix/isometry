@@ -179,7 +179,7 @@ sup_ = field @"sup"
 
 
 imap :: (f a -> g b) -> Interval f a -> Interval g b
-imap f = Interval <$> f . inf <*> f . sup
+imap f i = Interval (f (inf i)) (f (sup i))
 
 
 member :: (Applicative f, Foldable f, Ord a) => f a -> Interval f a -> Bool
