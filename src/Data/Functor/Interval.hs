@@ -43,7 +43,6 @@ module Data.Functor.Interval
 import           Control.Applicative (liftA2)
 import           Control.Effect.Random
 import           Control.Lens hiding (imap, (...))
-import           Control.Monad (join)
 import           Control.Monad.Trans.Class
 import           Data.Coerce (coerce)
 import           Data.FingerTree (Measured(..))
@@ -147,7 +146,7 @@ inf...sup = Interval (pure inf) (pure sup)
 infix 3 ...
 
 point :: f a -> Interval f a
-point = join Interval
+point p = Interval p p
 
 dimensionwise :: Applicative f => (Interval I a -> b) -> Interval f a -> f b
 dimensionwise f = liftI (fmap f . (...))
