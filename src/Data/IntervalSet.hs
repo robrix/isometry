@@ -21,38 +21,38 @@ import           Data.Functor.I
 import           Data.Functor.Interval
 import           Prelude hiding (null)
 
-newtype IntervalSet a = IntervalSet { getIntervalSet :: F.FingerTree (Maybe (Interval I a)) (Interval I a) }
+newtype IntervalSet f a = IntervalSet { getIntervalSet :: F.FingerTree (Maybe (Interval f a)) (Interval f a) }
   deriving (Eq, Ord)
 
-instance Show a => Show (IntervalSet a) where
+instance Show (f a) => Show (IntervalSet f a) where
   showsPrec p = showsUnaryWith showsPrec "fromList" p . toList
 
-empty :: Ord a => IntervalSet a
+empty :: Ord a => IntervalSet I a
 empty = IntervalSet F.empty
 
-singleton :: Ord a => Interval I a -> IntervalSet a
+singleton :: Ord a => Interval I a -> IntervalSet I a
 singleton = IntervalSet . F.singleton
 
-fromList :: Ord a => [Interval I a] -> IntervalSet a
+fromList :: Ord a => [Interval I a] -> IntervalSet I a
 fromList = Foldable.foldl' (flip insert) empty
 
 
-bounds :: Ord a => IntervalSet a -> Maybe (Interval I a)
+bounds :: Ord a => IntervalSet I a -> Maybe (Interval I a)
 bounds = F.measure . getIntervalSet
 
-null :: IntervalSet a -> Bool
+null :: IntervalSet I a -> Bool
 null = F.null . getIntervalSet
 
-toList :: IntervalSet a -> [Interval I a]
+toList :: IntervalSet f a -> [Interval f a]
 toList = Foldable.toList . getIntervalSet
 
 
-insert :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
+insert :: Ord a => Interval I a -> IntervalSet I a -> IntervalSet I a
 insert inserted t = l >< maybe inserted (union inserted) (bounds m) <| r
   where
   (l, m, r) = splitAround inserted t
 
-delete :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
+delete :: Ord a => Interval I a -> IntervalSet I a -> IntervalSet I a
 delete deleted t = l >< r'
   where
   (l, m, r) = splitAround deleted t
@@ -64,7 +64,7 @@ delete deleted t = l >< r'
       | sup deleted < sup h -> Interval (sup deleted) (sup h) <| r
     _ -> r
 
-splitAround :: Ord a => Interval I a -> IntervalSet a -> (IntervalSet a, IntervalSet a, IntervalSet a)
+splitAround :: Ord a => Interval I a -> IntervalSet I a -> (IntervalSet I a, IntervalSet I a, IntervalSet I a)
 splitAround i (IntervalSet s) = (IntervalSet l, IntervalSet n', IntervalSet r')
   where
   (l, m) = F.split (maybe False (before i)) s
@@ -86,8 +86,8 @@ after subject i = sup subject < sup i
 
 infixr 5 ><, <|
 
-(><) :: Ord a => IntervalSet a -> IntervalSet a -> IntervalSet a
+(><) :: Ord a => IntervalSet I a -> IntervalSet I a -> IntervalSet I a
 (><) = coerce ((F.><) :: Ord a => F.FingerTree (Maybe (Interval I a)) (Interval I a) -> F.FingerTree (Maybe (Interval I a)) (Interval I a) -> F.FingerTree (Maybe (Interval I a)) (Interval I a))
 
-(<|) :: Ord a => Interval I a -> IntervalSet a -> IntervalSet a
+(<|) :: Ord a => Interval I a -> IntervalSet I a -> IntervalSet I a
 (<|) = coerce ((F.<|) :: Ord a => Interval I a -> F.FingerTree (Maybe (Interval I a)) (Interval I a) -> F.FingerTree (Maybe (Interval I a)) (Interval I a))

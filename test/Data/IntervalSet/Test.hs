@@ -74,7 +74,7 @@ tests = map checkParallel
   gi = interval gp
   gs = intervalSet gi
 
-intervalSet :: (MonadGen m, Ord a) => m (Interval I a) -> m (IntervalSet a)
+intervalSet :: (MonadGen m, Ord a) => m (Interval I a) -> m (IntervalSet I a)
 intervalSet i = Gen.choice
   [ pure empty
   , singleton <$> i
