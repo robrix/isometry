@@ -23,6 +23,12 @@ tests = map checkParallel
     [ ("reflexivity", property $ do
       i <- forAll gi
       i `union` i === i)
+    , ("idempotence", property $ do
+      i1 <- forAll gi
+      i2 <- forAll gi
+      let u = i1 `union` i2
+      u `union` i1 === u
+      u `union` i2 === u)
     ]
   , Group "interval"
     [ ("validity", property (forAll gi >>= assert . isValid))
