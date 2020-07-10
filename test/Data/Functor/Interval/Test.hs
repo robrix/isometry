@@ -20,7 +20,6 @@ tests = map checkParallel
     [ (,) "membership" $ property $ do
       p <- pure <$> forAll gp
       member p (point p :: Interval I Int) === True
-
     ]
   , Group "isSubintervalOf"
     [ (,) "reflexivity" $ property $ do
