@@ -58,7 +58,7 @@ tests = map checkParallel
     ]
 
   , Group "union"
-    [ (,) "reflexivity" $ property $ do
+    [ (,) "idempotence" $ property $ do
       i <- forAll gi
       i `union` i === i
     , (,) "associativity" $ property $ do
