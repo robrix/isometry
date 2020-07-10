@@ -23,7 +23,7 @@ import           Data.Functor.I
 import           Data.Functor.Interval
 import           Prelude hiding (null)
 
-newtype IntervalSet f a = IntervalSet { getIntervalSet :: F.FingerTree (Maybe (Interval f a)) (Interval f a) }
+newtype IntervalSet f a = IntervalSet { getIntervalSet :: F.FingerTree (Maybe (Interval f a)) (Leaf f a) }
   deriving (Eq, Ord)
 
 instance Show (f a) => Show (IntervalSet f a) where
@@ -36,7 +36,7 @@ empty :: (Applicative f, Ord a) => IntervalSet f a
 empty = IntervalSet F.empty
 
 singleton :: (Applicative f, Ord a) => Interval f a -> IntervalSet f a
-singleton = IntervalSet . F.singleton
+singleton = IntervalSet . F.singleton . Leaf
 
 fromList :: Ord a => [Interval I a] -> IntervalSet I a
 fromList = Foldable.foldl' (flip insert) empty
@@ -46,7 +46,7 @@ null :: IntervalSet f a -> Bool
 null = F.null . getIntervalSet
 
 toList :: IntervalSet f a -> [Interval f a]
-toList = Foldable.toList . getIntervalSet
+toList = coerce . Foldable.toList . getIntervalSet
 
 
 insert :: Ord a => Interval I a -> IntervalSet I a -> IntervalSet I a
@@ -73,9 +73,9 @@ splitAround i (IntervalSet s) = (IntervalSet l, IntervalSet n', IntervalSet r')
   (n, r) = F.split (maybe False (after  i)) m
   (n', r') = case F.viewl r of
     F.EmptyL -> (n, r)
-    h F.:< t
+    Leaf h F.:< t
       | sup i `lt` inf h -> (n, r)
-      | otherwise        -> (n F.|> h, t)
+      | otherwise        -> (n F.|> Leaf h, t)
 
 
 -- Internal
@@ -83,10 +83,10 @@ splitAround i (IntervalSet s) = (IntervalSet l, IntervalSet n', IntervalSet r')
 infixr 5 ><, <|
 
 (><) :: Ord a => IntervalSet I a -> IntervalSet I a -> IntervalSet I a
-(><) = coerce ((F.><) :: Ord a => F.FingerTree (Maybe (Interval I a)) (Interval I a) -> F.FingerTree (Maybe (Interval I a)) (Interval I a) -> F.FingerTree (Maybe (Interval I a)) (Interval I a))
+(><) = coerce ((F.><) :: Ord a => F.FingerTree (Maybe (Interval I a)) (Leaf I a) -> F.FingerTree (Maybe (Interval I a)) (Leaf I a) -> F.FingerTree (Maybe (Interval I a)) (Leaf I a))
 
 (<|) :: Ord a => Interval I a -> IntervalSet I a -> IntervalSet I a
-(<|) = coerce ((F.<|) :: Ord a => Interval I a -> F.FingerTree (Maybe (Interval I a)) (Interval I a) -> F.FingerTree (Maybe (Interval I a)) (Interval I a))
+(<|) = coerce ((F.<|) :: Ord a => Leaf I a -> F.FingerTree (Maybe (Interval I a)) (Leaf I a) -> F.FingerTree (Maybe (Interval I a)) (Leaf I a))
 
 
 newtype Leaf f a = Leaf { getLeaf :: Interval f a }
