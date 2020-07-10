@@ -47,8 +47,8 @@ tests = map checkParallel
       assert . not $ i `isProperSubintervalOf` i
     , (,) "transitivity" $ property $ do
       i1 <- forAll gi
-      i2 <- forAll (superinterval nonZeroDelta i1)
-      i3 <- forAll (superinterval nonZeroDelta i2)
+      i2 <- forAll (properSuperinterval i1)
+      i3 <- forAll (properSuperinterval i2)
       assert (i1 `isProperSubintervalOf` i3)
     , (,) "offset" $ property $ do
       i <- forAll gi
