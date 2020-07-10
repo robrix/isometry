@@ -32,6 +32,11 @@ tests = map checkParallel
       i3 <- forAll (superinterval delta i2)
       label $ (if i1 == i2 then "i1 = i2" else "i1 ⊂ i2") <> " ∧ " <> (if i2 == i3 then "i2 = i3" else "i2 ⊂ i3")
       assert (i1 `isSubintervalOf` i3)
+    , (,) "offset" $ property $ do
+      i <- forAll gi
+      d <- forAll nonZeroDelta
+      assert . not $ i `isSubintervalOf` imap (+ d) i
+      assert . not $ imap (+ d) i `isSubintervalOf` i
     ]
 
   , Group "isProperSubintervalOf"
