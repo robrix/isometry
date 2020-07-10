@@ -3,10 +3,12 @@ module Data.Functor.Interval.Test
 ( tests
 , interval
 , superinterval
+, properSuperinterval
 , delta
 , nonZeroDelta
 ) where
 
+import           Control.Lens ((&), (+~), (-~))
 import           Control.Monad (join)
 import           Data.Functor.I
 import           Data.Functor.Interval
@@ -109,6 +111,20 @@ superinterval delta i = do
   l <- delta
   r <- delta
   pure $! Interval (inf i - pure l) (sup i + pure r)
+
+properSuperinterval :: (MonadGen m, Num a) => Interval I a -> m (Interval I a)
+properSuperinterval i = Gen.choice
+  [ do
+    l <- nonZeroDelta
+    pure $! i & inf_ -~ l
+  , do
+    r <- nonZeroDelta
+    pure $! i & sup_ +~ r
+  , do
+    l <- nonZeroDelta
+    r <- nonZeroDelta
+    pure $! i & inf_ -~ l & sup_ +~ r
+  ]
 
 delta :: (MonadGen m, Num a) => m a
 delta = Gen.choice [ pure 0, fromIntegral <$> Gen.int (Range.linear 0 10) ]
