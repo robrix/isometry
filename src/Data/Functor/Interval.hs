@@ -11,6 +11,7 @@ module Data.Functor.Interval
 , (...)
 , point
 , dimensionwise
+, liftI
 , size
 , toUnit
 , fromUnit
@@ -150,6 +151,9 @@ point = join Interval
 
 dimensionwise :: Applicative f => (Interval I a -> b) -> Interval f a -> f b
 dimensionwise f i = fmap f . (...) <$> inf i <*> sup i
+
+liftI :: Applicative f => (a -> a -> b) -> Interval f a -> f b
+liftI f i = f <$> inf i <*> sup i
 
 size :: (Applicative f, Num a) => Interval f a -> f a
 size = liftA2 (-) . sup <*> inf
