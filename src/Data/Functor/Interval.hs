@@ -22,6 +22,7 @@ module Data.Functor.Interval
 , imap
 , member
 , isValid
+, isPoint
 , isSubintervalOf
 , isProperSubintervalOf
 , before
@@ -192,6 +193,9 @@ member = isSubintervalOf . point
 
 isValid :: (Applicative f, Foldable f, Ord a) => Interval f a -> Bool
 isValid i = inf i `lte` sup i
+
+isPoint :: (Applicative f, Foldable f, Eq a) => Interval f a -> Bool
+isPoint = and . liftI (==)
 
 
 isSubintervalOf :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> Bool
