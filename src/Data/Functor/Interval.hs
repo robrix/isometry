@@ -191,7 +191,7 @@ isValid i = inf i `lte` sup i
 
 
 isSubintervalOf :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> Bool
-isSubintervalOf a b = and ((>=) <$> inf a <*> inf b) && and ((<=) <$> sup a <*> sup b)
+isSubintervalOf a b = inf a `gte` inf b && sup a `lte` sup b
 
 isProperSubintervalOf :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> Bool
 isProperSubintervalOf a b = isSubintervalOf a b && or (liftA2 (/=) a b)
