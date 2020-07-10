@@ -28,6 +28,9 @@ tests = map checkParallel
       let u = i1 `union` i2
       u `union` i1 === u
       u `union` i2 === u)
+    , ("associativity", property $ do
+      (i1, i2, i3) <- forAll ((,,) <$> gi <*> gi <*> gi)
+      (i1 `union` i2) `union` i3 === i1 `union` (i2 `union` i3))
     ]
   , Group "interval"
     [ ("validity", property (forAll gi >>= assert . isValid))
