@@ -12,10 +12,5 @@ source-repository-package
 
 source-repository-package
   type: git
-  location: https://github.com/fused-effects/fused-effects-lens.git
-  tag: 08cf20ad410362ecadaf56555b404ab7457fefee
-
-source-repository-package
-  type: git
   location: https://github.com/robrix/haskell-opentype.git
   tag: a1b6967d895530ea691bd83084a2d85c588a6213
