@@ -91,6 +91,7 @@ tests = map checkParallel
 
   , Group "properSuperinterval"
     [ (,) "validity" $ property (forAll gi >>= forAll . properSuperinterval >>= assert . isValid)
+    , (,) "correctness" $ property (forAll gi >>= \ i -> forAll (properSuperinterval i) >>= assert . isProperSubintervalOf i)
     , (,) "coverage" $ verifiedTermination . withConfidence (10^(6 :: Int)) . property $ do
       i <- forAll gi
       si <- forAll (properSuperinterval i)
