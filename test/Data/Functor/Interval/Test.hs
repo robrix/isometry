@@ -24,8 +24,7 @@ tests = map checkParallel
       i <- forAll gi
       i `union` i === i)
     , ("idempotence", property $ do
-      i1 <- forAll gi
-      i2 <- forAll gi
+      (i1, i2) <- forAll ((,) <$> gi <*> gi)
       let u = i1 `union` i2
       u `union` i1 === u
       u `union` i2 === u)
