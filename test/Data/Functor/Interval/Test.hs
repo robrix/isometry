@@ -61,6 +61,10 @@ tests = map checkParallel
     ]
   , Group "superinterval"
     [ ("validity", property (forAll gi >>= forAll . superinterval dp >>= assert . isValid))
+    , ("coverage", verifiedTermination . withConfidence (10^(6 :: Int)) . property $ do
+      i <- forAll gi >>= forAll . superinterval dp
+      cover 5 "point" (inf i == sup i)
+      cover 20 "span" (inf i < sup i))
     ]
   ]
   where
