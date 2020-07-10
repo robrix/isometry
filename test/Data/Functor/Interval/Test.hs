@@ -3,6 +3,7 @@ module Data.Functor.Interval.Test
 ( tests
 , interval
 , superinterval
+, delta
 ) where
 
 import           Control.Monad (join)
@@ -26,8 +27,8 @@ tests = map checkParallel
       assert $ i `isSubintervalOf` i)
     , ("transitivity", property $ do
       i1 <- forAll gi
-      i2 <- forAll (superinterval dp i1)
-      i3 <- forAll (superinterval dp i2)
+      i2 <- forAll (superinterval delta i1)
+      i3 <- forAll (superinterval delta i2)
       label $ (if i1 == i2 then "i1 = i2" else "i1 ⊂ i2") <> " ∧ " <> (if i2 == i3 then "i2 = i3" else "i2 ⊂ i3")
       assert (i1 `isSubintervalOf` i3)
       )
@@ -61,9 +62,9 @@ tests = map checkParallel
       cover 20 "span" (inf i < sup i))
     ]
   , Group "superinterval"
-    [ ("validity", property (forAll gi >>= forAll . superinterval dp >>= assert . isValid))
+    [ ("validity", property (forAll gi >>= forAll . superinterval delta >>= assert . isValid))
     , ("coverage", verifiedTermination . withConfidence (10^(6 :: Int)) . property $ do
-      i <- forAll gi >>= forAll . superinterval dp
+      i <- forAll gi >>= forAll . superinterval delta
       cover 5 "point" (inf i == sup i)
       cover 20 "span" (inf i < sup i))
     ]
@@ -71,7 +72,6 @@ tests = map checkParallel
   where
   gp = Gen.int (Range.linear 0 100)
   gi = interval gp
-  dp = Gen.int (Range.linear 0 10)
 
 
 interval :: (MonadGen m, Num a) => m a -> m (Interval I a)
@@ -87,3 +87,6 @@ superinterval delta i = do
   l <- delta
   r <- delta
   pure $! Interval (inf i - pure l) (sup i + pure r)
+
+delta :: (MonadGen m, Num a) => m a
+delta = fromIntegral <$> Gen.int (Range.linear 0 10)
