@@ -21,6 +21,7 @@ tests = map checkParallel
       p <- pure <$> forAll gp
       member p (point p :: Interval I Int) === True
     ]
+
   , Group "isSubintervalOf"
     [ (,) "reflexivity" $ property $ do
       i <- forAll gi
@@ -32,6 +33,7 @@ tests = map checkParallel
       label $ (if i1 == i2 then "i1 = i2" else "i1 ⊂ i2") <> " ∧ " <> (if i2 == i3 then "i2 = i3" else "i2 ⊂ i3")
       assert (i1 `isSubintervalOf` i3)
     ]
+
   , Group "isProperSubintervalOf"
     [ (,) "antireflexivity" $ property $ do
       i <- forAll gi
@@ -42,6 +44,7 @@ tests = map checkParallel
       i3 <- forAll (superinterval nonZeroDelta i2)
       assert (i1 `isProperSubintervalOf` i3)
     ]
+
   , Group "union"
     [ (,) "reflexivity" $ property $ do
       i <- forAll gi
@@ -58,6 +61,7 @@ tests = map checkParallel
       (i1, i2) <- forAll ((,) <$> gi <*> gi)
       i1 `union` i2 === (i2 `union` i1)
     ]
+
   , Group "interval"
     [ (,) "validity" $ property (forAll gi >>= assert . isValid)
     , (,) "coverage" $ verifiedTermination . withConfidence (10^(6 :: Int)) . property $ do
@@ -65,6 +69,7 @@ tests = map checkParallel
       cover 20 "point" (inf i == sup i)
       cover 20 "span" (inf i < sup i)
     ]
+
   , Group "superinterval"
     [ (,) "validity" $ property (forAll gi >>= forAll . superinterval delta >>= assert . isValid)
     , (,) "coverage" $ verifiedTermination . withConfidence (10^(6 :: Int)) . property $ do
