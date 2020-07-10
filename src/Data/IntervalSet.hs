@@ -77,11 +77,11 @@ splitAround i (IntervalSet s) = (IntervalSet l, IntervalSet n', IntervalSet r')
       | sup i < inf h -> (n, r)
       | otherwise     -> (n F.|> h, t)
 
-before :: Ord a => Interval I a -> Interval I a -> Bool
-before subject i = inf subject <= sup i
+before :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> Bool
+before subject i = and ((<=) <$> inf subject <*> sup i)
 
-after :: Ord a => Interval I a -> Interval I a -> Bool
-after subject i = sup subject < sup i
+after :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> Bool
+after subject i = and ((<) <$> sup subject <*> sup i)
 
 
 -- Internal
