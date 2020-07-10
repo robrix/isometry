@@ -91,6 +91,13 @@ tests = map checkParallel
 
   , Group "properSuperinterval"
     [ (,) "validity" $ property (forAll gi >>= forAll . properSuperinterval >>= assert . isValid)
+    , (,) "coverage" $ verifiedTermination . withConfidence (10^(6 :: Int)) . property $ do
+      i <- forAll gi
+      si <- forAll (properSuperinterval i)
+      cover 20 "inf si == inf i" $ inf si == inf i
+      cover 20 "inf si <  inf i" $ inf si <  inf i
+      cover 20 "sup si == sup i" $ sup si == sup i
+      cover 20 "sup si >  sup i" $ sup si >  sup i
     ]
   ]
   where
