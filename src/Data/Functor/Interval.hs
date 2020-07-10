@@ -8,6 +8,8 @@
 {-# LANGUAGE TypeApplications #-}
 module Data.Functor.Interval
 ( Interval(..)
+, inf_
+, sup_
 , (...)
 , point
 , dimensionwise
@@ -18,8 +20,6 @@ module Data.Functor.Interval
 , range
 , ranges
 , wrap
-, inf_
-, sup_
 , imap
 , member
 , isValid
@@ -141,6 +141,13 @@ instance (Applicative f, Ord a) => Measured (Maybe (Interval f a)) (Interval f a
   measure = Just
 
 
+inf_ :: Lens' (Interval f a) (f a)
+inf_ = field @"inf"
+
+sup_ :: Lens' (Interval f a) (f a)
+sup_ = field @"sup"
+
+
 (...) :: Applicative f => a -> a -> Interval f a
 inf...sup = Interval (pure inf) (pure sup)
 
@@ -172,13 +179,6 @@ ranges = liftI enumFromTo
 
 wrap :: (Applicative f, Real a) => Interval f a -> f a -> f a
 wrap i x = dimensionwise (\ i x -> getI (((I x + sup i) `mod'` size i) + inf i)) i <*> x
-
-
-inf_ :: Lens' (Interval f a) (f a)
-inf_ = field @"inf"
-
-sup_ :: Lens' (Interval f a) (f a)
-sup_ = field @"sup"
 
 
 imap :: (f a -> g b) -> Interval f a -> Interval g b
