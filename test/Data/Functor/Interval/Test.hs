@@ -4,6 +4,7 @@ module Data.Functor.Interval.Test
 , interval
 , superinterval
 , delta
+, nonZeroDelta
 ) where
 
 import           Control.Monad (join)
