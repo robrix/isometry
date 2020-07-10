@@ -31,8 +31,7 @@ tests = map checkParallel
       i2 <- forAll (superinterval delta i1)
       i3 <- forAll (superinterval delta i2)
       label $ (if i1 == i2 then "i1 = i2" else "i1 ⊂ i2") <> " ∧ " <> (if i2 == i3 then "i2 = i3" else "i2 ⊂ i3")
-      assert (i1 `isSubintervalOf` i3)
-      )
+      assert (i1 `isSubintervalOf` i3))
     ]
   , Group "isProperSubintervalOf"
     [ ("antireflexivity", property $ do
@@ -42,8 +41,7 @@ tests = map checkParallel
       i1 <- forAll gi
       i2 <- forAll (superinterval nonZeroDelta i1)
       i3 <- forAll (superinterval nonZeroDelta i2)
-      assert (i1 `isProperSubintervalOf` i3)
-      )
+      assert (i1 `isProperSubintervalOf` i3))
     ]
   , Group "union"
     [ ("reflexivity", property $ do
