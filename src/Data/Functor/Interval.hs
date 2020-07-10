@@ -35,6 +35,7 @@ module Data.Functor.Interval
 , liftRelation
 , lt
 , lte
+, gt
 ) where
 
 import           Control.Applicative (liftA2)
@@ -231,10 +232,13 @@ intersects a b = isValid (intersection a b)
 liftRelation :: (Applicative f, Foldable f) => (a -> b -> Bool) -> f a -> f b -> Bool
 liftRelation rel a b = and (rel <$> a <*> b)
 
-infix 4 `lt`, `lte`
+infix 4 `lt`, `lte`, `gt`
 
 lt :: (Applicative f, Foldable f, Ord a) => f a -> f a -> Bool
 lt = liftRelation (<)
 
 lte :: (Applicative f, Foldable f, Ord a) => f a -> f a -> Bool
 lte = liftRelation (<=)
+
+gt :: (Applicative f, Foldable f, Ord a) => f a -> f a -> Bool
+gt = liftRelation (>)
