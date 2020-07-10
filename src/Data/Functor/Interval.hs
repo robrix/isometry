@@ -235,7 +235,7 @@ intersects a b = isValid (intersection a b)
 -- Comparisons
 
 liftRelation :: (Applicative f, Foldable f) => (a -> b -> Bool) -> f a -> f b -> Bool
-liftRelation rel a b = and (rel <$> a <*> b)
+liftRelation rel a b = and (liftA2 rel a b)
 
 infix 4 `lt`, `lte`, `gt`, `gte`
 
