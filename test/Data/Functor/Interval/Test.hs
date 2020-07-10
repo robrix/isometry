@@ -65,7 +65,7 @@ tests = map checkParallel
     [ ("validity", property (forAll gi >>= forAll . superinterval delta >>= assert . isValid))
     , ("coverage", verifiedTermination . withConfidence (10^(6 :: Int)) . property $ do
       i <- forAll gi >>= forAll . superinterval delta
-      cover 5 "point" (inf i == sup i)
+      cover 20 "point" (inf i == sup i)
       cover 20 "span" (inf i < sup i))
     ]
   ]
@@ -89,4 +89,4 @@ superinterval delta i = do
   pure $! Interval (inf i - pure l) (sup i + pure r)
 
 delta :: (MonadGen m, Num a) => m a
-delta = fromIntegral <$> Gen.int (Range.linear 0 10)
+delta = Gen.choice [ pure 0, fromIntegral <$> Gen.int (Range.linear 0 10) ]
