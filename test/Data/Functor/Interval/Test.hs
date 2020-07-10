@@ -13,61 +13,62 @@ import           Data.Functor.Interval
 import           Hedgehog
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
+import           Test.Utils
 
 tests :: [IO Bool]
 tests = map checkParallel
   [ Group "point"
-    [ ("membership", property $ do
+    [ prop "membership" $ do
       p <- pure <$> forAll gp
       member p (point p :: Interval I Int) === True
-      )
+
     ]
   , Group "isSubintervalOf"
-    [ ("reflexivity", property $ do
+    [ prop "reflexivity" $ do
       i <- forAll gi
-      assert $ i `isSubintervalOf` i)
-    , ("transitivity", property $ do
+      assert $ i `isSubintervalOf` i
+    , prop "transitivity" $ do
       i1 <- forAll gi
       i2 <- forAll (superinterval delta i1)
       i3 <- forAll (superinterval delta i2)
       label $ (if i1 == i2 then "i1 = i2" else "i1 ⊂ i2") <> " ∧ " <> (if i2 == i3 then "i2 = i3" else "i2 ⊂ i3")
-      assert (i1 `isSubintervalOf` i3))
+      assert (i1 `isSubintervalOf` i3)
     ]
   , Group "isProperSubintervalOf"
-    [ ("antireflexivity", property $ do
+    [ prop "antireflexivity" $ do
       i <- forAll gi
-      assert . not $ i `isProperSubintervalOf` i)
-    , ("transitivity", property $ do
+      assert . not $ i `isProperSubintervalOf` i
+    , prop "transitivity" $ do
       i1 <- forAll gi
       i2 <- forAll (superinterval nonZeroDelta i1)
       i3 <- forAll (superinterval nonZeroDelta i2)
-      assert (i1 `isProperSubintervalOf` i3))
+      assert (i1 `isProperSubintervalOf` i3)
     ]
   , Group "union"
-    [ ("reflexivity", property $ do
+    [ prop "reflexivity" $ do
       i <- forAll gi
-      i `union` i === i)
-    , ("idempotence", property $ do
+      i `union` i === i
+    , prop "idempotence" $ do
       (i1, i2) <- forAll ((,) <$> gi <*> gi)
       let u = i1 `union` i2
       u `union` i1 === u
-      u `union` i2 === u)
-    , ("associativity", property $ do
+      u `union` i2 === u
+    , prop "associativity" $ do
       (i1, i2, i3) <- forAll ((,,) <$> gi <*> gi <*> gi)
-      (i1 `union` i2) `union` i3 === i1 `union` (i2 `union` i3))
-    , ("commutativity", property $ do
+      (i1 `union` i2) `union` i3 === i1 `union` (i2 `union` i3)
+    , prop "commutativity" $ do
       (i1, i2) <- forAll ((,) <$> gi <*> gi)
-      i1 `union` i2 === (i2 `union` i1))
+      i1 `union` i2 === (i2 `union` i1)
     ]
   , Group "interval"
-    [ ("validity", property (forAll gi >>= assert . isValid))
+    [ prop "validity" (forAll gi >>= assert . isValid)
     , ("coverage", verifiedTermination . withConfidence (10^(6 :: Int)) . property $ do
       i <- forAll gi
       cover 20 "point" (inf i == sup i)
       cover 20 "span" (inf i < sup i))
     ]
   , Group "superinterval"
-    [ ("validity", property (forAll gi >>= forAll . superinterval delta >>= assert . isValid))
+    [ prop "validity" (forAll gi >>= forAll . superinterval delta >>= assert . isValid)
     , ("coverage", verifiedTermination . withConfidence (10^(6 :: Int)) . property $ do
       i <- forAll gi >>= forAll . superinterval delta
       cover 20 "point" (inf i == sup i)
