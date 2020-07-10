@@ -48,6 +48,11 @@ tests = map checkParallel
       i2 <- forAll (superinterval nonZeroDelta i1)
       i3 <- forAll (superinterval nonZeroDelta i2)
       assert (i1 `isProperSubintervalOf` i3)
+    , (,) "offset" $ property $ do
+      i <- forAll gi
+      d <- forAll nonZeroDelta
+      assert . not $ i `isProperSubintervalOf` imap (+ d) i
+      assert . not $ imap (+ d) i `isProperSubintervalOf` i
     ]
 
   , Group "union"
