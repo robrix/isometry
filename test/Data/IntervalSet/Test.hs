@@ -24,8 +24,8 @@ tests = map checkParallel
     , ("monotonicity", property $ do
       i <- forAll gi
       s <- forAll gs
-      assert . fromMaybe True $ isSubintervalOf <$> bounds s <*> bounds (insert i s)
-      assert . fromMaybe True $ (i `isSubintervalOf`) <$> bounds (insert i s))
+      assert . fromMaybe True $ isSubintervalOf <$> measure s <*> measure (insert i s)
+      assert . fromMaybe True $ (i `isSubintervalOf`) <$> measure (insert i s))
     ]
   , Group "delete"
     [ ("inverse", property $ do
@@ -34,7 +34,7 @@ tests = map checkParallel
       insert i (delete i s) === insert i s)
     , ("annihilation", property $ do
       s <- forAll gs
-      maybe id delete (bounds s) s === empty)
+      maybe id delete (measure s) s === empty)
     ]
   , Group "fromList"
     [ ("inverse", property $ do
@@ -65,8 +65,8 @@ tests = map checkParallel
       cover 10 "empty" (I.null s)
       cover 10 "singleton" (length is == 1)
       cover 10 "disjoint" (length is > 1)
-      cover 10 "point" (maybe False ((== 0) . size) (bounds s))
-      cover 10 "span" (maybe False ((> 0) . size) (bounds s)))
+      cover 10 "point" (maybe False ((== 0) . size) (measure s))
+      cover 10 "span" (maybe False ((> 0) . size) (measure s)))
     ]
   ]
   where

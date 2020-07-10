@@ -5,7 +5,7 @@ module Data.IntervalSet
 , empty
 , singleton
 , fromList
-, bounds
+, F.Measured(..)
 , null
 , toList
 , insert
@@ -42,9 +42,6 @@ fromList :: Ord a => [Interval I a] -> IntervalSet I a
 fromList = Foldable.foldl' (flip insert) empty
 
 
-bounds :: (Applicative f, Ord a) => IntervalSet f a -> Maybe (Interval f a)
-bounds = F.measure . getIntervalSet
-
 null :: IntervalSet I a -> Bool
 null = F.null . getIntervalSet
 
@@ -53,7 +50,7 @@ toList = Foldable.toList . getIntervalSet
 
 
 insert :: Ord a => Interval I a -> IntervalSet I a -> IntervalSet I a
-insert inserted t = l >< maybe inserted (union inserted) (bounds m) <| r
+insert inserted t = l >< maybe inserted (union inserted) (F.measure m) <| r
   where
   (l, m, r) = splitAround inserted t
 
@@ -61,7 +58,7 @@ delete :: Ord a => Interval I a -> IntervalSet I a -> IntervalSet I a
 delete deleted t = l >< r'
   where
   (l, m, r) = splitAround deleted t
-  r' = case bounds m of
+  r' = case F.measure m of
     Just h
       | inf h < inf deleted
       , sup deleted < sup h -> Interval (inf h) (inf deleted) <| Interval (sup deleted) (sup h) <| r
