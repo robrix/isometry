@@ -41,6 +41,23 @@ tests = map checkParallel
       assert . not $ imap (+ d) i `isSubintervalOf` i
     ]
 
+  , Group "isSuperintervalOf"
+    [ (,) "reflexivity" $ property $ do
+      i <- forAll gi
+      assert $ i `isSuperintervalOf` i
+    , (,) "transitivity" $ property $ do
+      i1 <- forAll gi
+      i2 <- forAll (superinterval delta i1)
+      i3 <- forAll (superinterval delta i2)
+      label $ (if i1 == i2 then "i1 = i2" else "i1 ⊂ i2") <> " ∧ " <> (if i2 == i3 then "i2 = i3" else "i2 ⊂ i3")
+      assert (i3 `isSuperintervalOf` i1)
+    , (,) "offset" $ property $ do
+      i <- forAll gi
+      d <- forAll nonZeroDelta
+      assert . not $ i `isSuperintervalOf` imap (+ d) i
+      assert . not $ imap (+ d) i `isSuperintervalOf` i
+    ]
+
   , Group "isProperSubintervalOf"
     [ (,) "antireflexivity" $ property $ do
       i <- forAll gi
