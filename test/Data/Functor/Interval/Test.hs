@@ -24,6 +24,11 @@ tests = map checkParallel
       i <- forAll gi
       assert $ i `isSubintervalOf` i)
     ]
+  , Group "isProperSubintervalOf"
+    [ ("antireflexivity", property $ do
+      i <- forAll gi
+      assert . not $ i `isProperSubintervalOf` i)
+    ]
   , Group "union"
     [ ("reflexivity", property $ do
       i <- forAll gi
