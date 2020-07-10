@@ -140,6 +140,7 @@ instance (Applicative f, Floating a) => Floating (Interval f a) where
 
 instance (Applicative f, Ord a) => Semigroup (Interval f a) where
   (<>) = union
+  stimes = stimesIdempotent
 
 
 inf_ :: Lens' (Interval f a) (f a)
