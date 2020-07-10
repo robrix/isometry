@@ -50,6 +50,7 @@ import           Control.Monad.Trans.Class
 import           Data.Coerce (coerce)
 import           Data.Fixed (mod')
 import           Data.Functor.I
+import           Data.Semigroup
 import           GHC.Generics (Generic)
 import qualified System.Random as R
 
@@ -223,6 +224,7 @@ newtype Union f a = Union { getUnion :: Interval f a }
 
 instance (Applicative f, Ord a) => Semigroup (Union f a) where
   Union i1 <> Union i2 = Union ((min...max) <*> i1 <*> i2)
+  stimes = stimesIdempotent
 
 union :: forall f a . (Applicative f, Ord a) => Interval f a -> Interval f a -> Interval f a
 union = coerce ((<>) :: Union f a -> Union f a -> Union f a)
