@@ -194,7 +194,7 @@ isSubintervalOf :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interva
 isSubintervalOf a b = and ((>=) <$> inf a <*> inf b) && and ((<=) <$> sup a <*> sup b)
 
 isProperSubintervalOf :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> Bool
-isProperSubintervalOf a b = isSubintervalOf a b && or ((/=) <$> a <*> b)
+isProperSubintervalOf a b = isSubintervalOf a b && or (liftA2 (/=) a b)
 
 
 before :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> Bool
