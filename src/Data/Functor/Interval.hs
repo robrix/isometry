@@ -31,6 +31,9 @@ module Data.Functor.Interval
 , Intersection(..)
 , intersection
 , intersects
+  -- * Comparisons
+, liftRelation
+, lt
 ) where
 
 import           Control.Applicative (liftA2)
@@ -220,3 +223,12 @@ intersection = coerce ((<>) :: Intersection f a -> Intersection f a -> Intersect
 
 intersects :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> Bool
 intersects a b = isValid (intersection a b)
+
+
+-- Comparisons
+
+liftRelation :: (Applicative f, Foldable f) => (a -> b -> Bool) -> f a -> f b -> Bool
+liftRelation rel a b = and (rel <$> a <*> b)
+
+lt :: (Applicative f, Foldable f, Ord a) => f a -> f a -> Bool
+lt = liftRelation (<)

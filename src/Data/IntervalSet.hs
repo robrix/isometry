@@ -78,13 +78,6 @@ splitAround i (IntervalSet s) = (IntervalSet l, IntervalSet n', IntervalSet r')
       | otherwise        -> (n F.|> h, t)
 
 
-liftRelation :: (Applicative f, Foldable f) => (a -> b -> Bool) -> f a -> f b -> Bool
-liftRelation rel a b = and (rel <$> a <*> b)
-
-lt :: (Applicative f, Foldable f, Ord a) => f a -> f a -> Bool
-lt = liftRelation (<)
-
-
 -- Internal
 
 infixr 5 ><, <|
