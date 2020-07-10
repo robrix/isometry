@@ -27,7 +27,7 @@ newtype IntervalSet f a = IntervalSet { getIntervalSet :: F.FingerTree (Maybe (I
 instance Show (f a) => Show (IntervalSet f a) where
   showsPrec p = showsUnaryWith showsPrec "fromList" p . toList
 
-empty :: Ord a => IntervalSet I a
+empty :: (Applicative f, Ord a) => IntervalSet f a
 empty = IntervalSet F.empty
 
 singleton :: Ord a => Interval I a -> IntervalSet I a
