@@ -194,7 +194,7 @@ isProperSubintervalOf a b = and ((>) <$> inf a <*> inf b) && and ((<) <$> sup a 
 
 
 before :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> Bool
-before subject i = and ((<=) <$> inf subject <*> sup i)
+before subject i = inf subject `lte` sup i
 
 after :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> Bool
 after subject i = and ((<) <$> sup subject <*> sup i)
