@@ -153,7 +153,7 @@ dimensionwise :: Applicative f => (Interval I a -> b) -> Interval f a -> f b
 dimensionwise f = liftI (fmap f . (...))
 
 liftI :: Applicative f => (a -> a -> b) -> Interval f a -> f b
-liftI f i = f <$> inf i <*> sup i
+liftI f i = liftA2 f (inf i) (sup i)
 
 size :: (Applicative f, Num a) => Interval f a -> f a
 size = liftA2 (-) . sup <*> inf
