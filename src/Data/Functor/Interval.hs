@@ -214,10 +214,10 @@ isProperSuperintervalOf a b = isSuperintervalOf a b && or (liftA2 (/=) a b)
 
 
 before :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> Bool
-before subject i = inf subject `lte` sup i
+before a b = inf a `lte` sup b
 
 after :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> Bool
-after subject i = sup subject `lt` sup i
+after a b = sup a `lt` sup b
 
 
 uniformI :: (R.Random a, Applicative f, Traversable f, Has Random sig m) => Interval f a -> m (f a)
