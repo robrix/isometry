@@ -37,6 +37,12 @@ tests = map checkParallel
     [ ("antireflexivity", property $ do
       i <- forAll gi
       assert . not $ i `isProperSubintervalOf` i)
+    , ("transitivity", property $ do
+      i1 <- forAll gi
+      i2 <- forAll (superinterval nonZeroDelta i1)
+      i3 <- forAll (superinterval nonZeroDelta i2)
+      assert (i1 `isProperSubintervalOf` i3)
+      )
     ]
   , Group "union"
     [ ("reflexivity", property $ do
@@ -90,3 +96,6 @@ superinterval delta i = do
 
 delta :: (MonadGen m, Num a) => m a
 delta = Gen.choice [ pure 0, fromIntegral <$> Gen.int (Range.linear 0 10) ]
+
+nonZeroDelta :: (MonadGen m, Num a) => m a
+nonZeroDelta = (+ 1) <$> delta
