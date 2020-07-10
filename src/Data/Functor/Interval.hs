@@ -48,7 +48,6 @@ import           Control.Effect.Random
 import           Control.Lens (Lens', lens)
 import           Control.Monad.Trans.Class
 import           Data.Coerce (coerce)
-import           Data.FingerTree (Measured(..))
 import           Data.Fixed (mod')
 import           Data.Functor.I
 import           GHC.Generics (Generic)
@@ -140,9 +139,6 @@ instance (Applicative f, Floating a) => Floating (Interval f a) where
 
 instance (Applicative f, Ord a) => Semigroup (Interval f a) where
   (<>) = union
-
-instance (Applicative f, Ord a) => Measured (Maybe (Interval f a)) (Interval f a) where
-  measure = Just
 
 
 inf_ :: Lens' (Interval f a) (f a)
