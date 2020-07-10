@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 module Data.IntervalSet
 ( IntervalSet
 , empty
@@ -26,6 +28,9 @@ newtype IntervalSet f a = IntervalSet { getIntervalSet :: F.FingerTree (Maybe (I
 
 instance Show (f a) => Show (IntervalSet f a) where
   showsPrec p = showsUnaryWith showsPrec "fromList" p . toList
+
+instance (Applicative f, Ord a) => F.Measured (Maybe (Interval f a)) (IntervalSet f a) where
+  measure = F.measure . getIntervalSet
 
 empty :: (Applicative f, Ord a) => IntervalSet f a
 empty = IntervalSet F.empty
