@@ -19,6 +19,11 @@ tests = map checkParallel
       member p (point p :: Interval I Int) === True
       )
     ]
+  , Group "union"
+    [ ("reflexivity", property $ do
+      i <- forAll gi
+      i `union` i === i)
+    ]
   , Group "interval"
     [ ("validity", property (forAll gi >>= assert . isValid))
     , ("coverage", verifiedTermination . withConfidence (10^(6 :: Int)) . property $ do
