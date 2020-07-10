@@ -1,11 +1,10 @@
-{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeApplications #-}
 module Data.Functor.Interval
 ( Interval(..)
 , inf_
@@ -49,7 +48,6 @@ import           Data.Coerce (coerce)
 import           Data.FingerTree (Measured(..))
 import           Data.Fixed (mod')
 import           Data.Functor.I
-import           Data.Generics.Product.Fields
 import           GHC.Generics (Generic)
 import qualified System.Random as R
 
@@ -142,10 +140,10 @@ instance (Applicative f, Ord a) => Measured (Maybe (Interval f a)) (Interval f a
 
 
 inf_ :: Lens' (Interval f a) (f a)
-inf_ = field @"inf"
+inf_ = lens inf $ \ i inf -> i{ inf }
 
 sup_ :: Lens' (Interval f a) (f a)
-sup_ = field @"sup"
+sup_ = lens sup $ \ i sup -> i{ sup }
 
 
 (...) :: Applicative f => a -> a -> Interval f a
