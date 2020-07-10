@@ -30,7 +30,7 @@ instance Show (f a) => Show (IntervalSet f a) where
 empty :: (Applicative f, Ord a) => IntervalSet f a
 empty = IntervalSet F.empty
 
-singleton :: Ord a => Interval I a -> IntervalSet I a
+singleton :: (Applicative f, Ord a) => Interval f a -> IntervalSet f a
 singleton = IntervalSet . F.singleton
 
 fromList :: Ord a => [Interval I a] -> IntervalSet I a
