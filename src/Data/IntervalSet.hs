@@ -90,6 +90,7 @@ infixr 5 ><, <|
 
 
 newtype Leaf f a = Leaf { getLeaf :: Interval f a }
+  deriving (Eq, Ord)
 
 instance (Applicative f, Ord a) =>  F.Measured (Maybe (Interval f a)) (Leaf f a) where
   measure = Just . getLeaf
