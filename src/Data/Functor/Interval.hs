@@ -42,7 +42,7 @@ module Data.Functor.Interval
 
 import           Control.Applicative (liftA2)
 import           Control.Effect.Random
-import           Control.Lens hiding (imap, (...))
+import           Control.Lens (Lens', lens)
 import           Control.Monad.Trans.Class
 import           Data.Coerce (coerce)
 import           Data.FingerTree (Measured(..))
