@@ -23,6 +23,8 @@ module Data.Functor.Interval
 , isValid
 , isSubintervalOf
 , isProperSubintervalOf
+, before
+, after
 , uniformI
 , Union(..)
 , union
@@ -183,6 +185,13 @@ isSubintervalOf a b = and ((>=) <$> inf a <*> inf b) && and ((<=) <$> sup a <*> 
 
 isProperSubintervalOf :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> Bool
 isProperSubintervalOf a b = and ((>) <$> inf a <*> inf b) && and ((<) <$> sup a <*> sup b)
+
+
+before :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> Bool
+before subject i = and ((<=) <$> inf subject <*> sup i)
+
+after :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> Bool
+after subject i = and ((<) <$> sup subject <*> sup i)
 
 
 uniformI :: (R.Random a, Applicative f, Traversable f, Has Random sig m) => Interval f a -> m (f a)
