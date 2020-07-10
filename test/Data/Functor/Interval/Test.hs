@@ -2,6 +2,7 @@
 module Data.Functor.Interval.Test
 ( tests
 , interval
+, superinterval
 ) where
 
 import           Control.Monad (join)
