@@ -30,7 +30,7 @@ import           Control.Monad.IO.Class.Lift
 import           Data.Bin.Octree (withOctreeLen2)
 import           Data.Coerce
 import           Data.Functor.I
-import           Data.Functor.Interval hiding (range)
+import           Data.Functor.Interval hiding (transform)
 import           Data.Generics.Product.Fields
 import           Data.Word
 import           Foreign.Storable.Lift

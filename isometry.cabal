@@ -63,7 +63,6 @@ library
     Data.Flag
     Data.Functor.C
     Data.Functor.I
-    Data.Functor.Interval
     Data.Functor.K
     Data.IntervalSet
     Data.Nat
@@ -164,6 +163,7 @@ library
     , fused-effects-random
     , generic-lens
     , gl
+    , interval-functor
     , lens
     , linear
     , opentype

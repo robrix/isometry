@@ -84,7 +84,7 @@ copyPtr :: forall ty v m sig . (HasLabelled (Buffer ty) (Reader (Buffer ty v)) s
 copyPtr i' ptr = do
   _ <- askBuffer @ty
   let i = i' ^* S.sizeOf @v undefined
-  checking . runLiftIO . glBufferSubData (glEnum (typeVal @ty)) (fromIntegral (inf i)) (fromIntegral (size i)) $ castPtr ptr
+  checking . runLiftIO . glBufferSubData (glEnum (typeVal @ty)) (fromIntegral (inf i)) (fromIntegral (diameter i)) $ castPtr ptr
 
 
 

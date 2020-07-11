@@ -25,7 +25,7 @@ import           Control.Lens ((^.))
 import           Control.Monad (unless, when)
 import           Control.Monad.Fix
 import           Control.Monad.IO.Class.Lift
-import           Data.Functor.Interval
+import           Data.Functor.Interval hiding (lerp)
 import           GL
 import           GL.Effect.Check
 import           Isometry.Frame

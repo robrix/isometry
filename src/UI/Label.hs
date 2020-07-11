@@ -105,7 +105,7 @@ setLabel Label{ texture, fbuffer, ratio, ref } font@(Font face _) string
         Run instances b <- layoutString face string
 
         let b' = (floor...ceiling) <*> fontScale font *^ (fromIntegral <$> b)
-            size = Interval.size b'
+            size = Interval.diameter b'
             baseline = b'^.inf_._y
 
         bind (Just texture)

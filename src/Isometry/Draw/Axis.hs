@@ -20,7 +20,7 @@ import           Control.Effect.Lift
 import           Control.Effect.Trace
 import           Control.Lens (Lens')
 import           Data.Functor.I
-import           Data.Functor.Interval hiding (range)
+import           Data.Functor.Interval hiding (transform)
 import           Data.Generics.Product.Fields
 import           Foreign.Storable
 import           Geometry.Transform

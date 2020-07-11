@@ -15,10 +15,11 @@ module Data.IntervalSet
 , Interval(..)
 ) where
 
+import           Control.Applicative (liftA2)
+import           Data.Coerce
 import qualified Data.FingerTree as F
 import qualified Data.Foldable as Foldable (foldl', toList)
 import           Data.Functor.Classes (showsUnaryWith)
-import           Data.Coerce
 import           Data.Functor.I
 import           Data.Functor.Interval
 import           Prelude hiding (null)
@@ -94,3 +95,19 @@ newtype Leaf f a = Leaf { getLeaf :: Interval f a }
 
 instance (Applicative f, Ord a) =>  F.Measured (Maybe (Interval f a)) (Leaf f a) where
   measure = Just . getLeaf
+
+
+before, after :: (Applicative f, Foldable f, Ord a) => Interval f a -> Interval f a -> Bool
+before a b = inf a `lte` sup b
+after  a b = sup a `lt`  sup b
+
+liftRelation :: (Applicative f, Foldable f) => (a -> b -> Bool) -> f a -> f b -> Bool
+liftRelation rel a b = and (liftA2 rel a b)
+
+infix 4 `lt`, `lte`
+
+lt :: (Applicative f, Foldable f, Ord a) => f a -> f a -> Bool
+lt = liftRelation (<)
+
+lte :: (Applicative f, Foldable f, Ord a) => f a -> f a -> Bool
+lte = liftRelation (<=)

@@ -44,11 +44,11 @@ sample w bounds (PDF pdf) = do
         -- if any coordinate of the interval’s min is in-bounds…
         | or (inf i ^>^ inf bounds)
         -- … & it still lies under the curve, step the min outwards
-        , y < pdf (inf i) = step (i & over inf_ (^-^ size w))
+        , y < pdf (inf i) = step (i & over inf_ (^-^ diameter w))
         -- if any coordinate of the interval’s max is in-bounds…
         | or (sup i ^<^ sup bounds)
         -- … & it still lies under the curve, step the max outwards
-        , y < pdf (sup i) = step (i & over sup_ (^+^ size w))
+        , y < pdf (sup i) = step (i & over sup_ (^+^ diameter w))
         | otherwise        = i
       shrink i = uniformI i >>= \case
         x' | y < pdf x' -> x' <$ put (Chain x')
@@ -61,3 +61,7 @@ sample w bounds (PDF pdf) = do
       (^>^) = liftA2 (>)
 
   shrink (intersection bounds (step (point (x ^-^ u) + w)))
+
+
+uniformI :: (R.Random a, Applicative f, Traversable f, Has Random sig m) => Interval f a -> m (f a)
+uniformI i = traverse uniformR (liftI (,) i)
