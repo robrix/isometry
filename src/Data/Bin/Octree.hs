@@ -17,11 +17,10 @@ module Data.Bin.Octree
 
 import Control.Carrier.Lift
 import Control.Lens.Indexed
+import Control.Monad (foldM_)
 import Data.Bin.Bit
 import Data.Bin.Index
 import Data.Bin.Shape
-import Data.Foldable (for_)
-import Data.IORef
 import Data.Unfoldable (SparseUnfoldableWithIndex(..))
 import Foreign.Marshal.Array.Lift
 import Foreign.Ptr
@@ -119,24 +118,20 @@ b lbf rbf ltf rtf lbn rbn ltn rtn
 
 withOctreeLen :: (Has (Lift IO) sig m, Storable a) => Octree s a -> (Int -> Ptr a -> m b) -> m b
 withOctreeLen o with = allocaArray len $ \ p -> do
-  ref <- sendIO $ newIORef 0
-  _ <- sendIO . for_ o $ \ a -> do
-    !off <- readIORef ref
+  sendIO $ foldM_ (\ !off !a -> do
     pokeElemOff p off a
-    writeIORef ref $ off + 1
+    pure $! off + 1) 0 o
   with len p
   where
   len = length o
 
 withOctreeLen2 :: forall a b c r s m sig . (Has (Lift IO) sig m, Storable b, Storable c) => Octree s a -> (a -> (b, c)) -> (Int -> Ptr b -> Ptr c -> m r) -> m r
 withOctreeLen2 o prj with = allocaArray len $ \ pb -> allocaArray len $ \ pc -> do
-  ref <- sendIO $ newIORef 0
-  sendIO . for_ o $ \ a -> do
-    !off <- readIORef ref
+  sendIO $ foldM_ (\ !off !a -> do
     let (!b, !c) = prj a
     pokeElemOff pb off b
     pokeElemOff pc off c
-    writeIORef ref $ off + 1
+    pure $! off + 1) 0 o
   with len pb pc
   where
   !len = length o
