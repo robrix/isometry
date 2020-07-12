@@ -4,9 +4,9 @@ module Data.IntervalSet.Test
 ( tests
 ) where
 
+import           Control.Monad (join)
 import           Data.Functor.I
 import           Data.Functor.Interval
-import           Data.Functor.Interval.Test (interval)
 import           Data.IntervalSet as I
 import           Data.Maybe (fromMaybe)
 import           Hedgehog
@@ -65,8 +65,8 @@ tests = map checkParallel
       cover 10 "empty" (I.null s)
       cover 10 "singleton" (length is == 1)
       cover 10 "disjoint" (length is > 1)
-      cover 10 "point" (maybe False ((== 0) . size) (measure s))
-      cover 10 "span" (maybe False ((> 0) . size) (measure s)))
+      cover 10 "point" (maybe False isPoint (measure s))
+      cover 10 "span" (maybe False (not . isPoint) (measure s)))
     ]
   ]
   where
@@ -80,3 +80,11 @@ intervalSet i = Gen.choice
   , singleton <$> i
   , fromList <$> Gen.list (Range.linear 0 100) i
   ]
+
+interval :: (MonadGen m, Num a) => m a -> m (Interval I a)
+interval p = Gen.choice
+  [ join (...) <$> p
+  , mk <$> p <*> p
+  ]
+  where
+  mk a b = a ... a + b + 1
