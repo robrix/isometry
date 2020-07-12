@@ -15,9 +15,10 @@ module GL
 ) where
 
 import           Control.Algebra
+import           Control.Effect.Lift
 import           Control.Effect.State
 import           Control.Lens (Lens', lens)
-import           Control.Monad.IO.Class.Lift
+import           Control.Monad.IO.Class
 import           Data.Foldable (for_)
 import qualified Data.Map as Map
 import           Data.Maybe (fromMaybe)
@@ -98,6 +99,6 @@ instance Has (Lift IO) sig m => Algebra (State Capabilities :+: sig) (GLC m) whe
     L Get     -> pure (Capabilities mempty <$ ctx)
     L (Put s) -> do
       for_ (Map.toList (getCapabilities s)) $ \ (cap, b) ->
-        runLiftIO $ (if b then glEnable else glDisable) (glEnum cap)
+        sendIO $ (if b then glEnable else glDisable) (glEnum cap)
       pure ctx
     R other   -> GLC (alg (runGLC . hdl) other ctx)

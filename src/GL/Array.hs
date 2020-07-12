@@ -26,8 +26,8 @@ import           Control.Carrier.Reader
 import           Control.Carrier.State.Church
 import           Control.Effect.Finally
 import           Control.Effect.Labelled
+import           Control.Effect.Lift
 import           Control.Effect.Trace
-import           Control.Monad.IO.Class.Lift
 import           Data.Functor.I
 import           Data.Functor.Interval
 import           Data.Functor.K
@@ -54,7 +54,7 @@ instance Object (Array n) where
   delete = defaultDeleteWith glDeleteVertexArrays unArray
 
 instance Bind (Array n) where
-  bind = checking . runLiftIO . glBindVertexArray . maybe 0 unArray
+  bind = checking . sendIO . glBindVertexArray . maybe 0 unArray
 
 
 configureInterleaved :: forall v m sig . (HasLabelled Array (Reader (Array (v I))) sig m, HasLabelled (B.Buffer 'B.Array) (Reader (B.Buffer 'B.Array (v I))) sig m, Vars v, Has Check sig m, Has (Lift IO) sig m, Has Trace sig m) => m ()
@@ -65,7 +65,7 @@ configureSeparate b1 b2 = evalState (Offset 0) (evalFresh 0 (askArray >> B.bindB
   stride = S.sizeOf @((v1 :**: v2) I) undefined
 
 configureVars :: (Vars v, Has Check sig m, Has Fresh sig m, Has (Lift IO) sig m, Has (State Offset) sig m, Has Trace sig m) => Int -> v Proxy -> m ()
-configureVars stride = foldVarsM' (\ (Field{ location, name } :: Field Proxy a) -> runLiftIO $ do
+configureVars stride = foldVarsM' (\ (Field{ location, name } :: Field Proxy a) -> do
   offset <- get
   let size   = S.sizeOf @a undefined
       K ty   = GL.glType @a
@@ -74,8 +74,8 @@ configureVars stride = foldVarsM' (\ (Field{ location, name } :: Field Proxy a) 
 
   trace $ "configuring field " <> name <> " attrib " <> show location <> " at offset " <> show offset <> " stride " <> show stride <> " dims " <> show dims <> " type " <> show ty
 
-  checking $ glEnableVertexAttribArray (fromIntegral location)
-  checking $ glVertexAttribPointer     (fromIntegral location) dims ty GL_FALSE (fromIntegral stride) (nullPtr `plusPtr` getOffset offset))
+  checking . sendIO $ glEnableVertexAttribArray (fromIntegral location)
+  checking . sendIO $ glVertexAttribPointer     (fromIntegral location) dims ty GL_FALSE (fromIntegral stride) (nullPtr `plusPtr` getOffset offset))
 
 
 drawArrays
@@ -88,7 +88,7 @@ drawArrays
   => Type
   -> Interval I Int
   -> m ()
-drawArrays mode i = askProgram >> askArray >> checking (runLiftIO (glDrawArrays (glEnum mode) (fromIntegral (inf i)) (fromIntegral (diameter i))))
+drawArrays mode i = askProgram >> askArray >> checking (sendIO (glDrawArrays (glEnum mode) (fromIntegral (inf i)) (fromIntegral (diameter i))))
 
 multiDrawArrays
   :: ( Has Check sig m
@@ -106,7 +106,7 @@ multiDrawArrays mode is
     _ <- askProgram
     _ <- askArray
     withArray (map (fromIntegral . inf) is) $ \ firsts -> withArray (map (fromIntegral . diameter) is) $ \ counts ->
-      checking (runLiftIO (glMultiDrawArrays (glEnum mode) firsts counts (fromIntegral (length is))))
+      checking (sendIO (glMultiDrawArrays (glEnum mode) firsts counts (fromIntegral (length is))))
 
 drawArraysInstanced
   :: ( Has Check sig m
@@ -119,7 +119,7 @@ drawArraysInstanced
   -> Interval I Int
   -> Int
   -> m ()
-drawArraysInstanced mode i n = askProgram >> askArray >> checking (runLiftIO (glDrawArraysInstanced (glEnum mode) (fromIntegral (inf i)) (fromIntegral (diameter i)) (fromIntegral n)))
+drawArraysInstanced mode i n = askProgram >> askArray >> checking (sendIO (glDrawArraysInstanced (glEnum mode) (fromIntegral (inf i)) (fromIntegral (diameter i)) (fromIntegral n)))
 
 drawElements
   :: ( Has Check sig m
@@ -136,7 +136,7 @@ drawElements mode i = do
   _ <- askProgram
   _ <- askArray
   _ <- B.askBuffer @'B.ElementArray
-  checking (runLiftIO (glDrawElements (glEnum mode) (fromIntegral (diameter i)) GL_UNSIGNED_INT (nullPtr `plusPtr` (getI (inf i) * S.sizeOf @Word32 0))))
+  checking (sendIO (glDrawElements (glEnum mode) (fromIntegral (diameter i)) GL_UNSIGNED_INT (nullPtr `plusPtr` (getI (inf i) * S.sizeOf @Word32 0))))
 
 drawElementsInstanced
   :: ( Has Check sig m
@@ -154,7 +154,7 @@ drawElementsInstanced mode i n = do
   _ <- askProgram
   _ <- askArray
   _ <- B.askBuffer @'B.ElementArray
-  checking (runLiftIO (glDrawElementsInstanced (glEnum mode) (fromIntegral (diameter i)) GL_UNSIGNED_INT (nullPtr `plusPtr` (getI (inf i) * S.sizeOf @Word32 0)) (fromIntegral n)))
+  checking (sendIO (glDrawElementsInstanced (glEnum mode) (fromIntegral (diameter i)) GL_UNSIGNED_INT (nullPtr `plusPtr` (getI (inf i) * S.sizeOf @Word32 0)) (fromIntegral n)))
 
 
 load :: (Vars v, S.Storable (v I), Has Check sig m, Has Finally sig m, Has (Lift IO) sig m, Has Trace sig m) => [v I] -> m (B.Buffer 'B.Array (v I), Array (v I))
