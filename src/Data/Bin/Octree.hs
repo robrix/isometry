@@ -47,6 +47,15 @@ instance Foldable (Octree s) where
       B _ lbf rbf ltf rtf lbn rbn ltn rtn -> go lbf <> go rbf <> go ltf <> go rtf <> go lbn <> go rbn <> go ltn <> go rtn
   {-# INLINE foldMap #-}
 
+  foldr (f :: a -> b -> b) = go
+    where
+    go :: b -> Octree s' a -> b
+    go z = \case
+      E   -> z
+      L a -> f a z
+      B _ lbf rbf ltf rtf lbn rbn ltn rtn -> go (go (go (go (go (go (go (go z rtn) ltn) rbn) lbn) rtf) ltf) rbf) lbf
+  {-# INLINE foldr #-}
+
   length = \case
     E                   -> 0
     L _                 -> 1
