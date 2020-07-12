@@ -105,7 +105,7 @@ game = runGame $ do
 
       unless (turningL || turningR || delta == 0) $
         -- animate angle to nearest π/4 radians increment
-        angle_ %= lerp (getI (min 1 ((turnRate .*. dt) / delta))) nearest
+        angle_ %= lerp (getI (min 1 (turnRate .*. dt / delta ** 0.8))) nearest
 
     case err of
       Left err -> pure err
