@@ -15,10 +15,11 @@ import qualified Control.Carrier.Profile.Tree as Profile
 import           Control.Carrier.Thread.IO
 import qualified Control.Carrier.Trace.Ignoring as NoTrace
 import qualified Control.Carrier.Trace.Lift as Trace
+import           Control.Effect.Lift
 import           Control.Effect.Profile
 import           Control.Effect.Trace
 import           Control.Monad.Fix
-import           Control.Monad.IO.Class.Lift
+import           Control.Monad.IO.Class
 import           Data.Flag
 import           Data.Kind (Constraint, Type)
 import qualified GL.Carrier.Check.Identity as NoCheck

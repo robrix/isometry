@@ -18,9 +18,10 @@ module Control.Carrier.State.IORef
 
 import Control.Algebra
 import Control.Carrier.Reader
+import Control.Effect.Lift
 import Control.Effect.State
 import Control.Monad.Fix
-import Control.Monad.IO.Class.Lift
+import Control.Monad.IO.Class
 import Control.Monad.Trans.Class
 import Data.IORef
 

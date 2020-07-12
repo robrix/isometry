@@ -14,10 +14,10 @@ module UI.Typeface
 ) where
 
 import           Control.Effect.Finally
+import           Control.Effect.Lift
 import           Control.Effect.Trace
 import           Control.Lens hiding ((...))
 import           Control.Monad (guard, join, (<=<))
-import           Control.Monad.IO.Class.Lift
 import           Data.Bifunctor (first)
 import           Data.Char (isPrint, isSeparator, ord)
 import           Data.Coerce (coerce)

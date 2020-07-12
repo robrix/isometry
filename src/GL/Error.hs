@@ -6,9 +6,9 @@ module GL.Error
 , throwGLError
 ) where
 
+import           Control.Effect.Lift
 import qualified Control.Exception.Lift as E
 import           Control.Monad
-import           Control.Monad.IO.Class.Lift
 import qualified Foreign.C.String as C
 import qualified Foreign.Marshal.Alloc.Lift as A
 import           Foreign.Ptr
