@@ -46,13 +46,13 @@ instance Foldable (Octree s) where
       E   -> mempty
       L a -> f a
       B _ lbf rbf ltf rtf lbn rbn ltn rtn -> go lbf <> go rbf <> go ltf <> go rtf <> go lbn <> go rbn <> go ltn <> go rtn
-  {-# INLINABLE foldMap #-}
+  {-# INLINE foldMap #-}
 
   length = \case
     E                   -> 0
     L _                 -> 1
     B l _ _ _ _ _ _ _ _ -> l
-  {-# INLINABLE length #-}
+  {-# INLINE length #-}
 
 deriving instance Functor     (Octree s)
 deriving instance Traversable (Octree s)
@@ -68,14 +68,14 @@ instance FoldableWithIndex (V3 (Index s)) (Octree s) where
       <> go B0 B1 B1 ltn <> go B1 B1 B1 rtn
       where
       go x y z = ifoldMap (f . (ib <$> V3 x y z <*>))
-  {-# INLINABLE ifoldMap #-}
+  {-# INLINE ifoldMap #-}
 
 instance SparseUnfoldableWithIndex (V3 Bit) (V3 (Index 'Z)) (Octree 'Z) where
   iunfoldSparseM _ leaf = L <$> leaf (pure il)
-  {-# INLINABLE iunfoldSparseM #-}
+  {-# INLINE iunfoldSparseM #-}
 
   iunfoldSparse _ leaf = L (leaf (pure il))
-  {-# INLINABLE iunfoldSparse #-}
+  {-# INLINE iunfoldSparse #-}
 
 instance SparseUnfoldableWithIndex (V3 Bit) (V3 (Index s)) (Octree s) => SparseUnfoldableWithIndex (V3 Bit) (V3 (Index ('S s))) (Octree ('S s)) where
   iunfoldSparseM branch leaf = b
@@ -85,7 +85,7 @@ instance SparseUnfoldableWithIndex (V3 Bit) (V3 (Index s)) (Octree s) => SparseU
     <*> go (V3 B0 B1 B1) <*> go (V3 B1 B1 B1)
     where
     go i = branch i >>= \ b -> if b then iunfoldSparseM branch (leaf . (ib <$> i <*>)) else pure E
-  {-# INLINABLE iunfoldSparseM #-}
+  {-# INLINE iunfoldSparseM #-}
 
   iunfoldSparse branch leaf = b
     (go (V3 B0 B0 B0)) (go (V3 B1 B0 B0))
@@ -94,7 +94,7 @@ instance SparseUnfoldableWithIndex (V3 Bit) (V3 (Index s)) (Octree s) => SparseU
     (go (V3 B0 B1 B1)) (go (V3 B1 B1 B1))
     where
     go i = if branch i then iunfoldSparse branch (leaf . (ib <$> i <*>)) else E
-  {-# INLINABLE iunfoldSparse #-}
+  {-# INLINE iunfoldSparse #-}
 
 instance Applicative (Octree 'Z) where
   pure = L
@@ -115,7 +115,7 @@ b lbf rbf ltf rtf lbn rbn ltn rtn
   | otherwise = E
   where
   !len = length lbf + length rbf + length ltf + length rtf + length lbn + length rbn + length ltn + length rtn
-{-# INLINABLE b #-}
+{-# INLINE b #-}
 
 withOctreeLen :: (Has (Lift IO) sig m, Storable a) => Octree s a -> (Int -> Ptr a -> m b) -> m b
 withOctreeLen o with = allocaArray len $ \ p -> do
