@@ -44,7 +44,7 @@ runFrame
      )
   => ReaderC Voxel.Drawable
     (ReaderC Axis.Drawable
-    (Labelled World (ReaderC (World S128 Voxel))
+    (Labelled World (ReaderC (World S1024 Voxel))
     (StateC Instant
     (EmptyC
     m)))) a
