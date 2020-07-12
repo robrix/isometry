@@ -69,10 +69,10 @@ face angular angle rotation
   delta = facingRel rotation angle
 
 
-easeInOutCubic :: Double -> Double
+easeInOutCubic :: (Fractional a, Ord a) => a -> a
 easeInOutCubic t
-  | t < 0.5   = 4 * t ** 3
-  | otherwise = (t - 1) * (2 * t - 2) ** 2 + 1
+  | t < 0.5   = 4 * t ^ (3 :: Int)
+  | otherwise = (t - 1) * (2 * t - 2) ^ (2 :: Int) + 1
 
 
 reject :: (Metric v, Fractional a) => v a -> v a -> v a
