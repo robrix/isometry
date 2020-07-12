@@ -18,13 +18,13 @@ import           Control.Carrier.Reader
 import           Control.Carrier.State.Church
 import qualified Control.Carrier.State.STM.TVar as TVar
 import           Control.Effect.Lens.Exts as Lens
+import           Control.Effect.Lift
 import           Control.Effect.Thread
 import           Control.Effect.Trace
 import           Control.Exception.Lift
 import           Control.Lens ((^.))
 import           Control.Monad (unless, when)
 import           Control.Monad.Fix
-import           Control.Monad.IO.Class.Lift
 import           Data.Functor.Interval hiding (lerp)
 import           GL
 import           GL.Effect.Check
@@ -54,11 +54,10 @@ runGame
     (TVar.StateC Player
     (TVar.StateC Input
     (RandomC SMGen
-    (LiftIO
     (FinallyC
     (GLC
     (ReaderC Context
-    (ReaderC Window.Window m)))))))) a
+    (ReaderC Window.Window m))))))) a
   -> m a
 runGame
   = Window.runSDL
@@ -66,7 +65,6 @@ runGame
   . runContext
   . runGLC
   . runFinally
-  . runLiftIO
   . (\ m -> sendM newSMGen >>= flip evalRandom m)
   . TVar.evalState @Input mempty
   . TVar.evalState Player{ angle = -pi/4 }
@@ -81,7 +79,7 @@ game
      )
   => m ()
 game = runGame $ do
-  SDL.cursorVisible SDL.$= False
+  sendIO $ SDL.cursorVisible SDL.$= False
   trace "loading typeface"
   face <- measure "readTypeface" $ readTypeface ("fonts" </> "DejaVuSans.ttf")
   measure "cacheCharactersForDrawing" . cacheCharactersForDrawing face $ ['0'..'9'] <> ['a'..'z'] <> ['A'..'Z'] <> ",.’/:-⁻⁰¹²³⁴⁵⁶⁷⁸⁹·" -- characters to preload

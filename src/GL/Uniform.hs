@@ -13,7 +13,7 @@ module GL.Uniform
 , ColumnD(..)
 ) where
 
-import           Control.Monad.IO.Class.Lift
+import           Control.Effect.Lift
 import           Data.Coerce
 import           Data.Functor.Const
 import           Data.Functor.Identity
@@ -37,31 +37,31 @@ class GL.Type t => Uniform t where
 
 instance Uniform Bool where
   glslType = "bool"
-  uniform prog loc = runLiftIO . glProgramUniform1i prog loc . fromIntegral . fromEnum
+  uniform prog loc = sendIO . glProgramUniform1i prog loc . fromIntegral . fromEnum
 
 instance Uniform Int where
   glslType = "int"
-  uniform prog loc = runLiftIO . glProgramUniform1i prog loc . fromIntegral
+  uniform prog loc = sendIO . glProgramUniform1i prog loc . fromIntegral
 
 instance Uniform Int32 where
   glslType = "int"
-  uniform prog loc = runLiftIO . glProgramUniform1i prog loc
+  uniform prog loc = sendIO . glProgramUniform1i prog loc
 
 instance Uniform Word where
   glslType = "uint"
-  uniform prog loc = runLiftIO . glProgramUniform1ui prog loc . fromIntegral
+  uniform prog loc = sendIO . glProgramUniform1ui prog loc . fromIntegral
 
 instance Uniform Word32 where
   glslType = "uint"
-  uniform prog loc = runLiftIO . glProgramUniform1ui prog loc
+  uniform prog loc = sendIO . glProgramUniform1ui prog loc
 
 instance Uniform Float where
   glslType = "float"
-  uniform prog loc = runLiftIO . glProgramUniform1f prog loc
+  uniform prog loc = sendIO . glProgramUniform1f prog loc
 
 instance Uniform Double where
   glslType = "double"
-  uniform prog loc = runLiftIO . glProgramUniform1d prog loc
+  uniform prog loc = sendIO . glProgramUniform1d prog loc
 
 instance Row t => Uniform (V2 t) where
   glslType = glslTypeForRow @t R2

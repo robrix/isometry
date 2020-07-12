@@ -22,7 +22,6 @@ import qualified Control.Concurrent.Lift as CC
 import qualified Control.Exception.Lift as E
 import           Control.Lens ((^.))
 import           Control.Monad ((<=<))
-import           Control.Monad.IO.Class.Lift
 import           Data.Fixed (div')
 import           Data.Functor.I
 import           Data.Functor.K
@@ -47,10 +46,10 @@ instance Unit Length Coords where
 
 
 swap :: (Has (Lift IO) sig m, Has (Reader Window) sig m) => m ()
-swap = runLiftIO glFlush >> ask >>= runLiftIO . glSwapWindow
+swap = sendIO glFlush >> ask >>= sendIO . glSwapWindow
 
 poll :: Has (Lift IO) sig m => m (Maybe Event)
-poll = runLiftIO pollEvent
+poll = sendIO pollEvent
 
 input :: Has (Lift IO) sig m => (Event -> m ()) -> m ()
 input h = go where
@@ -58,24 +57,24 @@ input h = go where
 
 size :: (Num a, Has (Lift IO) sig m, Has (Reader Window) sig m) => m (V2 (Coords a))
 size = do
-  size <- asks windowSize >>= runLiftIO . get
+  size <- asks windowSize >>= sendIO . get
   pure (fromIntegral <$> size)
 
 ratio :: (Integral a, Has (Lift IO) sig m, Has (Reader Window) sig m) => m (I a)
-ratio = runLiftIO $ do
+ratio = do
   window <- ask
-  drawableSize <- glGetDrawableSize window
-  windowSize <- get (windowSize window)
+  drawableSize <- sendIO $ glGetDrawableSize window
+  windowSize <- sendIO $ get (windowSize window)
   pure $! (drawableSize^._y) `div'` (windowSize^._y)
 
 
 runSDL :: Has (Lift IO) sig m => m a -> m a
-runSDL = CC.runInBoundThread . E.bracket_ (runLiftIO initializeAll) (runLiftIO quit)
+runSDL = CC.runInBoundThread . E.bracket_ (sendIO initializeAll) (sendIO quit)
 
 runWindow :: Has (Lift IO) sig m => Text -> V2 (Coords Int) -> ReaderC Window m a -> m a
 runWindow name size = E.bracket
-  (runLiftIO (createWindow name windowConfig))
-  (runLiftIO . destroyWindow)
+  (sendIO (createWindow name windowConfig))
+  (sendIO . destroyWindow)
   . flip runReader where
   windowConfig = defaultWindow
     { windowInitialSize     = fromIntegral <$> size

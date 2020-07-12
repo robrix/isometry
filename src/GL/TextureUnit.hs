@@ -10,7 +10,7 @@ module GL.TextureUnit
 , setActiveTexture
 ) where
 
-import           Control.Monad.IO.Class.Lift
+import           Control.Effect.Lift
 import           Data.Kind (Type)
 import           Foreign.Storable
 import qualified GL.Type as GL
@@ -29,7 +29,7 @@ instance GL.Type (TextureUnit u v) where
 
 instance Sampler u => Uniform (TextureUnit u v) where
   glslType = glslSamplerType @u
-  uniform prog loc = runLiftIO . glProgramUniform1i prog loc . unTextureUnit
+  uniform prog loc = sendIO . glProgramUniform1i prog loc . unTextureUnit
 
 class Sampler (u :: Type -> Type) where
   glslSamplerType :: String
@@ -52,4 +52,4 @@ instance Sampler Index where
 
 
 setActiveTexture :: Has (Lift IO) sig m => TextureUnit u v -> m ()
-setActiveTexture (TextureUnit i) = runLiftIO $ glActiveTexture (fromIntegral (GL_TEXTURE0 + i))
+setActiveTexture (TextureUnit i) = sendIO $ glActiveTexture (fromIntegral (GL_TEXTURE0 + i))

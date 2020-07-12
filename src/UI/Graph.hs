@@ -11,9 +11,9 @@ module UI.Graph
 
 import           Control.Carrier.Finally
 import           Control.Effect.Lens ((?=))
+import           Control.Effect.Lift
 import           Control.Effect.Trace (Trace)
 import           Control.Lens ((^.))
-import           Control.Monad.IO.Class.Lift
 import           Data.Coerce
 import           Data.Functor.I
 import           Data.Functor.Interval
@@ -59,7 +59,7 @@ mkGraph f n from to = do
 
 drawGraph :: (Has Check sig m, Has (Lift IO) sig m) => Graph -> m ()
 drawGraph Graph { matrix, colour, array, points, lines, pointSize, count } = bindArray array $ do
-  runLiftIO (glBlendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA)
+  sendIO $ glBlendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
   use points $ do
     Points.matrix_    ?= matrix
     Points.pointSize_ ?= pointSize

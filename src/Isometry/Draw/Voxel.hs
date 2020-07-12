@@ -26,7 +26,6 @@ import           Control.Effect.Profile
 import qualified Control.Effect.Reader.Labelled as Labelled
 import           Control.Effect.Trace
 import           Control.Lens (Lens')
-import           Control.Monad.IO.Class.Lift
 import           Data.Bin.Octree (withOctreeLen2)
 import           Data.Coerce
 import           Data.Functor.I
@@ -116,11 +115,11 @@ runDrawable m = do
 
   setActiveTexture originsU
   bind (Just originsT)
-  runLiftIO $ glTexBuffer GL_TEXTURE_BUFFER GL_RGB32F (unBuffer originsB)
+  sendIO $ glTexBuffer GL_TEXTURE_BUFFER GL_RGB32F (unBuffer originsB)
 
   setActiveTexture coloursU
   bind (Just coloursT)
-  runLiftIO $ glTexBuffer GL_TEXTURE_BUFFER GL_RGBA32F (unBuffer coloursB)
+  sendIO $ glTexBuffer GL_TEXTURE_BUFFER GL_RGBA32F (unBuffer coloursB)
 
   program <- build shader
   (_, array) <- load (coerce corners)

@@ -19,7 +19,6 @@ import           Control.Effect.Lift
 import           Control.Effect.Trace
 import           Control.Lens ((^.))
 import           Control.Monad (when)
-import           Control.Monad.IO.Class.Lift
 import           Data.Coerce
 import           Data.Foldable (for_)
 import           Data.Functor.I
@@ -95,12 +94,12 @@ labelSize = sendM . fmap (maybe (V2 0 0) UI.Label.size) . readIORef . ref
 setLabel :: (HasCallStack, Has Check sig m, Has (Lift IO) sig m) => Label -> Font -> String -> m ()
 setLabel Label{ texture, fbuffer, ratio, ref } font@(Font face _) string
   | null string = sendM (writeIORef ref Nothing)
-  | otherwise   = runLiftIO $ do
+  | otherwise   = do
     state <- sendIO (readIORef ref)
     case state of
       Just LabelState{ string = oldString } | string == oldString -> pure ()
       _ -> do
-        glBlendFunc GL_ONE GL_ONE -- add
+        sendIO $ glBlendFunc GL_ONE GL_ONE -- add
 
         Run instances b <- layoutString face string
 
@@ -122,7 +121,7 @@ setLabel Label{ texture, fbuffer, ratio, ref } font@(Font face _) string
         scissor  $ ratio .*^ Interval 0 size
 
         setClearColour transparent
-        glClear GL_COLOR_BUFFER_BIT
+        sendIO $ glClear GL_COLOR_BUFFER_BIT
 
         let V2 sx sy = fromIntegral ratio / fmap fromIntegral size
         runReader face . using glyphs $ do
@@ -154,11 +153,11 @@ drawLabel
   -> Colour Float
   -> Maybe (Colour Float)
   -> m ()
-drawLabel label@Label{ texture, ratio, ref } offset colour bcolour = runReader label . runLiftIO $ do
+drawLabel label@Label{ texture, ratio, ref } offset colour bcolour = runReader label $ do
   state <- sendIO (readIORef ref)
   case state of
     Just LabelState{ size, baseline } -> do
-      glBlendFunc GL_ZERO GL_SRC_COLOR
+      sendIO $ glBlendFunc GL_ZERO GL_SRC_COLOR
 
       bind @Framebuffer Nothing
 
@@ -170,7 +169,7 @@ drawLabel label@Label{ texture, ratio, ref } offset colour bcolour = runReader l
       case bcolour of
         Just colour -> do
           setClearColour colour
-          glClear GL_COLOR_BUFFER_BIT
+          sendIO $ glClear GL_COLOR_BUFFER_BIT
         _ -> pure ()
 
       using text $ do
@@ -185,7 +184,7 @@ drawLabel label@Label{ texture, ratio, ref } offset colour bcolour = runReader l
         drawArrays TriangleStrip range
 
         when (opaque colour /= black) $ do
-          glBlendFunc GL_ONE GL_ONE
+          sendIO $ glBlendFunc GL_ONE GL_ONE
           Text.colour_ ?= colour
           drawArrays TriangleStrip range
     _ -> pure ()

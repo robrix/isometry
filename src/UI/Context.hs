@@ -14,7 +14,6 @@ module UI.Context
 import           Control.Carrier.Reader
 import           Control.Effect.Lift
 import qualified Control.Exception.Lift as E
-import           Control.Monad.IO.Class.Lift
 import           Data.Functor.I
 import           Data.Functor.Interval
 import           Data.Functor.K
@@ -39,8 +38,8 @@ instance Unit Length Pixels where
 
 runContext :: (Has (Lift IO) sig m, Has (Reader Window) sig m) => ReaderC Context m a -> m a
 runContext = E.bracket
-  (ask >>= runLiftIO . glCreateContext)
-  (\ c -> runLiftIO (glFinish >> glDeleteContext c))
+  (ask >>= sendIO . glCreateContext)
+  (\ c -> sendIO (glFinish >> glDeleteContext c))
   . flip runReader
 
 

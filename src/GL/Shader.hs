@@ -12,7 +12,7 @@ module GL.Shader
 ) where
 
 import           Control.Effect.Finally
-import           Control.Monad.IO.Class.Lift
+import           Control.Effect.Lift
 import qualified Foreign.C.String.Lift as C
 import qualified Foreign.Marshal.Utils.Lift as U
 import           Foreign.Ptr
@@ -49,11 +49,11 @@ instance KnownStage 'Fragment where
 
 createShader :: (Has Finally sig m, Has (Lift IO) sig m) => Stage -> m Shader
 createShader type' = do
-  shader <- runLiftIO (glCreateShader (GL.glEnum type'))
-  Shader shader <$ onExit (runLiftIO (glDeleteShader shader))
+  shader <- sendIO (glCreateShader (GL.glEnum type'))
+  Shader shader <$ onExit (sendIO (glDeleteShader shader))
 
 compile :: (Has (Lift IO) sig m, HasCallStack) => String -> Shader -> m ()
-compile source (Shader shader) = runLiftIO $ do
+compile source (Shader shader) = sendIO $ do
   C.withCString source $ \ source ->
     U.with source $ \ p ->
       glShaderSource shader 1 p nullPtr
@@ -61,4 +61,4 @@ compile source (Shader shader) = runLiftIO $ do
   checkShader source (Shader shader)
 
 checkShader :: (Has (Lift IO) sig m, HasCallStack) => String -> Shader -> m ()
-checkShader source = withFrozenCallStack $ runLiftIO . checkStatus glGetShaderiv glGetShaderInfoLog (Source source) GL_COMPILE_STATUS . unShader
+checkShader source = withFrozenCallStack $ sendIO . checkStatus glGetShaderiv glGetShaderInfoLog (Source source) GL_COMPILE_STATUS . unShader

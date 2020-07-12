@@ -15,8 +15,9 @@ module GL.Carrier.Check.IO
 ) where
 
 import Control.Algebra
+import Control.Effect.Lift
 import Control.Monad.Fix
-import Control.Monad.IO.Class.Lift
+import Control.Monad.IO.Class
 import Data.Foldable (toList)
 import GHC.Stack
 import GL.Effect.Check
@@ -29,7 +30,7 @@ newtype CheckC m a = CheckC { runCheck :: m a }
 instance Has (Lift IO) sig m => Algebra (Check :+: sig) (CheckC m) where
   alg hdl sig ctx = case sig of
     L (Check loc) -> do
-      err <- runLiftIO glGetError
+      err <- sendIO glGetError
       ctx <$ case err of
         GL_NO_ERROR -> pure ()
         other       -> withCallStack (fromCallSiteList (toList loc)) (withFrozenCallStack (throwGLError other))

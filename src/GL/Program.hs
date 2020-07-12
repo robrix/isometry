@@ -21,8 +21,9 @@ import           Control.Carrier.Reader
 import           Control.Carrier.State.Church
 import           Control.Effect.Finally
 import           Control.Effect.Labelled
+import           Control.Effect.Lift
 import           Control.Effect.Sum
-import           Control.Monad.IO.Class.Lift
+import           Control.Monad.IO.Class
 import           Control.Monad.Trans.Class
 import           Data.Foldable (for_)
 import           Data.Kind (Type)
@@ -46,23 +47,24 @@ data Program (u :: (Type -> Type) -> Type) (i :: (Type -> Type) -> Type) (o :: (
 
 
 build :: forall u v o m sig . (HasCallStack, Has Check sig m, Has Finally sig m, Has (Lift IO) sig m, Vars u, Vars v) => DSL.RShader u v o -> m (Program u v o)
-build p = runLiftIO $ do
-  program <- glCreateProgram
-  onExit (glDeleteProgram program)
+build p = do
+  program <- sendIO glCreateProgram
+  onExit (sendIO (glDeleteProgram program))
   foldVarsM @v (\ Field { name, location } -> checking $
-    C.withCString name (glBindAttribLocation program (fromIntegral location))) defaultVars
+    C.withCString name (sendIO . glBindAttribLocation program (fromIntegral location))) defaultVars
   shaders <- for (DSL.shaderSources p) $ \ (type', source) -> do
     shader <- createShader type'
     shader <$ compile source shader
 
-  for_ shaders (glAttachShader program . unShader)
-  glLinkProgram program
-  for_ shaders (glDetachShader program . unShader)
+  sendIO $ do
+    for_ shaders (glAttachShader program . unShader)
+    glLinkProgram program
+    for_ shaders (glDetachShader program . unShader)
 
-  checkStatus glGetProgramiv glGetProgramInfoLog Other GL_LINK_STATUS program
+    checkStatus glGetProgramiv glGetProgramInfoLog Other GL_LINK_STATUS program
 
   ls <- foldVarsM @u (\ Field{ name, location } -> do
-    loc <- checking $ C.withCString name (glGetUniformLocation program)
+    loc <- checking $ C.withCString name (sendIO . glGetUniformLocation program)
     pure (IntMap.singleton location loc)) defaultVars
 
   pure (Program ls program)
@@ -90,3 +92,4 @@ instance (Has Check sig m, Has (Lift IO) sig m, Vars u) => Algebra (State (u May
       pure ctx
     R (L other) -> ProgramC (alg (runProgramC . hdl) (inj (runLabelled other)) ctx)
     R (R other) -> ProgramC (alg (runProgramC . hdl) (R other) ctx)
+  {-# INLINE alg #-}

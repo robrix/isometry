@@ -30,9 +30,9 @@ module UI.Colour
 , HasColour(..)
 ) where
 
+import           Control.Effect.Lift
 import           Control.Effect.Random
 import           Control.Lens
-import           Control.Monad.IO.Class.Lift
 import           Data.Bits
 import           Data.Generics.Product.Fields
 import           Data.Word
@@ -110,7 +110,7 @@ opaque = set _a 1
 
 
 setClearColour :: Has (Lift IO) sig m => Colour Float -> m ()
-setClearColour (Colour (V4 r g b a)) = runLiftIO $ glClearColor r g b a
+setClearColour (Colour (V4 r g b a)) = sendIO $ glClearColor r g b a
 
 
 newtype Packed = Packed { getPacked :: Word32 }

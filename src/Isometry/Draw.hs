@@ -20,7 +20,6 @@ import           Control.Effect.Labelled
 import           Control.Effect.Lift
 import           Control.Effect.Profile
 import           Control.Effect.Trace
-import           Control.Monad.IO.Class.Lift
 import           Data.Bits ((.|.))
 import           GHC.Stack
 import           GL.Effect.Check
@@ -67,26 +66,26 @@ draw
      , HasCallStack
      )
      => m ()
-draw = runLiftIO $ do
+draw = do
   UI{ target, face } <- ask
   let font = Font face 18
   bind @Framebuffer Nothing
 
   clipToContext
 
-  glDepthMask GL_TRUE
+  sendIO $ glDepthMask GL_TRUE
 
   UI.setClearColour UI.black
-  glClear $ GL_COLOR_BUFFER_BIT .|. GL_DEPTH_BUFFER_BIT
+  sendIO . glClear $ GL_COLOR_BUFFER_BIT .|. GL_DEPTH_BUFFER_BIT
 
-  glBlendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+  sendIO $ glBlendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 
   measure "Axis.draw" Axis.draw
   measure "Voxel.draw" Voxel.draw
 
-  glDepthMask GL_FALSE
+  sendIO $ glDepthMask GL_FALSE
 
   measure "setLabel" $ setLabel target font "hello"
   measure "drawLabel" $ drawLabel target 10 UI.white Nothing
 
-  measure "glFinish" glFinish
+  measure "glFinish" (sendIO glFinish)

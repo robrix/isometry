@@ -25,7 +25,7 @@ module GL.Buffer
 
 import           Control.Carrier.Reader
 import           Control.Effect.Labelled
-import           Control.Monad.IO.Class.Lift
+import           Control.Effect.Lift
 import           Data.Array.Storable
 import           Data.Functor.I
 import           Data.Functor.Interval
@@ -48,11 +48,11 @@ instance Object (Buffer ty v) where
   delete = defaultDeleteWith glDeleteBuffers unBuffer
 
 instance KnownType ty => Bind (Buffer ty v) where
-  bind = checking . runLiftIO . glBindBuffer (glEnum (typeVal @ty)) . maybe 0 unBuffer
+  bind = checking . sendIO . glBindBuffer (glEnum (typeVal @ty)) . maybe 0 unBuffer
 
 -- FIXME: Store the current size and don’t reallocate when larger.
 realloc :: forall ty v m sig . (HasLabelled (Buffer ty) (Reader (Buffer ty v)) sig m, KnownType ty, S.Storable v, Has (Lift IO) sig m) => Int -> Update -> Usage -> m ()
-realloc n update usage = runLiftIO (glBufferData (glEnum (typeVal @ty)) (fromIntegral (n * S.sizeOf @v undefined)) nullPtr (glEnum (Hint update usage)))
+realloc n update usage = sendIO (glBufferData (glEnum (typeVal @ty)) (fromIntegral (n * S.sizeOf @v undefined)) nullPtr (glEnum (Hint update usage)))
 
 copy :: forall ty v m sig . (HasLabelled (Buffer ty) (Reader (Buffer ty v)) sig m, KnownType ty, S.Storable v, Has Check sig m, Has (Lift IO) sig m) => Int -> [v] -> m ()
 copy = copyWith @ty A.withArrayLen
@@ -83,7 +83,7 @@ copyWith with offset vertices = with vertices (\ len -> copyPtr @ty ((0...len) +
 copyPtr :: forall ty v m sig . (HasLabelled (Buffer ty) (Reader (Buffer ty v)) sig m, KnownType ty, S.Storable v, Has Check sig m, Has (Lift IO) sig m) => Interval I Int -> Ptr v -> m ()
 copyPtr i' ptr = do
   let i = i' ^* S.sizeOf @v undefined
-  checking . runLiftIO . glBufferSubData (glEnum (typeVal @ty)) (fromIntegral (inf i)) (fromIntegral (diameter i)) $ castPtr ptr
+  checking . sendIO . glBufferSubData (glEnum (typeVal @ty)) (fromIntegral (inf i)) (fromIntegral (diameter i)) $ castPtr ptr
 
 
 

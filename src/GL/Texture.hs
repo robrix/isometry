@@ -19,7 +19,7 @@ module GL.Texture
 , Parameter
 ) where
 
-import Control.Monad.IO.Class.Lift
+import Control.Effect.Lift
 import Data.Proxy
 import Foreign.Ptr (nullPtr)
 import GHC.Stack
@@ -37,7 +37,7 @@ instance Object (Texture ty) where
   delete = defaultDeleteWith glDeleteTextures unTexture
 
 instance KnownType ty => Bind (Texture ty) where
-  bind = checking . runLiftIO . glBindTexture (glEnum (typeVal (Proxy :: Proxy ty))) . maybe 0 unTexture
+  bind = checking . sendIO . glBindTexture (glEnum (typeVal (Proxy :: Proxy ty))) . maybe 0 unTexture
 
 
 data Type
@@ -83,7 +83,7 @@ instance GL.Enum PixelType where
     Packed8888 True  -> GL_UNSIGNED_INT_8_8_8_8_REV
 
 setImageFormat :: (Integral a, HasCallStack, Has Check sig m, Has (Lift IO) sig m) => Type -> InternalFormat -> V2 a -> PixelFormat -> PixelType -> m ()
-setImageFormat target internalFormat (V2 width height) pixelFormat pixelType = checking . runLiftIO $ glTexImage2D (glEnum target) 0 (fromIntegral (glEnum internalFormat)) (fromIntegral width) (fromIntegral height) 0 (glEnum pixelFormat) (glEnum pixelType) nullPtr
+setImageFormat target internalFormat (V2 width height) pixelFormat pixelType = checking . sendIO $ glTexImage2D (glEnum target) 0 (fromIntegral (glEnum internalFormat)) (fromIntegral width) (fromIntegral height) 0 (glEnum pixelFormat) (glEnum pixelType) nullPtr
 
 
 data FilterType = MinFilter | MagFilter
@@ -126,7 +126,7 @@ instance GL.Enum Wrap where
 
 
 setParameter :: (Parameter val param, Has Check sig m, Has (Lift IO) sig m) => Type -> param -> val -> m ()
-setParameter target param = checking . runLiftIO . glTexParameteri (glEnum target) (glEnum param) . fromIntegral . glEnum
+setParameter target param = checking . sendIO . glTexParameteri (glEnum target) (glEnum param) . fromIntegral . glEnum
 
 class (GL.Enum param, GL.Enum val) => Parameter val param | param -> val
 

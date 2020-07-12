@@ -7,8 +7,8 @@ module GL.Framebuffer
 , Bind(..)
 ) where
 
+import           Control.Effect.Lift
 import           Control.Monad (unless)
-import           Control.Monad.IO.Class.Lift
 import           Data.Proxy
 import           GHC.Stack
 import           GL.Effect.Check
@@ -26,7 +26,7 @@ instance Object Framebuffer where
   delete = defaultDeleteWith glDeleteFramebuffers unFramebuffer
 
 instance Bind Framebuffer where
-  bind = checking . runLiftIO . glBindFramebuffer GL_FRAMEBUFFER . maybe 0 unFramebuffer
+  bind = checking . sendIO . glBindFramebuffer GL_FRAMEBUFFER . maybe 0 unFramebuffer
 
 
 newtype Attachment
@@ -38,7 +38,7 @@ instance GL.Enum Attachment where
 
 
 attachTexture :: forall ty sig m . (HasCallStack, Has Check sig m, Has (Lift IO) sig m) => GL.KnownType ty => Attachment -> GL.Texture ty -> m ()
-attachTexture attachment (GL.Texture texture) = runLiftIO $ do
-  checking $ glFramebufferTexture2D GL_FRAMEBUFFER (glEnum attachment) (glEnum (GL.typeVal (Proxy :: Proxy ty))) texture 0
-  status <- glCheckFramebufferStatus GL_FRAMEBUFFER
+attachTexture attachment (GL.Texture texture) = do
+  checking . sendIO $ glFramebufferTexture2D GL_FRAMEBUFFER (glEnum attachment) (glEnum (GL.typeVal (Proxy :: Proxy ty))) texture 0
+  status <- sendIO $ glCheckFramebufferStatus GL_FRAMEBUFFER
   unless (status == GL_FRAMEBUFFER_COMPLETE) (throwGLError status)
