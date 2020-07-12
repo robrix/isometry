@@ -24,15 +24,18 @@ import qualified Control.Exception as E
 -- | See @"Control.Exception".'E.throwIO'@.
 throwIO :: (E.Exception e, Has (Lift IO) sig m) => e -> m a
 throwIO = sendM . E.throwIO
+{-# INLINE throwIO #-}
 
 -- | See @"Control.Exception".'E.catch'@.
 catch :: (E.Exception e, Has (Lift IO) sig m) => m a -> (e -> m a) -> m a
 catch m h = liftWith $ \ hdl ctx -> hdl (m <$ ctx) `E.catch` (hdl . (<$ ctx) . h)
+{-# INLINE catch #-}
 
 -- | See @"Control.Exception".'E.catches'@.
 catches :: Has (Lift IO) sig m => m a -> [Handler m a] -> m a
 catches m hs = liftWith $ \ hdl ctx ->
   E.catches (hdl (m <$ ctx)) (map (\ (Handler h) -> E.Handler (hdl . (<$ ctx) . h)) hs)
+{-# INLINE catches #-}
 
 -- | See @"Control.Exception".'E.Handler'@.
 data Handler m a
@@ -43,15 +46,18 @@ deriving instance Functor m => Functor (Handler m)
 -- | See @"Control.Exception".'E.handle'@.
 handle :: (E.Exception e, Has (Lift IO) sig m) => (e -> m a) -> m a -> m a
 handle h m = liftWith $ \ hdl ctx -> (hdl . (<$ ctx) . h) `E.handle` hdl (m <$ ctx)
+{-# INLINE handle #-}
 
 -- | See @"Control.Exception".'E.try'@.
 try :: (E.Exception e, Has (Lift IO) sig m) => m a -> m (Either e a)
 try = handle (pure . Left) . fmap Right
+{-# INLINE try #-}
 
 -- | See @"Control.Exception".'E.mask'@.
 mask :: Has (Lift IO) sig m => ((forall a . m a -> m a) -> m b) -> m b
 mask with = liftWith $ \ hdl ctx -> E.mask $ \ restore ->
   hdl (with (\ m -> liftWith $ \ hdl' ctx' -> restore (hdl' (m <$ ctx'))) <$ ctx)
+{-# INLINE mask #-}
 
 -- | See @"Control.Exception".'E.bracket'@.
 bracket
@@ -64,6 +70,7 @@ bracket acquire release m = mask $ \ restore -> do
   a <- acquire
   r <- restore (m a) `onException` release a
   r <$ release a
+{-# INLINE bracket #-}
 
 -- | See @"Control.Exception".'E.bracket_'@.
 bracket_
@@ -73,6 +80,7 @@ bracket_
   -> m c
   -> m c
 bracket_ before after thing = bracket before (const after) (const thing)
+{-# INLINE bracket_ #-}
 
 -- | See @"Control.Exception".'E.finally'@.
 finally
@@ -81,7 +89,9 @@ finally
   -> m b
   -> m a
 finally m sequel = mask $ \ restore -> (restore m `onException` sequel) <* sequel
+{-# INLINE finally #-}
 
 -- | See @"Control.Exception".'E.onException'@.
 onException :: Has (Lift IO) sig m => m a -> m b -> m a
 onException io what = io `catch` \e -> what >> throwIO (e :: E.SomeException)
+{-# INLINE onException #-}
