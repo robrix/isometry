@@ -7,4 +7,5 @@ import           Hedgehog.Main
 
 main :: IO ()
 main = defaultMain
-  IntervalSet.tests
+  [ IntervalSet.tests
+  ]
