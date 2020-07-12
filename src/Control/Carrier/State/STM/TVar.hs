@@ -53,3 +53,4 @@ instance Has (Lift IO) sig m => Algebra (State s :+: sig) (StateC s m) where
       var <- StateC ask
       ctx <$ StateC (sendM (atomically (writeTVar var s)))
     R other   -> StateC (alg (runStateC . hdl) (R other) ctx)
+  {-# INLINE alg #-}
