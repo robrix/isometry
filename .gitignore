@@ -1,3 +1,4 @@
 *.png
 dist-newstyle/
 Brewfile.lock.json
+profiles
