@@ -17,56 +17,56 @@ tests :: [IO Bool]
 tests = map checkParallel
   [ Group "empty" [ ("empty is null", withTests 1 . property $ I.null (empty @I @Int) === True) ]
   , Group "insert"
-    [ ("idempotence", property $ do
+    [ (,) "idempotence" $ property $ do
       i <- forAll gi
       s <- insert i <$> forAll gs
-      insert i s === s)
-    , ("monotonicity", property $ do
+      insert i s === s
+    , (,) "monotonicity" $ property $ do
       i <- forAll gi
       s <- forAll gs
       assert . fromMaybe True $ isSubintervalOf <$> measure s <*> measure (insert i s)
-      assert . fromMaybe True $ (i `isSubintervalOf`) <$> measure (insert i s))
+      assert . fromMaybe True $ (i `isSubintervalOf`) <$> measure (insert i s)
     ]
   , Group "delete"
-    [ ("inverse", property $ do
+    [ (,) "inverse" $ property $ do
       s <- forAll gs
       i <- forAll gi
-      insert i (delete i s) === insert i s)
-    , ("annihilation", property $ do
+      insert i (delete i s) === insert i s
+    , (,) "annihilation" $ property $ do
       s <- forAll gs
-      maybe id delete (measure s) s === empty)
+      maybe id delete (measure s) s === empty
     ]
   , Group "fromList"
-    [ ("inverse", property $ do
+    [ (,) "inverse" $ property $ do
       s <- forAll gs
-      fromList (toList s) === s)
+      fromList (toList s) === s
     ]
   , Group "splitAround"
-    [ ("left is less than infimum", property $ do
+    [ (,) "left is less than infimum" $ property $ do
       s <- forAll gs
       i <- forAll gi
       let (l, _, _) = splitAround i s
-      all ((< inf i) . sup) (toList l) === True)
-    , ("right is greater than supremum", property $ do
+      all ((< inf i) . sup) (toList l) === True
+    , (,) "right is greater than supremum" $ property $ do
       s <- forAll gs
       i <- forAll gi
       let (_, _, r) = splitAround i s
-      all ((sup i <) . inf) (toList r) === True)
-    , ("centre is overlapping", property $ do
+      all ((sup i <) . inf) (toList r) === True
+    , (,) "centre is overlapping" $ property $ do
       s <- forAll gs
       i <- forAll gi
       let (_, c, _) = splitAround i s
-      all (intersects i) (toList c) === True)
+      all (intersects i) (toList c) === True
     ]
   , Group "intervalSet"
-    [ ("coverage", property $ do
+    [ (,) "coverage" $ property $ do
       s <- forAll gs
       let is = I.toList s
       cover 10 "empty" (I.null s)
       cover 10 "singleton" (length is == 1)
       cover 10 "disjoint" (length is > 1)
       cover 10 "point" (maybe False isPoint (measure s))
-      cover 10 "span" (maybe False (not . isPoint) (measure s)))
+      cover 10 "span" (maybe False (not . isPoint) (measure s))
     ]
   ]
   where
