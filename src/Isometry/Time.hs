@@ -22,3 +22,4 @@ timed m = do
   dt <- fmap realToFrac . since <$> get <*> now
   put =<< now
   runReader dt m
+{-# INLINE timed #-}
