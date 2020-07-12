@@ -102,13 +102,13 @@ runDrawable m = do
 
   measure "alloc & copy octree" $
     withOctreeLen2 world ((,) <$> origin <*> Voxel.colour) $ \ len origins colours -> do
-    measure "alloc & copy origins" . bindBuffer originsB $ do
-      realloc @'Buffer.Texture len Static Read
-      copyPtr @'Buffer.Texture (0...len) origins
+      measure "alloc & copy origins" . bindBuffer originsB $ do
+        realloc @'Buffer.Texture len Static Read
+        copyPtr @'Buffer.Texture (0...len) origins
 
-    measure "alloc & copy colours" . bindBuffer coloursB $ do
-      realloc @'Buffer.Texture len Static Read
-      copyPtr @'Buffer.Texture (0...len) colours
+      measure "alloc & copy colours" . bindBuffer coloursB $ do
+        realloc @'Buffer.Texture len Static Read
+        copyPtr @'Buffer.Texture (0...len) colours
 
   measure "alloc & copy indices" . bindBuffer indicesB $ do
     realloc @'Buffer.ElementArray (length indices) Static Read
