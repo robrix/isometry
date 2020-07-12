@@ -18,10 +18,10 @@ module Data.Bin.Octree
 import Control.Carrier.Lift
 import Control.Lens.Indexed
 import Data.Bin.Bit
-import Data.Foldable (for_)
-import Data.IORef
 import Data.Bin.Index
 import Data.Bin.Shape
+import Data.Foldable (for_)
+import Data.IORef
 import Data.Unfoldable (SparseUnfoldableWithIndex(..))
 import Foreign.Marshal.Array.Lift
 import Foreign.Ptr
