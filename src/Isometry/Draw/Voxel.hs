@@ -78,7 +78,7 @@ draw = UI.using drawable $ do
   origins_ ?= originsU
   colours_ ?= coloursU
   bindBuffer indicesB $
-    drawElementsInstanced Triangles (0...length indices) (length world)
+    drawElementsInstanced Triangles indicesI (length world)
 
 
 runDrawable
@@ -189,6 +189,8 @@ indices =
   , 3
   , 2
   ]
+
+indicesI = 0...length indices
 
 
 shader :: D.Shader shader => shader U V Frag
