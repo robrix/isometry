@@ -137,7 +137,7 @@ withOctreeLen o with = allocaArray len $ \ p -> do
   where
   len = length o
 
-withOctreeLen2 :: forall a b c r s m sig . (Has (Lift IO) sig m, Storable b, Storable c) => Octree s a -> (a -> (b, c)) -> (Int -> Ptr b -> Ptr c -> m r) -> m r
+withOctreeLen2 :: (Has (Lift IO) sig m, Storable b, Storable c) => Octree s a -> (a -> (b, c)) -> (Int -> Ptr b -> Ptr c -> m r) -> m r
 withOctreeLen2 o (prj :: a -> (b, c)) with = allocaArray len $ \ !pb -> allocaArray len $ \ !pc -> do
   let go :: Octree s' a -> (Int# -> IO ()) -> Int# -> IO ()
       go E     k = k
