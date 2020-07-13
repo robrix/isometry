@@ -15,7 +15,6 @@ import           Control.Effect.Lens (use)
 import           Control.Effect.Lift
 import           Control.Effect.Profile
 import           Control.Effect.Trace
-import           Control.Lens ((&), (.~))
 import           Data.Bin.Index (toInt)
 import           Data.Bin.Shape as Shape
 import           Data.Unfoldable (tetra)
@@ -57,7 +56,7 @@ runFrame
       let !world = makeWorld (tetra (\ v ->
             let !v' = toInt <$> v
                 o = fmap (fromIntegral . (+ offset)) v'
-            in Voxel o 0 & UI.colour_ .~ UI.Colour (ext (normalize <$> v') 1)))
+            in Voxel o $ UI.Colour (ext (normalize <$> v') 1)))
           !offset = negate (s `div` 2)
           !s = Shape.size world
           normalize !x = fromIntegral x / fromIntegral s
