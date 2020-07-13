@@ -55,10 +55,10 @@ runFrame
   . (\ m -> now >>= \ start -> evalState start m)
   . (\ m -> do
     world <- measure "build" $ do
-      let !world = makeWorld (tetra (\ !v ->
-            let !v' = fromIntegral . toInt <$> v
-                o = fmap (+ offset) v'
-            in Voxel (coerce o) (UI.Colour (normalize v'))))
+      let !world = makeWorld (tetra (\ (V3 x y z) ->
+            let !v = V3 (fromIntegral (toInt x)) (fromIntegral (toInt y)) (fromIntegral (toInt z))
+                o = fmap (+ offset) v
+            in Voxel (coerce o) (UI.Colour (normalize v))))
           !offset = negate (s * 0.5)
           !s = fromIntegral $ Shape.size world
           !factor = 1 / s
