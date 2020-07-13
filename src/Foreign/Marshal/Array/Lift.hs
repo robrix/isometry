@@ -1,5 +1,6 @@
 module Foreign.Marshal.Array.Lift
-( allocaArray
+( mallocArray
+, allocaArray
 , peekArray
 , pokeArray
 , withArray
@@ -10,6 +11,10 @@ import           Control.Carrier.Lift
 import qualified Foreign.Marshal.Array as A
 import           Foreign.Ptr
 import           Foreign.Storable
+
+mallocArray :: (Storable a, Has (Lift IO) sig m) => Int -> m (Ptr a)
+mallocArray = sendIO . A.mallocArray
+{-# INLINABLE mallocArray #-}
 
 allocaArray :: (Has (Lift IO) sig m, Storable a) => Int -> (Ptr a -> m b) -> m b
 allocaArray n with = liftWith $ \ hdl ctx -> A.allocaArray n (hdl . (<$ ctx) . with)
