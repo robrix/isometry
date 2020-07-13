@@ -96,7 +96,6 @@ instance SparseUnfoldableWithIndex (V3 Bit) (V3 (Index s)) (Octree s) => SparseU
     <*> go (V3 B0 B1 B1) <*> go (V3 B1 B1 B1)
     where
     go i = branch i >>= \ b -> if b then iunfoldSparseM branch (leaf . (ib <$> i <*>)) else pure E
-    {-# INLINE go #-}
   {-# INLINE iunfoldSparseM #-}
 
   iunfoldSparse branch leaf = b
@@ -106,7 +105,6 @@ instance SparseUnfoldableWithIndex (V3 Bit) (V3 (Index s)) (Octree s) => SparseU
     (go (V3 B0 B1 B1)) (go (V3 B1 B1 B1))
     where
     go i = if branch i then iunfoldSparse branch (leaf . (ib <$> i <*>)) else E
-    {-# INLINE go #-}
   {-# INLINE iunfoldSparse #-}
 
 instance Applicative (Octree 'Z) where
