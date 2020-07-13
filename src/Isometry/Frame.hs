@@ -59,7 +59,8 @@ runFrame
             in Voxel o (UI.Colour (normalize v'))))
           !offset = negate (s `div` 2)
           !s = Shape.size world
-          normalize (V3 x y z) = V4 (fromIntegral x / fromIntegral s) (fromIntegral y / fromIntegral s) (fromIntegral z / fromIntegral s) 1
+          !factor = 1 / fromIntegral s
+          normalize (V3 x y z) = V4 (fromIntegral x * factor) (fromIntegral y * factor) (fromIntegral z * factor) 1
 
       world <$ trace ("world length: " <> show (length world))
     runReader world m)
