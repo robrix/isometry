@@ -56,7 +56,7 @@ runFrame
       let !world = makeWorld (tetra (\ v ->
             let !v' = toInt <$> v
                 o = fmap (fromIntegral . (+ offset)) v'
-            in Voxel o $ UI.Colour (ext (normalize <$> v') 1)))
+            in Voxel o (UI.Colour (ext (normalize <$> v') 1))))
           !offset = negate (s `div` 2)
           !s = Shape.size world
           normalize !x = fromIntegral x / fromIntegral s
