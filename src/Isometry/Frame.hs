@@ -17,6 +17,7 @@ import           Control.Effect.Profile
 import           Control.Effect.Trace
 import           Data.Bin.Index (toInt)
 import           Data.Bin.Shape as Shape
+import           Data.Coerce (coerce)
 import           Data.Unfoldable (tetra)
 import           GHC.Stack
 import           GL.Effect.Check
@@ -33,6 +34,7 @@ import           Isometry.World
 import           Linear.Exts
 import qualified UI.Colour as UI
 import qualified UI.Window as Window
+import           Unit.Length (Metres(..), Semi(..))
 
 runFrame
   :: ( Has Check sig m
@@ -54,13 +56,13 @@ runFrame
   . (\ m -> do
     world <- measure "build" $ do
       let !world = makeWorld (tetra (\ v ->
-            let !v' = toInt <$> v
-                o = fmap (fromIntegral . (+ offset)) v'
-            in Voxel o (UI.Colour (normalize v'))))
-          !offset = negate (s `div` 2)
-          !s = Shape.size world
-          !factor = 1 / fromIntegral s
-          normalize (V3 x y z) = V4 (fromIntegral x * factor) (fromIntegral y * factor) (fromIntegral z * factor) 1
+            let !v' = fromIntegral . toInt <$> v
+                o = fmap (+ offset) v'
+            in Voxel (coerce o) (UI.Colour (normalize v'))))
+          !offset = negate (s * 0.5)
+          !s = fromIntegral $ Shape.size world
+          !factor = 1 / s
+          normalize (V3 x y z) = V4 (x * factor) (y * factor) (z * factor) 1
 
       world <$ trace ("world length: " <> show (length world))
     runReader world m)
