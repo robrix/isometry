@@ -190,6 +190,7 @@ indices =
   , 2
   ]
 
+indicesI :: Interval I Int
 indicesI = 0...length indices
 
 
