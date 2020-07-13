@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -O2 #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE DisambiguateRecordFields #-}

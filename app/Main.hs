@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -O2 #-}
 module Main
 ( main
 ) where
