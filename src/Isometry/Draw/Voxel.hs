@@ -77,6 +77,7 @@ draw = UI.using drawable $ do
   matrix_  ?= t
   origins_ ?= originsU
   colours_ ?= coloursU
+  offset_  ?= 0
   bindBuffer indicesB $
     drawElementsInstanced Triangles indicesI (length world)
 
@@ -196,9 +197,9 @@ indicesI = 0...length indices
 
 shader :: D.Shader shader => shader U V Frag
 shader
-  =   vertex (\ U{ matrix, origins } V{ pos } IF{ colour } -> main $ do
-    gl_Position .= matrix D.>* ext4 (pos + texelFetch origins (cast gl_InstanceID)D.^.D._xyz) 1
-    colour .= cast gl_InstanceID)
+  =   vertex (\ U{ matrix, origins, offset } V{ pos } IF{ colour } -> main $ do
+    gl_Position .= matrix D.>* ext4 (pos + texelFetch origins (cast (gl_InstanceID + offset))D.^.D._xyz) 1
+    colour .= cast (gl_InstanceID + offset))
 
   >>> fragment (\ U{ colours } IF{ colour } Frag{ fragColour } -> main $
     fragColour .= coerce @(_ (V4 Float)) (texelFetch colours (cast colour)))
@@ -208,6 +209,7 @@ data U v = U
   { matrix  :: v (Transform V4 Float Distance ClipUnits)
   , origins :: v (TextureUnit Index (V3 (Distance Float)))
   , colours :: v (TextureUnit Index (UI.Colour Float))
+  , offset  :: v Int
   }
   deriving (Generic)
 
@@ -221,6 +223,9 @@ origins_ = field @"origins"
 
 colours_ :: Lens' (U v) (v (TextureUnit Index (UI.Colour Float)))
 colours_ = field @"colours"
+
+offset_ :: Lens' (U v) (v Int)
+offset_ = field @"offset"
 
 
 newtype V v = V { pos :: v (V3 (Distance Float)) }
