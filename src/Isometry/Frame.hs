@@ -55,11 +55,12 @@ runFrame
   . (\ m -> do
     world <- measure "build" $ do
       let !world = makeWorld (tetra (\ v ->
-            let o = fmap (fromIntegral . (+ offset) . toInt) v
-            in Voxel o 0 & UI.colour_ .~ UI.Colour (ext (normalize <$> v) 1)))
+            let !v' = toInt <$> v
+                o = fmap (fromIntegral . (+ offset)) v'
+            in Voxel o 0 & UI.colour_ .~ UI.Colour (ext (normalize <$> v') 1)))
           !offset = negate (s `div` 2)
           !s = Shape.size world
-          normalize !x = fromIntegral (toInt x) / fromIntegral s
+          normalize !x = fromIntegral x / fromIntegral s
 
       world <$ trace ("world length: " <> show (length world))
     runReader world m)
