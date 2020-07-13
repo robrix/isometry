@@ -123,15 +123,21 @@ class Ext v v' | v -> v', v' -> v where
 
 instance Ext V1 V2 where
   ext (V1 x) = V2 x
+  {-# INLINE ext #-}
   unext = V1 . (^._x)
+  {-# INLINE unext #-}
 
 instance Ext V2 V3 where
   ext (V2 x y) = V3 x y
+  {-# INLINE ext #-}
   unext = (^._xy)
+  {-# INLINE unext #-}
 
 instance Ext V3 V4 where
   ext (V3 x y z) = V4 x y z
+  {-# INLINE ext #-}
   unext = (^._xyz)
+  {-# INLINE unext #-}
 
 -- | Subject to the invariant that w=1.
 extended :: Ext v v' => a -> Iso (v a) (v b) (v' a) (v' b)
