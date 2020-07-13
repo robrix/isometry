@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -O2 #-}
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -63,8 +64,8 @@ runFrame
           !s = fromIntegral $ Shape.size world
           !factor = 1 / s
           normalize (V3 x y z) = V4 (x * factor) (y * factor) (z * factor) 1
-
-      world <$ trace ("world length: " <> show (length world))
+      pure world
+    trace ("world length: " <> show (length world))
     runReader world m)
   . runLabelled
   . runDrawables
