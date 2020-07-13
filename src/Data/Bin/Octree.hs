@@ -6,6 +6,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE MagicHash #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
@@ -26,6 +27,7 @@ import Data.Unfoldable (SparseUnfoldableWithIndex(..))
 import Foreign.Marshal.Array.Lift
 import Foreign.Ptr
 import Foreign.Storable
+import GHC.Exts
 import Linear.V3
 
 data Octree s a where
@@ -136,12 +138,16 @@ withOctreeLen o with = allocaArray len $ \ p -> do
   len = length o
 
 withOctreeLen2 :: forall a b c r s m sig . (Has (Lift IO) sig m, Storable b, Storable c) => Octree s a -> (a -> (b, c)) -> (Int -> Ptr b -> Ptr c -> m r) -> m r
-withOctreeLen2 o prj with = allocaArray len $ \ pb -> allocaArray len $ \ pc -> do
-  sendIO $ foldM_ (\ !off !a -> do
-    let (!b, !c) = prj a
-    pokeElemOff pb off b
-    pokeElemOff pc off c
-    pure $! off + 1) 0 o
+withOctreeLen2 o (prj :: a -> (b, c)) with = allocaArray len $ \ !pb -> allocaArray len $ \ !pc -> do
+  let go :: Octree s' a -> (Int# -> IO ()) -> Int# -> IO ()
+      go E     k = k
+      go (L a) k = \ n# -> do
+        let (!b, !c) = prj a
+        pokeElemOff pb (I# n#) b
+        pokeElemOff pc (I# n#) c
+        k (n# +# 1#)
+      go (B _ lbf rbf ltf rtf lbn rbn ltn rtn) k = go lbf (go rbf (go ltf (go rtf (go lbn (go rbn (go ltn (go rtn k)))))))
+  sendIO $ go o (\ _ -> pure ()) 0#
   with len pb pc
   where
   !len = length o
