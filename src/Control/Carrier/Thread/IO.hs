@@ -30,3 +30,4 @@ instance Has (Lift IO) sig m => Algebra (Labelled Thread (Thread CC.ThreadId) :+
     L (Labelled (Kill i)) -> ctx <$ sendM (CC.killThread i)
     L (Labelled Yield)    -> ctx <$ sendM CC.yield
     R other               -> ThreadC (alg (runThread . hdl) other ctx)
+  {-# INLINE alg #-}
