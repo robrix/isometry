@@ -1,6 +1,7 @@
 module Foreign.Marshal.Alloc.Lift
 ( alloca
 , allocaBytes
+, free
 ) where
 
 import           Control.Carrier.Lift
@@ -15,3 +16,7 @@ alloca with = liftWith $ \ hdl ctx -> A.alloca (hdl . (<$ ctx) . with)
 allocaBytes :: Has (Lift IO) sig m => Int -> (Ptr a -> m b) -> m b
 allocaBytes n with = liftWith $ \ hdl ctx -> A.allocaBytes n (hdl . (<$ ctx) . with)
 {-# INLINABLE allocaBytes #-}
+
+free :: Has (Lift IO) sig m => Ptr a -> m ()
+free = sendIO . A.free
+{-# INLINABLE free #-}
