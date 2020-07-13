@@ -55,7 +55,7 @@ runFrame
   . (\ m -> now >>= \ start -> evalState start m)
   . (\ m -> do
     world <- measure "build" $ do
-      let !world = makeWorld (tetra (\ v ->
+      let !world = makeWorld (tetra (\ !v ->
             let !v' = fromIntegral . toInt <$> v
                 o = fmap (+ offset) v'
             in Voxel (coerce o) (UI.Colour (normalize v'))))
