@@ -11,12 +11,12 @@ import           Foreign.Storable
 
 alloca :: (Has (Lift IO) sig m, Storable a) => (Ptr a -> m b) -> m b
 alloca with = liftWith $ \ hdl ctx -> A.alloca (hdl . (<$ ctx) . with)
-{-# INLINABLE alloca #-}
+{-# INLINE alloca #-}
 
 allocaBytes :: Has (Lift IO) sig m => Int -> (Ptr a -> m b) -> m b
 allocaBytes n with = liftWith $ \ hdl ctx -> A.allocaBytes n (hdl . (<$ ctx) . with)
-{-# INLINABLE allocaBytes #-}
+{-# INLINE allocaBytes #-}
 
 free :: Has (Lift IO) sig m => Ptr a -> m ()
 free = sendIO . A.free
-{-# INLINABLE free #-}
+{-# INLINE free #-}
