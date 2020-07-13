@@ -2,7 +2,8 @@
 {-# LANGUAGE TypeApplications #-}
 module Isometry.Voxel
 ( Voxel(..)
-, Side(..)
+, Dimension(..)
+, Polarity(..)
 ) where
 
 import           Data.Ix
@@ -29,11 +30,13 @@ instance Storable Voxel where
  peek ptr = Voxel <$> peek (castPtr ptr) <*> peek (castPtr ptr `plusPtr` sizeOf @(V3 (Distance Float)) undefined)
  poke ptr (Voxel o c) = poke (castPtr ptr) o *> poke (castPtr ptr `plusPtr` sizeOf @(V3 (Distance Float)) undefined) c
 
-data Side
-  = L
-  | R
-  | B
-  | T
-  | F
-  | N
+data Dimension
+  = X
+  | Y
+  | Z
+  deriving (Enum, Eq, Ix, Ord, Show)
+
+data Polarity
+  = Neg
+  | Pos
   deriving (Enum, Eq, Ix, Ord, Show)
