@@ -113,7 +113,6 @@ disjointIntervals gi = reverse . foldr mkDisjoint [] <$> Gen.list (Range.linear 
   mkDisjoint i is = mapInterval (+ (1 + sup (head is))) i:is
 
 
-
 prop_isDisjoint_empty = withTests 1 . property $
   assert $ isDisjoint ([] :: [Interval I Int])
 
