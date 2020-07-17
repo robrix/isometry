@@ -112,13 +112,13 @@ foldN (f :: forall s . Int -> Octree s a -> b -> b) n z o = go s n o z
   !s = Shape.size o
   go :: Int -> Int -> Octree s' a -> b -> b
   go _ 0 _ = id
-  go !s n o = case o of
+  go !s n t = case t of
     E   -> id
-    L _ -> f n o
+    L _ -> f n t
     B _ lbf rbf ltf rtf lbn rbn ltn rtn
       | let !s' = s `div` 2
             go' = go s' (n - 1)
-      -> f n o . go' lbf . go' rbf . go' ltf . go' rtf . go' lbn . go' rbn . go' ltn . go' rtn
+      -> f n t . go' lbf . go' rbf . go' ltf . go' rtf . go' lbn . go' rbn . go' ltn . go' rtn
 
 
 runDrawable
