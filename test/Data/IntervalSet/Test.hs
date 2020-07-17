@@ -43,6 +43,11 @@ prop_delete_annihilation = property $ do
   s <- forAll gs
   maybe id delete (measure s) s === empty
 
+prop_delete_disjoint = property $ do
+  s <- forAll gs
+  i <- forAll gi
+  holds isDisjoint $ toList (delete i s)
+
 
 prop_fromList_inverse = property $ do
   s <- forAll gs
