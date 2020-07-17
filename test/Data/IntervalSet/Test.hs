@@ -11,6 +11,7 @@ import           Data.Functor.I
 import           Data.Functor.Interval
 import           Data.IntervalSet as I
 import           Data.Maybe (fromMaybe)
+import           GHC.Stack
 import           Hedgehog
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
@@ -129,3 +130,14 @@ isDisjoint []             = True
 isDisjoint (i:is)
   | any (intersects i) is = False
   | otherwise             = isDisjoint is
+
+
+holds :: (MonadTest m, Show a, HasCallStack) => (a -> Bool) -> a -> m ()
+holds p x = do
+  ok <- withFrozenCallStack $ eval (p x)
+  if ok then
+    success
+  else
+    withFrozenCallStack $ do
+      footnoteShow x
+      failure
