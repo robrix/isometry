@@ -106,6 +106,9 @@ interval p = Gen.choice
 
 
 
+prop_isDisjoint_empty = withTests 1 . property $
+  assert $ isDisjoint ([] :: [Interval I Int])
+
 prop_isDisjoint_repeat = property $ do
   i <- forAll gi
   assert . not $ isDisjoint [i, i]
