@@ -16,6 +16,7 @@
 {-# LANGUAGE TypeApplications #-}
 module Isometry.Draw.Voxel
 ( draw
+, visibleIndices
 , visible
 , foldN
 , runDrawable
