@@ -51,7 +51,7 @@ toList :: IntervalSet f a -> [Interval f a]
 toList = coerce . Foldable.toList . getIntervalSet
 
 
-insert :: Ord a => Interval I a -> IntervalSet I a -> IntervalSet I a
+insert :: (Applicative f, Foldable f, Ord a) => Interval f a -> IntervalSet f a -> IntervalSet f a
 insert inserted t = l >< maybe inserted (union inserted) (F.measure m) <| r
   where
   (l, m, r) = splitAround inserted t
