@@ -72,7 +72,7 @@ prop_splitAround_intersects = property $ do
   all (intersects i) (toList c) === True
 
 
-prop_intervalSet_coverage = property $ do
+prop_intervalSet_coverage = verifiedTermination . withConfidence (10^(9::Int)) . property $ do
   s <- forAll gs
   let is = I.toList s
   cover 10 "empty" (I.null s)
