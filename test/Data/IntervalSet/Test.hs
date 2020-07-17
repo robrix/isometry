@@ -47,6 +47,14 @@ prop_fromList_inverse = property $ do
   fromList (toList s) === s
 
 
+prop_toList_inverse = property $ do
+  s <- reverse . foldr mkDisjoint [] <$> forAll (Gen.list (Range.linear 0 100) gi)
+  toList (fromList s) === s
+  where
+  mkDisjoint i [] = [i]
+  mkDisjoint i is = mapInterval (+ succ (sup (head is))) i:is
+
+
 prop_splitAround_infimum = property $ do
   s <- forAll gs
   i <- forAll gi
