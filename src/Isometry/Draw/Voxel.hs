@@ -10,11 +10,14 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeApplications #-}
 module Isometry.Draw.Voxel
 ( draw
 , visible
+, foldN
 , runDrawable
 , Drawable
 , corners
@@ -29,7 +32,8 @@ import           Control.Effect.Profile
 import qualified Control.Effect.Reader.Labelled as Labelled
 import           Control.Effect.Trace
 import           Control.Lens (Lens')
-import           Data.Bin.Octree (withOctreeLen2)
+import           Data.Bin.Octree (Octree(..), withOctreeLen2)
+import qualified Data.Bin.Shape as Shape
 import           Data.Coerce
 import           Data.Functor.I
 import           Data.Functor.Interval hiding (transform)
@@ -39,6 +43,7 @@ import           Foreign.Storable.Lift
 import           Geometry.Transform
 import           GHC.Generics
 import           GHC.Stack
+import           GHC.TypeLits
 import           GL.Array
 import           GL.Buffer as Buffer
 import           GL.Effect.Check
@@ -89,6 +94,20 @@ visible i t = intersects (Interval inf' sup') (-1...1)
   where
   !inf' = unext (apply t (ext (inf i) 1))
   !sup' = unext (apply t (ext (sup i) 1))
+
+foldN :: KnownNat (Shape.Size s) => (forall s . Int -> Octree s a -> b -> b) -> Int -> b -> Octree s a -> b
+foldN (f :: forall s . Int -> Octree s a -> b -> b) n z o = go s n o z
+  where
+  !s = Shape.size o
+  go :: Int -> Int -> Octree s' a -> b -> b
+  go _ 0 _ = id
+  go !s n o = case o of
+    E   -> id
+    L _ -> f n o
+    B _ lbf rbf ltf rtf lbn rbn ltn rtn
+      | let !s' = s `div` 2
+            go' = go s' (n - 1)
+      -> f n o . go' lbf . go' rbf . go' ltf . go' rtf . go' lbn . go' rbn . go' ltn . go' rtn
 
 
 runDrawable
