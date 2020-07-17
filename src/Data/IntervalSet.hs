@@ -21,7 +21,6 @@ import           Data.Coerce
 import qualified Data.FingerTree as F
 import qualified Data.Foldable as Foldable (foldl', toList)
 import           Data.Functor.Classes (showsUnaryWith)
-import           Data.Functor.I
 import           Data.Functor.Interval
 import           Prelude hiding (null)
 
@@ -40,7 +39,7 @@ empty = IntervalSet F.empty
 singleton :: (Applicative f, Ord a) => Interval f a -> IntervalSet f a
 singleton = IntervalSet . F.singleton . Leaf
 
-fromList :: Ord a => [Interval I a] -> IntervalSet I a
+fromList :: (Applicative f, Foldable f, Ord a) => [Interval f a] -> IntervalSet f a
 fromList = Foldable.foldl' (flip insert) empty
 
 
