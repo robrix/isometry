@@ -56,16 +56,16 @@ insert inserted t = l >< maybe inserted (union inserted) (F.measure m) <| r
   where
   (l, m, r) = splitAround inserted t
 
-delete :: Ord a => Interval I a -> IntervalSet I a -> IntervalSet I a
+delete :: (Applicative f, Foldable f, Ord a) => Interval f a -> IntervalSet f a -> IntervalSet f a
 delete deleted t = l >< r'
   where
   (l, m, r) = splitAround deleted t
   r' = case F.measure m of
     Just h
-      | inf h < inf deleted
-      , sup deleted < sup h -> Interval (inf h) (inf deleted) <| Interval (sup deleted) (sup h) <| r
-      | inf h < inf deleted -> Interval (inf h) (inf deleted) <| r
-      | sup deleted < sup h -> Interval (sup deleted) (sup h) <| r
+      | inf h `lt` inf deleted
+      , sup deleted `lt` sup h -> Interval (inf h) (inf deleted) <| Interval (sup deleted) (sup h) <| r
+      | inf h `lt` inf deleted -> Interval (inf h) (inf deleted) <| r
+      | sup deleted `lt` sup h -> Interval (sup deleted) (sup h) <| r
     _ -> r
 
 splitAround :: (Applicative f, Foldable f, Ord a) => Interval f a -> IntervalSet f a -> (IntervalSet f a, IntervalSet f a, IntervalSet f a)
