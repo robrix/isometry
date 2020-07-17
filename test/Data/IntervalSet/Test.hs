@@ -101,6 +101,11 @@ interval p = Gen.choice
   where
   mk a b = a ... a + b + 1
 
+
+prop_disjointIntervals_isDisjoint = property $ do
+  is <- forAll (disjointIntervals gi)
+  assert $ isDisjoint is
+
 disjointIntervals :: (MonadGen m, Num a) => m (Interval I a) -> m [Interval I a]
 disjointIntervals gi = reverse . foldr mkDisjoint [] <$> Gen.list (Range.linear 0 100) gi
   where
