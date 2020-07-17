@@ -19,7 +19,7 @@ import qualified Hedgehog.Range as Range
 tests :: IO Bool
 tests = checkParallel $$(discover)
 
-prop_empty_null = withTests 1 . property $ I.null (empty @I @Int) === True
+prop_empty_null = withTests 1 . property $ I.null (empty @Int) === True
 
 
 prop_insert_idempotence = property $ do
@@ -92,7 +92,7 @@ gp = Gen.int (Range.linear 0 100)
 gi = interval gp
 gs = intervalSet gi
 
-intervalSet :: (MonadGen m, Ord a) => m (Interval I a) -> m (IntervalSet I a)
+intervalSet :: (MonadGen m, Ord a) => m (Interval I a) -> m (IntervalSet a)
 intervalSet i = Gen.choice
   [ pure empty
   , singleton <$> i
