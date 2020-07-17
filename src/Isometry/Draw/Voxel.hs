@@ -89,16 +89,15 @@ draw = UI.using drawable $ do
   matrix_  ?= t
   origins_ ?= originsU
   colours_ ?= coloursU
-  bindBuffer indicesB . for_ (I.toList (visibleIndices world)) $ \ i -> do
+  bindBuffer indicesB . for_ (I.toList (visibleIndices t world)) $ \ i -> do
     offset_ ?= getI (inf i)
     drawElementsInstanced Triangles indicesI (getI (diameter i))
 
-visibleIndices :: KnownNat (Shape.Size s) => Octree s a -> I.IntervalSet I Int
-visibleIndices o = snd (foldN go 3 (0, I.singleton (0...length o)) o)
+visibleIndices :: KnownNat (Shape.Size s) => Transform V4 Float Distance ClipUnits -> Octree s a -> I.IntervalSet I Int
+visibleIndices t o = snd (foldN go 3 (0, I.singleton (0...length o)) o)
   where
   go :: Interval V3 Int -> Octree s' a -> (Int, I.IntervalSet I Int) -> (Int, I.IntervalSet I Int)
-  -- FIXME: test the visibility of the bounding cube
-  go _ o (prev, indices) = (prev + length o, indices)
+  go cube o (prev, indices) = (prev + length o, if visible (realToFrac <$> cube) t then indices else I.delete (prev...length o) indices)
 
 visible :: Interval V3 (Distance Float) -> Transform V4 Float Distance ClipUnits -> Bool
 visible i t = intersects (Interval inf' sup') (-1...1)
