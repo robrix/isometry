@@ -109,6 +109,10 @@ prop_isDisjoint_repeat = property $ do
   i <- forAll gi
   assert . not $ isDisjoint [i, i]
 
+prop_isDisjoint_abut = property $ do
+  i <- forAll gi
+  assert . not $ isDisjoint [i, Interval (sup i) (sup i + diameter i)]
+
 isDisjoint :: Ord a => [Interval I a] -> Bool
 isDisjoint []             = True
 isDisjoint (i:is)
