@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -O2 #-}
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingVia #-}
@@ -13,6 +14,7 @@
 {-# LANGUAGE TypeApplications #-}
 module Isometry.Draw.Voxel
 ( draw
+, visible
 , runDrawable
 , Drawable
 , corners
@@ -50,6 +52,7 @@ import           Graphics.GL.Core41
 import           Isometry.View as View
 import           Isometry.Voxel as Voxel
 import           Isometry.World
+import           Linear.Exts hiding (E)
 import           UI.Colour as UI
 import qualified UI.Drawable as UI
 import           Unit.Length
@@ -80,6 +83,12 @@ draw = UI.using drawable $ do
   offset_  ?= 0
   bindBuffer indicesB $
     drawElementsInstanced Triangles indicesI (length world)
+
+visible :: Interval V3 (Distance Float) -> Transform V4 Float Distance ClipUnits -> Bool
+visible i t = intersects (Interval inf' sup') (-1...1)
+  where
+  !inf' = unext (apply t (ext (inf i) 1))
+  !sup' = unext (apply t (ext (sup i) 1))
 
 
 runDrawable
