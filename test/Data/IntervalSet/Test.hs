@@ -102,3 +102,10 @@ interval p = Gen.choice
   ]
   where
   mk a b = a ... a + b + 1
+
+
+isDisjoint :: Ord a => [Interval I a] -> Bool
+isDisjoint []             = True
+isDisjoint (i:is)
+  | any (intersects i) is = False
+  | otherwise             = isDisjoint is
