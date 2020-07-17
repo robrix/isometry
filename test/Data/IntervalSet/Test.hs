@@ -3,6 +3,7 @@
 {-# LANGUAGE TypeApplications #-}
 module Data.IntervalSet.Test
 ( tests
+, isDisjoint
 ) where
 
 import           Control.Monad (join)
