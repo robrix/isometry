@@ -32,7 +32,7 @@ import           Control.Effect.Lift
 import           Control.Effect.Profile
 import qualified Control.Effect.Reader.Labelled as Labelled
 import           Control.Effect.Trace
-import           Control.Lens (Lens')
+import           Control.Lens (Lens', (&), (+~))
 import           Data.Bin.Octree (Octree(..), withOctreeLen2)
 import qualified Data.Bin.Shape as Shape
 import           Data.Coerce
@@ -52,7 +52,7 @@ import           GL.Buffer as Buffer
 import           GL.Effect.Check
 import           GL.Object
 import           GL.Program
-import           GL.Shader.DSL as D hiding (get, (.*.), (./.), (^.), _x, _xy, _xz, _y, _yz, _z)
+import           GL.Shader.DSL as D hiding (get, (.*.), (./.), (^.), _x, _xy, _xyz, _xz, _y, _yz, _z)
 import qualified GL.Shader.DSL as D
 import           GL.Texture
 import           GL.TextureUnit
@@ -96,7 +96,7 @@ draw = UI.using drawable $ do
 visibleIndices :: KnownNat (Shape.Size s) => Octree s a -> I.IntervalSet I Int
 visibleIndices o = snd (foldN go 3 (0, I.singleton (0...length o)) o)
   where
-  go :: Int -> Octree s' a -> (Int, I.IntervalSet I Int) -> (Int, I.IntervalSet I Int)
+  go :: Interval V3 Int -> Octree s' a -> (Int, I.IntervalSet I Int) -> (Int, I.IntervalSet I Int)
   -- FIXME: test the visibility of the bounding cube
   go _ o (prev, indices) = (prev + length o, indices)
 
@@ -106,19 +106,24 @@ visible i t = intersects (Interval inf' sup') (-1...1)
   !inf' = unext (apply t (ext (inf i) 1))
   !sup' = unext (apply t (ext (sup i) 1))
 
-foldN :: KnownNat (Shape.Size s) => (forall s . Int -> Octree s a -> b -> b) -> Int -> b -> Octree s a -> b
-foldN (f :: forall s . Int -> Octree s a -> b -> b) n z o = go s n o z
+foldN :: KnownNat (Shape.Size s) => (forall s . Interval V3 Int -> Octree s a -> b -> b) -> Int -> b -> Octree s a -> b
+foldN (f :: forall s . Interval V3 Int -> Octree s a -> b -> b) n z o = go n s (pure (-s `div` 2)) o z
   where
   !s = Shape.size o
-  go :: Int -> Int -> Octree s' a -> b -> b
-  go _ 0 _ = id
-  go !s n t = case t of
+  go :: Int -> Int -> V3 Int -> Octree s' a -> b -> b
+  go 0 _ _ _ = id
+  go n !s !o t = case t of
     E   -> id
-    L _ -> f s t
+    L _ -> f (Interval o (o + pure s)) t
     B _ lbf rbf ltf rtf lbn rbn ltn rtn
       | let !s' = s `div` 2
-            go' = go s' (n - 1)
-      -> f s t . go' lbf . go' rbf . go' ltf . go' rtf . go' lbn . go' rbn . go' ltn . go' rtn
+            !n' = n - 1
+            go' = go n' s'
+      -> f (Interval o (o + pure s)) t
+      .  go' o                    lbf . go' (o & _x   +~      s') rbf
+      .  go' (o & _y  +~      s') ltf . go' (o & _xy  +~ pure s') rtf
+      .  go' (o & _z  +~      s') lbn . go' (o & _xz  +~ pure s') rbn
+      .  go' (o & _yz +~ pure s') ltn . go' (o & _xyz +~ pure s') rtn
 
 
 runDrawable
