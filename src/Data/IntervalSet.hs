@@ -1,5 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 module Data.IntervalSet
 ( IntervalSet
 , empty
@@ -83,8 +84,8 @@ splitAround i (IntervalSet s) = (IntervalSet l, IntervalSet n', IntervalSet r')
 
 infixr 5 ><, <|
 
-(><) :: Ord a => IntervalSet I a -> IntervalSet I a -> IntervalSet I a
-(><) = coerce ((F.><) :: Ord a => F.FingerTree (Maybe (Interval I a)) (Leaf I a) -> F.FingerTree (Maybe (Interval I a)) (Leaf I a) -> F.FingerTree (Maybe (Interval I a)) (Leaf I a))
+(><) :: forall f a . (Applicative f, Ord a) => IntervalSet f a -> IntervalSet f a -> IntervalSet f a
+(><) = coerce ((F.><) :: F.FingerTree (Maybe (Interval f a)) (Leaf f a) -> F.FingerTree (Maybe (Interval f a)) (Leaf f a) -> F.FingerTree (Maybe (Interval f a)) (Leaf f a))
 
 (<|) :: Ord a => Interval I a -> IntervalSet I a -> IntervalSet I a
 (<|) = coerce ((F.<|) :: Ord a => Leaf I a -> F.FingerTree (Maybe (Interval I a)) (Leaf I a) -> F.FingerTree (Maybe (Interval I a)) (Leaf I a))
