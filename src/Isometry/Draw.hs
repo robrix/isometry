@@ -21,8 +21,10 @@ import           Control.Effect.Labelled
 import           Control.Effect.Lift
 import           Control.Effect.Profile
 import           Control.Effect.Trace
+import qualified Data.Bin.Shape as Shape
 import           Data.Bits ((.|.))
 import           GHC.Stack
+import           GHC.TypeLits
 import           GL.Effect.Check
 import           GL.Framebuffer
 import           Graphics.GL.Core41
@@ -65,6 +67,7 @@ draw
      , Has (Reader Window.Window) sig m
      , HasLabelled World (Reader (World s Voxel)) sig m
      , HasCallStack
+     , KnownNat (Shape.Size s)
      )
      => m ()
 draw = do

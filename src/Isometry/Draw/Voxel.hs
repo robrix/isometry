@@ -35,9 +35,11 @@ import           Control.Lens (Lens')
 import           Data.Bin.Octree (Octree(..), withOctreeLen2)
 import qualified Data.Bin.Shape as Shape
 import           Data.Coerce
+import           Data.Foldable (for_)
 import           Data.Functor.I
 import           Data.Functor.Interval hiding (transform)
 import           Data.Generics.Product.Fields
+import qualified Data.IntervalSet as I
 import           Data.Word
 import           Foreign.Storable.Lift
 import           Geometry.Transform
@@ -69,12 +71,13 @@ draw
      , Has (Reader View) sig m
      , Labelled.HasLabelled World (Reader (World s Voxel)) sig m
      , HasCallStack
+     , KnownNat (Shape.Size s)
      )
   => m ()
 draw = UI.using drawable $ do
   Drawable { originsT, coloursT, indicesB } <- ask
   t <- asks transform
-  world <- Labelled.ask @World
+  World world <- Labelled.ask @World
 
   setActiveTexture originsU
   bind (Just originsT)
@@ -85,9 +88,16 @@ draw = UI.using drawable $ do
   matrix_  ?= t
   origins_ ?= originsU
   colours_ ?= coloursU
-  offset_  ?= 0
-  bindBuffer indicesB $
-    drawElementsInstanced Triangles indicesI (length world)
+  bindBuffer indicesB . for_ (I.toList (visibleIndices world)) $ \ i -> do
+    offset_ ?= getI (inf i)
+    drawElementsInstanced Triangles indicesI (getI (diameter i))
+
+visibleIndices :: KnownNat (Shape.Size s) => Octree s a -> I.IntervalSet I Int
+visibleIndices o = snd (foldN go 3 (0, I.singleton (0...length o)) o)
+  where
+  go :: Int -> Octree s' a -> (Int, I.IntervalSet I Int) -> (Int, I.IntervalSet I Int)
+  -- FIXME: test the visibility of the bounding cube
+  go _ o (prev, indices) = (prev + length o, indices)
 
 visible :: Interval V3 (Distance Float) -> Transform V4 Float Distance ClipUnits -> Bool
 visible i t = intersects (Interval inf' sup') (-1...1)

@@ -21,6 +21,7 @@ import           Data.Bin.Shape as Shape
 import           Data.Coerce (coerce)
 import           Data.Unfoldable (tetra)
 import           GHC.Stack
+import           GHC.TypeLits
 import           GL.Effect.Check
 import           Isometry.Draw
 import qualified Isometry.Draw.Axis as Axis
@@ -85,6 +86,7 @@ frame
      , Has (State Player) sig m
      , HasLabelled World (Reader (World s Voxel)) sig m
      , HasCallStack
+     , KnownNat (Shape.Size s)
      )
   => m ()
 frame = timed $ do
