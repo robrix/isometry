@@ -104,6 +104,11 @@ interval p = Gen.choice
   mk a b = a ... a + b + 1
 
 
+
+prop_isDisjoint_repeat = property $ do
+  i <- forAll gi
+  assert . not $ isDisjoint [i, i]
+
 isDisjoint :: Ord a => [Interval I a] -> Bool
 isDisjoint []             = True
 isDisjoint (i:is)
