@@ -21,6 +21,7 @@ module GL.Buffer
 , Usage(..)
 , bindBuffer
 , askBuffer
+, BufferC
 ) where
 
 import           Control.Carrier.Reader
