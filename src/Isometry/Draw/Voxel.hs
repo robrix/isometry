@@ -111,13 +111,14 @@ visible i t = any (`intersects` (-1...1 :: Interval I (ClipUnits Float))) (liftI
   !sup' = over (extended 1) (apply t) (sup i)
 
 foldN
-  :: KnownNat (Shape.Size s)
+  :: forall s a b
+  .  KnownNat (Shape.Size s)
   => (forall s . Interval V3 Int -> Octree s a -> b -> b)
   -> Int
   -> b
   -> Octree s a
   -> b
-foldN (f :: forall s . Interval V3 Int -> Octree s a -> b -> b) n z o = go n s (pure (-s `div` 2)) o z
+foldN f n z o = go n s (pure (-s `div` 2)) o z
   where
   !s = Shape.size o
   go :: Int -> Int -> V3 Int -> Octree s' a -> b -> b
