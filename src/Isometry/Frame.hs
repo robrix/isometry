@@ -29,7 +29,7 @@ import qualified Isometry.Draw.Voxel as Voxel
 import           Isometry.Input as Input
 import           Isometry.Player
 import           Isometry.Time
-import           Isometry.UI
+-- import           Isometry.UI
 import           Isometry.View
 import           Isometry.Voxel as Voxel
 import           Isometry.World
@@ -79,7 +79,7 @@ frame
      , Has Profile sig m
      , Has (Reader Axis.Drawable) sig m
      , Has (Reader Voxel.Drawable) sig m
-     , Has (Reader UI) sig m
+    --  , Has (Reader UI) sig m
      , Has (Reader Window.Window) sig m
      , Has (State Input) sig m
      , Has (State Instant) sig m

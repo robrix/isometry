@@ -2,7 +2,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DisambiguateRecordFields #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE NamedFieldPuns #-}
+-- {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeApplications #-}
@@ -33,15 +33,15 @@ import           Isometry.Frame
 import           Isometry.Input
 import           Isometry.Player
 import           Isometry.Time
-import           Isometry.UI
+-- import           Isometry.UI
 import           Linear.Exts
 import qualified SDL
 import           Stochastic.Sample.Markov
-import           System.FilePath
+-- import           System.FilePath
 import           System.Random.SplitMix (SMGen, newSMGen)
 import           UI.Context
-import           UI.Label as Label
-import           UI.Typeface (cacheCharactersForDrawing, readTypeface)
+-- import           UI.Label as Label
+-- import           UI.Typeface (cacheCharactersForDrawing, readTypeface)
 import qualified UI.Window as Window
 import           Unit.Angle
 import           Unit.Length
@@ -81,11 +81,11 @@ game
   => m ()
 game = runGame $ do
   sendIO $ SDL.cursorVisible SDL.$= False
-  trace "loading typeface"
-  face <- measure "readTypeface" $ readTypeface ("fonts" </> "DejaVuSans.ttf")
-  measure "cacheCharactersForDrawing" . cacheCharactersForDrawing face $ ['0'..'9'] <> ['a'..'z'] <> ['A'..'Z'] <> ",.’/:-⁻⁰¹²³⁴⁵⁶⁷⁸⁹·" -- characters to preload
+  -- trace "loading typeface"
+  -- face <- measure "readTypeface" $ readTypeface ("fonts" </> "DejaVuSans.ttf")
+  -- measure "cacheCharactersForDrawing" . cacheCharactersForDrawing face $ ['0'..'9'] <> ['a'..'z'] <> ['A'..'Z'] <> ",.’/:-⁻⁰¹²³⁴⁵⁶⁷⁸⁹·" -- characters to preload
 
-  target <- measure "label" Label.label
+  -- target <- measure "label" Label.label
 
   start <- now
   integration <- fork . (>>= throwIO) . evalState start . fix $ \ loop -> do
@@ -117,7 +117,7 @@ game = runGame $ do
   enabled_ ProgramPointSize .= True
   enabled_ ScissorTest      .= True
 
-  (runFrame . runReader UI{ target, face } . fix $ \ loop -> do
+  (runFrame {-. runReader UI{ target, face }-} . fix $ \ loop -> do
     measure "frame" frame
     measure "swap" Window.swap
     loop)

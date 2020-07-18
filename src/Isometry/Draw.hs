@@ -30,14 +30,14 @@ import           GL.Framebuffer
 import           Graphics.GL.Core41
 import qualified Isometry.Draw.Axis as Axis
 import qualified Isometry.Draw.Voxel as Voxel
-import           Isometry.UI
+-- import           Isometry.UI
 import           Isometry.View as View
 import           Isometry.Voxel as Voxel
 import           Isometry.World
 import qualified UI.Colour as UI
 import           UI.Context
-import           UI.Label
-import           UI.Typeface
+-- import           UI.Label
+-- import           UI.Typeface
 import           UI.Window as Window
 
 runDrawables
@@ -62,7 +62,7 @@ draw
      , Has Profile sig m
      , Has (Reader Axis.Drawable) sig m
      , Has (Reader Voxel.Drawable) sig m
-     , Has (Reader UI) sig m
+    --  , Has (Reader UI) sig m
      , Has (Reader View) sig m
      , Has (Reader Window.Window) sig m
      , HasLabelled World (Reader (World s Voxel)) sig m
@@ -71,13 +71,13 @@ draw
      )
      => m ()
 draw = do
-  UI{ target, face } <- ask
-  let font = Font face 18
+  -- UI{ target, face } <- ask
+  -- let font = Font face 18
   bind @Framebuffer Nothing
 
   clipToContext
 
-  sendIO $ glDepthMask GL_TRUE
+  -- sendIO $ glDepthMask GL_TRUE
 
   UI.setClearColour UI.black
   sendIO . glClear $ GL_COLOR_BUFFER_BIT .|. GL_DEPTH_BUFFER_BIT
@@ -87,9 +87,9 @@ draw = do
   measure "Axis.draw" Axis.draw
   measure "Voxel.draw" Voxel.draw
 
-  sendIO $ glDepthMask GL_FALSE
+  -- sendIO $ glDepthMask GL_FALSE
 
-  measure "setLabel" $ setLabel target font "hello"
-  measure "drawLabel" $ drawLabel target 10 UI.white Nothing
+  -- measure "setLabel" $ setLabel target font "hello"
+  -- measure "drawLabel" $ drawLabel target 10 UI.white Nothing
 
   measure "glFinish" (sendIO glFinish)
