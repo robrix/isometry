@@ -105,7 +105,7 @@ visibleIndices t o = snd (foldN go 3 (0, I.singleton (0...length o)) o)
     !i = prev...pred next
 
 visible :: Interval V3 (Distance Float) -> Transform V4 Float Distance ClipUnits -> Bool
-visible i t = intersects (Interval inf' sup') (-1...1)
+visible i t = any (`intersects` (-1...1 :: Interval I (ClipUnits Float))) (liftI (...) (Interval inf' sup'))
   where
   !inf' = unext (apply t (ext (inf i) 1))
   !sup' = unext (apply t (ext (sup i) 1))
