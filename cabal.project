@@ -8,4 +8,4 @@ source-repository-package
 source-repository-package
   type: git
   location: https://github.com/robrix/haskell-opentype.git
-  tag: a1b6967d895530ea691bd83084a2d85c588a6213
+  tag: 5b045cb6b983648b9adc93061a045f37853c1941
