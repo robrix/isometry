@@ -32,7 +32,7 @@ import           Control.Effect.Lift
 import           Control.Effect.Profile
 import qualified Control.Effect.Reader.Labelled as Labelled
 import           Control.Effect.Trace
-import           Control.Lens (Lens', (&), (+~))
+import           Control.Lens (Lens', over, (&), (+~))
 import           Data.Bin.Octree (Octree(..), withOctreeLen2)
 import qualified Data.Bin.Shape as Shape
 import           Data.Coerce
@@ -107,8 +107,8 @@ visibleIndices t o = snd (foldN go 3 (0, I.singleton (0...length o)) o)
 visible :: Interval V3 (Distance Float) -> Transform V4 Float Distance ClipUnits -> Bool
 visible i t = any (`intersects` (-1...1 :: Interval I (ClipUnits Float))) (liftI (...) (Interval inf' sup'))
   where
-  !inf' = unext (apply t (ext (inf i) 1))
-  !sup' = unext (apply t (ext (sup i) 1))
+  !inf' = over (extended 1) (apply t) (inf i)
+  !sup' = over (extended 1) (apply t) (sup i)
 
 foldN :: KnownNat (Shape.Size s) => (forall s . Interval V3 Int -> Octree s a -> b -> b) -> Int -> b -> Octree s a -> b
 foldN (f :: forall s . Interval V3 Int -> Octree s a -> b -> b) n z o = go n s (pure (-s `div` 2)) o z
