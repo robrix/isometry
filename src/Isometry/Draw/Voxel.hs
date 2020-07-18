@@ -96,9 +96,9 @@ draw = UI.using drawable $ do
     drawElementsInstanced Triangles indicesI (getI (diameter i))
 
 visibleIndices :: KnownNat (Shape.Size s) => Transform V4 Float Distance ClipUnits -> Octree s a -> I.IntervalSet Int
-visibleIndices t o = snd (foldN shouldRecur go 3 (0, I.singleton (0...length o)) o)
+visibleIndices t o = snd (foldN shouldRecur go (0, I.singleton (0...length o)) o)
   where
-  shouldRecur cube = visible (realToFrac <$> cube) t
+  shouldRecur n cube = n < 3 && visible (realToFrac <$> cube) t
   go :: Interval V3 Int -> Octree s' a -> (Int, I.IntervalSet Int) -> (Int, I.IntervalSet Int)
   go cube o (prev, indices) = (next, if visible (realToFrac <$> cube) t then indices else I.delete i indices)
     where
@@ -114,24 +114,22 @@ visible i t = any (`intersects` (-1...1 :: Interval I (ClipUnits Float))) (liftI
 foldN
   :: forall s a b
   .  KnownNat (Shape.Size s)
-  => (Interval V3 Int -> Bool)
+  => (Int -> Interval V3 Int -> Bool)
   -> (forall s . Interval V3 Int -> Octree s a -> b -> b)
-  -> Int
   -> b
   -> Octree s a
   -> b
-foldN r f n z o = go n s (pure (-s `div` 2)) o z
+foldN r f z o = go 0 s (pure (-s `div` 2)) o z
   where
   !s = Shape.size o
   go :: Int -> Int -> V3 Int -> Octree s' a -> b -> b
-  go 0 _ _ _ = id
   go n !s !o t = case t of
-    _ | not (r (Interval o (o + pure s))) -> id
+    _ | not (r n (Interval o (o + pure s))) -> id
     E   -> id
     L _ -> f (Interval o (o + pure s)) t
     B _ lbf rbf ltf rtf lbn rbn ltn rtn
       | let !s' = s `div` 2
-            !n' = n - 1
+            !n' = n + 1
             go' = go n' s'
       -> f (Interval o (o + pure s)) t
       .  go' o                    lbf . go' (o & _x   +~      s') rbf
