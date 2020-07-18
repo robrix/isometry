@@ -99,7 +99,10 @@ visibleIndices :: KnownNat (Shape.Size s) => Transform V4 Float Distance ClipUni
 visibleIndices t o = snd (foldN go 3 (0, I.singleton (0...length o)) o)
   where
   go :: Interval V3 Int -> Octree s' a -> (Int, I.IntervalSet Int) -> (Int, I.IntervalSet Int)
-  go cube o (prev, indices) = (prev + length o, if visible (realToFrac <$> cube) t then indices else I.delete (prev...prev + length o) indices)
+  go cube o (prev, indices) = (next, if visible (realToFrac <$> cube) t then indices else I.delete i indices)
+    where
+    !next = prev + length o
+    !i = prev...next
 
 visible :: Interval V3 (Distance Float) -> Transform V4 Float Distance ClipUnits -> Bool
 visible i t = intersects (Interval inf' sup') (-1...1)
