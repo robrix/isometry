@@ -198,6 +198,7 @@ test-suite test
   build-depends:
     , base
     , hedgehog
+    , interval-functor
     , isometry
 
 source-repository head
