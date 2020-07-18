@@ -8,6 +8,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
@@ -124,20 +125,18 @@ foldN r f n z o = go n s (pure (-s `div` 2)) o z
   where
   !s = Shape.size o
   go :: Int -> Int -> V3 Int -> Octree s' a -> b -> b
-  go 0 _ _ _ = id
-  go n !s !o t = case t of
-    _ | not (r (Interval o (o + pure s))) -> id
-    E   -> id
-    L _ -> f (Interval o (o + pure s)) t
+  go 0 !s !o = f (Interval o (o + pure s))
+  go n !s !o = \case
     B _ lbf rbf ltf rtf lbn rbn ltn rtn
-      | let !s' = s `div` 2
+      | r (Interval o (o + pure s))
+      , let !s' = s `div` 2
             !n' = n - 1
             go' = go n' s'
-      -> f (Interval o (o + pure s)) t
-      .  go' o                    lbf . go' (o & _x   +~      s') rbf
+      -> go' o                    lbf . go' (o & _x   +~      s') rbf
       .  go' (o & _y  +~      s') ltf . go' (o & _xy  +~ pure s') rtf
       .  go' (o & _z  +~      s') lbn . go' (o & _xz  +~ pure s') rbn
       .  go' (o & _yz +~ pure s') ltn . go' (o & _xyz +~ pure s') rtn
+    _ -> id
 
 
 runDrawable
