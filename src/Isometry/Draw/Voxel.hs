@@ -89,7 +89,9 @@ draw = UI.using drawable $ do
   matrix_  ?= t
   origins_ ?= originsU
   colours_ ?= coloursU
-  bindBuffer indicesB . for_ (I.toList (visibleIndices t world)) $ \ i -> do
+  let is = I.toList (visibleIndices t world)
+
+  bindBuffer indicesB . for_ is $ \ i -> do
     offset_ ?= getI (inf i)
     drawElementsInstanced Triangles indicesI (getI (diameter i))
 
