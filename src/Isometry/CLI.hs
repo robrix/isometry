@@ -56,8 +56,8 @@ argumentsParser :: ParserInfo Options
 argumentsParser = info
   (version <*> helper <*> options)
   (  fullDesc
-  <> progDesc "Starlight is a game about spaceships in space."
-  <> header   "Starlight - spaceships in space")
+  <> progDesc "Isometry is a game (?) about voxels."
+  <> header   "Isometry - voxels")
 
 options :: Parser Options
 options = foldl' (&) defaultOptions <$> sequenceA
