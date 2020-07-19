@@ -97,14 +97,11 @@ draw = UI.using drawable $ do
     drawElementsInstanced Triangles indicesI (getI (diameter i))
 
 visibleIndices :: KnownNat (Shape.Size s) => Transform V4 Float Distance ClipUnits -> Octree s a -> I.IntervalSet Int
-visibleIndices t o = snd (foldN shouldRecur go 3 (0, I.singleton (0...length o)) o)
+visibleIndices t o = foldN shouldRecur go 3 (I.singleton (0...length o)) o
   where
   shouldRecur cube = visible (realToFrac <$> cube) t
-  go :: Interval V3 Int -> Octree s' a -> (Int, I.IntervalSet Int) -> (Int, I.IntervalSet Int)
-  go cube o (prev, indices) = (next, if visible (realToFrac <$> cube) t then indices else I.delete i indices)
-    where
-    !next = prev + length o
-    !i = prev...pred next
+  go :: Interval V3 Int -> Interval I Int -> I.IntervalSet Int -> I.IntervalSet Int
+  go cube !i indices = if visible (realToFrac <$> cube) t then indices else I.delete i indices
 
 visible :: Interval V3 (Distance Float) -> Transform V4 Float Distance ClipUnits -> Bool
 visible i t = any (`intersects` (-1...1 :: Interval I (ClipUnits Float))) (liftI (...) (Interval inf' sup'))
@@ -116,16 +113,21 @@ foldN
   :: forall s a b
   .  KnownNat (Shape.Size s)
   => (Interval V3 Int -> Bool)
-  -> (forall s . Interval V3 Int -> Octree s a -> b -> b)
+  -> (Interval V3 Int -> Interval I Int -> b -> b)
   -> Int
   -> b
   -> Octree s a
   -> b
-foldN r f n z o = go n s (pure (-s `div` 2)) o z
+foldN r f n z o = snd (go n s (pure (-s `div` 2)) o (0, z))
   where
   !s = Shape.size o
-  go :: Int -> Int -> V3 Int -> Octree s' a -> b -> b
-  go 0 !s !o = f (Interval o (o + pure s))
+  go :: Int -> Int -> V3 Int -> Octree s' a -> (Int, b) -> (Int, b)
+  go 0 !s !o = \case
+    E -> id
+    t -> \ (!prev, z) ->
+      let !next = prev + length t
+          !i = prev...pred next
+      in  (next, f (Interval o (o + pure s)) i z)
   go n !s !o = \case
     B _ lbf rbf ltf rtf lbn rbn ltn rtn
       | r (Interval o (o + pure s))
@@ -136,7 +138,7 @@ foldN r f n z o = go n s (pure (-s `div` 2)) o z
       .  go' (o & _y  +~      s') ltf . go' (o & _xy  +~ pure s') rtf
       .  go' (o & _z  +~      s') lbn . go' (o & _xz  +~ pure s') rbn
       .  go' (o & _yz +~ pure s') ltn . go' (o & _xyz +~ pure s') rtn
-    _ -> id
+    t -> \ (prev, z) -> let !next = prev + length t in (next, z)
 
 
 runDrawable
