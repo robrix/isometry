@@ -18,10 +18,10 @@ import           Control.Carrier.Random.Gen
 import           Control.Carrier.Reader
 import           Control.Carrier.State.Church
 import qualified Control.Carrier.State.STM.TVar as TVar
-import           Control.Carrier.Time.System.Specialized as System
 import           Control.Effect.Lens.Exts as Lens
 import           Control.Effect.Lift
 import           Control.Effect.Thread
+import           Control.Effect.Time.System as System
 import           Control.Effect.Trace
 import           Control.Exception.Lift
 import           Control.Lens ((^.))

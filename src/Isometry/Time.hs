@@ -8,7 +8,7 @@ module Isometry.Time
 
 import Control.Carrier.Reader
 import Control.Effect.State
-import Control.Carrier.Time.System.Specialized as System
+import Control.Effect.Time.System as System
 import Unit.Time
 
 timed

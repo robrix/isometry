@@ -10,12 +10,12 @@ module Isometry.Frame
 import           Control.Carrier.Empty.Church
 import           Control.Carrier.Reader
 import           Control.Carrier.State.Church
-import           Control.Carrier.Time.System.Specialized
 import           Control.Effect.Finally
 import           Control.Effect.Labelled
 import           Control.Effect.Lens (use)
 import           Control.Effect.Lift
 import           Control.Effect.Profile
+import           Control.Effect.Time.System
 import           Control.Effect.Trace
 import           Data.Bin.Index (toInt)
 import           Data.Bin.Shape as Shape
