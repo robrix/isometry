@@ -1,4 +1,3 @@
-{-# LANGUAGE TypeApplications #-}
 module Isometry.Time
 ( Instant(..)
 , Duration(..)
@@ -9,7 +8,7 @@ module Isometry.Time
 
 import Control.Carrier.Reader
 import Control.Effect.State
-import Control.Carrier.Time.System as System
+import Control.Carrier.Time.System.Specialized as System
 import Unit.Time
 
 timed
@@ -19,7 +18,7 @@ timed
   => ReaderC (Seconds Double) m a
   -> m a
 timed m = do
-  dt <- fmap realToFrac . since <$> get <*> now @Instant
-  put =<< now @Instant
+  dt <- fmap realToFrac . since <$> get <*> now
+  put =<< now
   runReader dt m
 {-# INLINE timed #-}

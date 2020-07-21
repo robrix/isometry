@@ -10,7 +10,7 @@ module Isometry.Frame
 import           Control.Carrier.Empty.Church
 import           Control.Carrier.Reader
 import           Control.Carrier.State.Church
-import           Control.Carrier.Time.System
+import           Control.Carrier.Time.System.Specialized
 import           Control.Effect.Finally
 import           Control.Effect.Labelled
 import           Control.Effect.Lens (use)

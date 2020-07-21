@@ -18,7 +18,7 @@ import           Control.Carrier.Random.Gen
 import           Control.Carrier.Reader
 import           Control.Carrier.State.Church
 import qualified Control.Carrier.State.STM.TVar as TVar
-import           Control.Carrier.Time.System as System
+import           Control.Carrier.Time.System.Specialized as System
 import           Control.Effect.Lens.Exts as Lens
 import           Control.Effect.Lift
 import           Control.Effect.Thread
@@ -89,7 +89,7 @@ game = runGame $ do
 
   -- target <- measure "label" Label.label
 
-  start <- now @Instant
+  start <- now
   integration <- fork . (>>= throwIO) . evalState start . fix $ \ loop -> do
     err <- try @SomeException . timed $ do
       dt <- ask @(Seconds _)
