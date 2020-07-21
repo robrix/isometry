@@ -101,7 +101,9 @@ visibleIndices t o = foldN shouldRecur go 3 (I.singleton (0...length o)) o
   where
   shouldRecur cube = visible (realToFrac <$> cube) t
   go :: Interval V3 Int -> Interval I Int -> I.IntervalSet Int -> I.IntervalSet Int
-  go cube !i indices = if visible (realToFrac <$> cube) t then indices else I.delete i indices
+  go cube !i indices
+    | visible (realToFrac <$> cube) t = indices
+    | otherwise                       = I.delete i indices
 
 visible :: Interval V3 (Distance Float) -> Transform V4 Float Distance ClipUnits -> Bool
 visible i t = any (`intersects` (-1...1 :: Interval I (ClipUnits Float))) (liftI (...) (Interval inf' sup'))
