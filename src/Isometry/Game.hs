@@ -92,7 +92,7 @@ game = runGame $ do
 
   integration <- fork . (>>= throwIO) . evalState (Duration 0) . fix $ \ loop -> do
     err <- try @SomeException . timed $ do
-      dt <- ask @(Seconds _)
+      dt <- gets (realToFrac @Duration @(Seconds _))
       input <- get @Input
 
       let turningL = input^.pressed_ SDL.KeycodeQ
