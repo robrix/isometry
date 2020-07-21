@@ -18,6 +18,7 @@ import           Control.Carrier.Random.Gen
 import           Control.Carrier.Reader
 import           Control.Carrier.State.Church
 import qualified Control.Carrier.State.STM.TVar as TVar
+import           Control.Carrier.Time.System as System
 import           Control.Effect.Lens.Exts as Lens
 import           Control.Effect.Lift
 import           Control.Effect.Thread
@@ -76,6 +77,7 @@ game
      , Has (Lift IO) sig m
      , Has Profile sig m
      , HasLabelled Thread (Thread id) sig m
+     , Has (System.Time Instant) sig m
      , Has Trace sig m
      )
   => m ()
@@ -87,7 +89,7 @@ game = runGame $ do
 
   -- target <- measure "label" Label.label
 
-  start <- now
+  start <- now @Instant
   integration <- fork . (>>= throwIO) . evalState start . fix $ \ loop -> do
     err <- try @SomeException . timed $ do
       dt <- ask @(Seconds _)

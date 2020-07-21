@@ -10,6 +10,7 @@ module Isometry.Frame
 import           Control.Carrier.Empty.Church
 import           Control.Carrier.Reader
 import           Control.Carrier.State.Church
+import           Control.Carrier.Time.System
 import           Control.Effect.Finally
 import           Control.Effect.Labelled
 import           Control.Effect.Lens (use)
@@ -43,6 +44,7 @@ runFrame
      , Has Finally sig m
      , Has (Lift IO) sig m
      , Has Profile sig m
+     , Has (Time Instant) sig m
      , Has Trace sig m
      )
   => ReaderC Voxel.Drawable
@@ -84,6 +86,7 @@ frame
      , Has (State Input) sig m
      , Has (State Instant) sig m
      , Has (State Player) sig m
+     , Has (Time Instant) sig m
      , HasLabelled World (Reader (World s Voxel)) sig m
      , HasCallStack
      , KnownNat (Shape.Size s)

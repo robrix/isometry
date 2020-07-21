@@ -159,6 +159,7 @@ library
     , fused-effects-lens ^>= 1.2
     , fused-effects-profile
     , fused-effects-random ^>= 1.1
+    , fused-effects-time
     , generic-lens
     , gl
     , interval-functor

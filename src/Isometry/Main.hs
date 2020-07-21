@@ -14,6 +14,7 @@ import           Control.Algebra
 import qualified Control.Carrier.Profile.Identity as NoProfile
 import qualified Control.Carrier.Profile.Tree as Profile
 import           Control.Carrier.Thread.IO
+import           Control.Carrier.Time.System
 import qualified Control.Carrier.Trace.Ignoring as NoTrace
 import qualified Control.Carrier.Trace.Lift as Trace
 import           Control.Effect.Lift
@@ -32,10 +33,12 @@ import           Isometry.Game
 main :: IO ()
 main = do
   options <- CLI.execParser CLI.argumentsParser
-  runThread (runCheck (CLI.check options) (runProfile (CLI.profile options) (runTrace (CLI.trace options) game)))
+  runThread (runTime (runCheck (CLI.check options) (runProfile (CLI.profile options) (runTrace (CLI.trace options) game))))
 
 runProfile
-  :: Has (Lift IO) sig m
+  :: ( Has (Lift IO) sig m
+     , Has (Time Instant) sig m
+     )
   => Flag CLI.ShouldProfile
   -> (forall t . (Lifts MonadFail t, Lifts MonadFix t, Lifts MonadIO t, Algebra (Profile :+: sig) (t m)) => t m a)
   -> m a
