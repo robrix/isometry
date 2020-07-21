@@ -59,7 +59,8 @@ runGame
     (FinallyC
     (GLC
     (ReaderC Context
-    (ReaderC Window.Window m))))))) a
+    (ReaderC Window.Window
+    m))))))) a
   -> m a
 runGame
   = Window.runSDL
