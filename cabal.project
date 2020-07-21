@@ -3,13 +3,13 @@ packages: .
 source-repository-package
   type: git
   location: https://github.com/fused-effects/fused-effects-profile.git
-  tag: b923654f37a77582210d46c460fdf09b6909ada6
+  tag: 3e72b732655b34471fff674d6e328f1004173ee6
   subdir: fused-effects-profile
 
 source-repository-package
   type: git
   location: https://github.com/fused-effects/fused-effects-profile.git
-  tag: b923654f37a77582210d46c460fdf09b6909ada6
+  tag: 3e72b732655b34471fff674d6e328f1004173ee6
   subdir: fused-effects-time
 
 source-repository-package
