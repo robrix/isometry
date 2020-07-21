@@ -90,8 +90,7 @@ game = runGame $ do
 
   -- target <- measure "label" Label.label
 
-  start <- now
-  integration <- fork . (>>= throwIO) . evalState start . fix $ \ loop -> do
+  integration <- fork . (>>= throwIO) . evalState (Duration 0) . fix $ \ loop -> do
     err <- try @SomeException . timed $ do
       dt <- ask @(Seconds _)
       input <- get @Input

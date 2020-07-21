@@ -1,3 +1,4 @@
+{-# LANGUAGE TypeApplications #-}
 module Isometry.Time
 ( Instant(..)
 , Duration(..)
@@ -13,12 +14,15 @@ import Unit.Time
 
 timed
   :: ( Has (System.Time Instant) sig m
-     , Has (State Instant) sig m
+     , Has (State Duration) sig m
      )
   => ReaderC (Seconds Double) m a
   -> m a
 timed m = do
-  dt <- fmap realToFrac . since <$> get <*> now
-  put =<< now
-  runReader dt m
+  start <- now
+  dt <- realToFrac <$> get @Duration
+  eraFrom start $ do
+    a <- runReader dt m
+    put =<< sinceEpoch
+    pure a
 {-# INLINE timed #-}

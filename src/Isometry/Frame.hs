@@ -44,19 +44,18 @@ runFrame
      , Has Finally sig m
      , Has (Lift IO) sig m
      , Has Profile sig m
-     , Has (Time Instant) sig m
      , Has Trace sig m
      )
   => ReaderC Voxel.Drawable
     (ReaderC Axis.Drawable
     (Labelled World (ReaderC (World S1024 Voxel))
-    (StateC Instant
+    (StateC Duration
     (EmptyC
     m)))) a
   -> m ()
 runFrame
   = evalEmpty
-  . (\ m -> now >>= \ start -> evalState start m)
+  . evalState (Duration 0)
   . (\ m -> do
     world <- measure "build" $ do
       let !world = makeWorld (tetra (\ (V3 x y z) ->
@@ -83,8 +82,8 @@ frame
      , Has (Reader Voxel.Drawable) sig m
     --  , Has (Reader UI) sig m
      , Has (Reader Window.Window) sig m
+     , Has (State Duration) sig m
      , Has (State Input) sig m
-     , Has (State Instant) sig m
      , Has (State Player) sig m
      , Has (Time Instant) sig m
      , HasLabelled World (Reader (World s Voxel)) sig m
