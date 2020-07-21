@@ -17,6 +17,7 @@
 {-# LANGUAGE TypeApplications #-}
 module Isometry.Draw.Voxel
 ( draw
+, visibleIndices
 , visible
 , foldN
 , runDrawable
@@ -36,9 +37,11 @@ import           Control.Lens (Lens', over, (&), (+~))
 import           Data.Bin.Octree (Octree(..), withOctreeLen2)
 import qualified Data.Bin.Shape as Shape
 import           Data.Coerce
+import           Data.Foldable (for_)
 import           Data.Functor.I
 import           Data.Functor.Interval hiding (transform)
 import           Data.Generics.Product.Fields
+import qualified Data.IntervalSet as I
 import           Data.Word
 import           Foreign.Storable.Lift
 import           Geometry.Transform
@@ -87,16 +90,20 @@ draw = UI.using drawable $ do
   matrix_  ?= t
   origins_ ?= originsU
   colours_ ?= coloursU
+  let is = I.toList (visibleIndices t world)
 
-  let shouldRecur cube = visible (realToFrac <$> cube) t
-      go cube !i k
-        | visible (realToFrac <$> cube) t = do
-          k
-          offset_ ?= getI (inf i)
-          drawElementsInstanced Triangles indicesI (getI (diameter i))
-        | otherwise                       = k
+  bindBuffer indicesB . for_ is $ \ i -> do
+    offset_ ?= getI (inf i)
+    drawElementsInstanced Triangles indicesI (getI (diameter i))
 
-  bindBuffer indicesB $ foldN shouldRecur go 3 (pure ()) world
+visibleIndices :: KnownNat (Shape.Size s) => Transform V4 Float Distance ClipUnits -> Octree s a -> I.IntervalSet Int
+visibleIndices t o = foldN shouldRecur go 3 (I.singleton (0...length o)) o
+  where
+  shouldRecur cube = visible (realToFrac <$> cube) t
+  go :: Interval V3 Int -> Interval I Int -> I.IntervalSet Int -> I.IntervalSet Int
+  go cube !i indices
+    | visible (realToFrac <$> cube) t = indices
+    | otherwise                       = I.delete i indices
 
 visible :: Interval V3 (Distance Float) -> Transform V4 Float Distance ClipUnits -> Bool
 visible i t = any (`intersects` (-1...1 :: Interval I (ClipUnits Float))) (liftI (...) (Interval inf' sup'))
