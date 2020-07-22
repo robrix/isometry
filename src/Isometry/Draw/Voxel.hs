@@ -89,8 +89,7 @@ draw = UI.using drawable $ do
   colours_ ?= coloursU
 
   let shouldRecur cube = visible (realToFrac <$> cube) t
-      go !i k = do
-        () <- k
+      go !i k = k *> do
         offset_ ?= getI (inf i)
         drawElementsInstanced Triangles indicesI (getI (diameter i))
 
