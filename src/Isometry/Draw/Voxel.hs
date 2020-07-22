@@ -120,10 +120,11 @@ foldN r f n z o = snd (go n s (pure (-s `div` 2)) o (0, z))
   go n !s !o
     | n == 0 = \case
       E -> id
-      t -> \ (!prev, z) ->
+      t | r cube -> \ (!prev, z) ->
         let !next = prev + length t
             !i = prev...pred next
         in  (next, f cube i z)
+        | otherwise -> id
     | otherwise = \case
       B _ lbf rbf ltf rtf lbn rbn ltn rtn
         | r cube
