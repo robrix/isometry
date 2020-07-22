@@ -119,7 +119,7 @@ foldN r f n z o = snd (go n s (pure (-s `div` 2)) o (0, z))
       E -> id
       t | r cube -> \ (!prev, z) ->
         let !next = prev + length t
-            !i = prev...pred next
+            !i = prev...next
         -- FIXME: combine calls for adjacent intervals
         in  (next, f i z)
         | otherwise -> id
