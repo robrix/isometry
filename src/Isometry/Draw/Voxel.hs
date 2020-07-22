@@ -89,7 +89,7 @@ draw = UI.using drawable $ do
   colours_ ?= coloursU
 
   let shouldRecur cube = visible (realToFrac <$> cube) t
-      go _ !i k = do
+      go !i k = do
         () <- k
         offset_ ?= getI (inf i)
         drawElementsInstanced Triangles indicesI (getI (diameter i))
@@ -106,7 +106,7 @@ foldN
   :: forall s a b
   .  KnownNat (Shape.Size s)
   => (Interval V3 Int -> Bool)
-  -> (Interval V3 Int -> Interval I Int -> b -> b)
+  -> (Interval I Int -> b -> b)
   -> Int
   -> b
   -> Octree s a
@@ -121,7 +121,7 @@ foldN r f n z o = snd (go n s (pure (-s `div` 2)) o (0, z))
       t | r cube -> \ (!prev, z) ->
         let !next = prev + length t
             !i = prev...pred next
-        in  (next, f cube i z)
+        in  (next, f i z)
         | otherwise -> id
     | otherwise = \case
       B _ lbf rbf ltf rtf lbn rbn ltn rtn
