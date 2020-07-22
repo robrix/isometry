@@ -133,9 +133,10 @@ foldN r f n z o = snd (go n s (pure (-s `div` 2)) o (0, z))
         .  go' (o & _xz  +~ pure s') rbn .  go' (o & _z  +~      s') lbn
         .  go' (o & _xy  +~ pure s') rtf .  go' (o & _y  +~      s') ltf
         .  go' (o & _x   +~      s') rbf .  go' o                    lbf
-      t -> \ (prev, z) -> let !next = prev + length t in (next, z)
+      t -> skip t
     where
     cube = Interval o (o + pure s)
+    skip t (prev, z) = let !next = prev + length t in (next, z)
 
 
 runDrawable
