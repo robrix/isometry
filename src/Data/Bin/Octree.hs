@@ -40,6 +40,8 @@ data Octree s a where
     -> !(Octree s a) -> !(Octree s a)
     -> Octree ('S s) a
 
+deriving instance Show a => Show (Octree s a)
+
 instance Foldable (Octree s) where
   foldMap (f :: a -> m) = go
     where
