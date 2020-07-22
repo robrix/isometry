@@ -89,12 +89,10 @@ draw = UI.using drawable $ do
   colours_ ?= coloursU
 
   let shouldRecur cube = visible (realToFrac <$> cube) t
-      go cube !i k
-        | visible (realToFrac <$> cube) t = do
-          k
-          offset_ ?= getI (inf i)
-          drawElementsInstanced Triangles indicesI (getI (diameter i))
-        | otherwise                       = k
+      go _ !i k = do
+        () <- k
+        offset_ ?= getI (inf i)
+        drawElementsInstanced Triangles indicesI (getI (diameter i))
 
   bindBuffer indicesB $ foldN shouldRecur go 3 (pure ()) world
 
