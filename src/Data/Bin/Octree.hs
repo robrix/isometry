@@ -142,13 +142,13 @@ withOctreeLen o with = allocaArray len $ \ p -> do
 withOctreeLen2 :: (Has (Lift IO) sig m, Storable b, Storable c) => Octree s a -> (a -> (b, c)) -> (Int -> Ptr b -> Ptr c -> m r) -> m r
 withOctreeLen2 o (prj :: a -> (b, c)) with = allocaArray len $ \ !pb -> allocaArray len $ \ !pc -> do
   let go :: Octree s' a -> (Int# -> IO ()) -> Int# -> IO ()
-      go E     k = k
-      go (L a) k = \ n# -> do
+      go E     = id
+      go (L a) = \ k n# -> do
         let (!b, !c) = prj a
         pokeElemOff pb (I# n#) b
         pokeElemOff pc (I# n#) c
         k (n# +# 1#)
-      go (B _ lbf rbf ltf rtf lbn rbn ltn rtn) k = go lbf (go rbf (go ltf (go rtf (go lbn (go rbn (go ltn (go rtn k)))))))
+      go (B _ lbf rbf ltf rtf lbn rbn ltn rtn) = go lbf . go rbf . go ltf . go rtf . go lbn . go rbn . go ltn . go rtn
   sendIO $ go o (\ _ -> pure ()) 0#
   with len pb pc
   where
