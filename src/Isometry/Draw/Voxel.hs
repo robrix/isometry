@@ -130,10 +130,10 @@ foldN r f n z o = snd (go n s (pure (-s `div` 2)) o (0, z))
         , let !s' = s `div` 2
               !n' = n - 1
               go' = go n' s'
-        -> go' o                    lbf . go' (o & _x   +~      s') rbf
-        .  go' (o & _y  +~      s') ltf . go' (o & _xy  +~ pure s') rtf
-        .  go' (o & _z  +~      s') lbn . go' (o & _xz  +~ pure s') rbn
-        .  go' (o & _yz +~ pure s') ltn . go' (o & _xyz +~ pure s') rtn
+        -> go' (o & _xyz +~ pure s') rtn .  go' (o & _yz +~ pure s') ltn
+        .  go' (o & _xz  +~ pure s') rbn .  go' (o & _z  +~      s') lbn
+        .  go' (o & _xy  +~ pure s') rtf .  go' (o & _y  +~      s') ltf
+        .  go' (o & _x   +~      s') rbf .  go' o                    lbf
       t -> \ (prev, z) -> let !next = prev + length t in (next, z)
     where
     cube = Interval o (o + pure s)
