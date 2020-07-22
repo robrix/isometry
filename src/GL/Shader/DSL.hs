@@ -141,8 +141,9 @@ instance Shader RShader where
 
 
 newtype ClipUnits a = ClipUnits { getClipUnits :: a }
-  deriving (GL.Column, Conjugate, Enum, Epsilon, Eq, Foldable, Floating, Fractional, Functor, Integral, Num, Ord, Random, Real, RealFloat, RealFrac, GL.Row, Show, Storable, Traversable, GL.Type, GL.Uniform)
+  deriving (GL.Column, Conjugate, Enum, Epsilon, Eq, Foldable, Floating, Fractional, Functor, Integral, Num, Ord, Random, Real, RealFloat, RealFrac, GL.Row, Storable, Traversable, GL.Type, GL.Uniform)
   deriving (Additive, Applicative, Metric, Monad) via I
+  deriving Show via Formatting ClipUnits a
 
 instance Unit Length ClipUnits where
   suffix = K ("clip"++)
