@@ -118,10 +118,10 @@ foldN r f n z o = snd (go n s (pure (-s `div` 2)) o (0, z))
     | n == 0 = \case
       E -> id
       t | r cube -> \ (!prev, z) ->
-        let !next = prev + length t
-            !i = prev...next
-        -- FIXME: combine calls for adjacent intervals
-        in  (next, f i z)
+          let !next = prev + length t
+              !i = prev...next
+          -- FIXME: combine calls for adjacent intervals
+          in  (next, f i z)
         | otherwise -> skip t
     | otherwise = \case
       B _ lbf rbf ltf rtf lbn rbn ltn rtn
