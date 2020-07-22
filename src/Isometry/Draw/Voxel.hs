@@ -114,26 +114,24 @@ foldN r f n z o = snd (go n s (pure (-s `div` 2)) o (0, z))
   where
   !s = Shape.size o
   go :: Int -> Int -> V3 Int -> Octree s' a -> (Int, b) -> (Int, b)
-  go n !s !o
-    | n == 0 = \case
-      E -> id
-      t | r cube -> \ (!prev, z) ->
-          let !next = prev + length t
-              !i = prev...next
-          -- FIXME: combine calls for adjacent intervals
-          in  (next, f i z)
-        | otherwise -> skip t
-    | otherwise = \case
-      B _ lbf rbf ltf rtf lbn rbn ltn rtn
-        | r cube
-        , let !s' = s `div` 2
-              !n' = n - 1
-              go' = go n' s'
-        -> go' (o & _xyz +~ pure s') rtn .  go' (o & _yz +~ pure s') ltn
-        .  go' (o & _xz  +~ pure s') rbn .  go' (o & _z  +~      s') lbn
-        .  go' (o & _xy  +~ pure s') rtf .  go' (o & _y  +~      s') ltf
-        .  go' (o & _x   +~      s') rbf .  go' o                    lbf
-      t -> skip t
+  go n !s !o = \case
+    E -> id
+    B _ lbf rbf ltf rtf lbn rbn ltn rtn
+      | n > 0
+      , r cube
+      , let !s' = s `div` 2
+            !n' = n - 1
+            go' = go n' s'
+      -> go' (o & _xyz +~ pure s') rtn .  go' (o & _yz +~ pure s') ltn
+      .  go' (o & _xz  +~ pure s') rbn .  go' (o & _z  +~      s') lbn
+      .  go' (o & _xy  +~ pure s') rtf .  go' (o & _y  +~      s') ltf
+      .  go' (o & _x   +~      s') rbf .  go' o                    lbf
+    t | r cube -> \ (!prev, z) ->
+        let !next = prev + length t
+            !i = prev...next
+        -- FIXME: combine calls for adjacent intervals
+        in  (next, f i z)
+      | otherwise -> skip t
     where
     cube = Interval o (o + pure s)
     skip t (prev, z) = let !next = prev + length t in (next, z)
