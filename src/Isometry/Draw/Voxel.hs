@@ -122,7 +122,7 @@ foldN r f n z o = snd (go n s (pure (-s `div` 2)) o (0, z))
             !i = prev...next
         -- FIXME: combine calls for adjacent intervals
         in  (next, f i z)
-        | otherwise -> id
+        | otherwise -> skip t
     | otherwise = \case
       B _ lbf rbf ltf rtf lbn rbn ltn rtn
         | r cube
