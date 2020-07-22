@@ -117,23 +117,24 @@ foldN r f n z o = snd (go n s (pure (-s `div` 2)) o (0, z))
   where
   !s = Shape.size o
   go :: Int -> Int -> V3 Int -> Octree s' a -> (Int, b) -> (Int, b)
-  go 0 !s !o = \case
-    E -> id
-    t -> \ (!prev, z) ->
-      let !next = prev + length t
-          !i = prev...pred next
-      in  (next, f (Interval o (o + pure s)) i z)
-  go n !s !o = \case
-    B _ lbf rbf ltf rtf lbn rbn ltn rtn
-      | r (Interval o (o + pure s))
-      , let !s' = s `div` 2
-            !n' = n - 1
-            go' = go n' s'
-      -> go' o                    lbf . go' (o & _x   +~      s') rbf
-      .  go' (o & _y  +~      s') ltf . go' (o & _xy  +~ pure s') rtf
-      .  go' (o & _z  +~      s') lbn . go' (o & _xz  +~ pure s') rbn
-      .  go' (o & _yz +~ pure s') ltn . go' (o & _xyz +~ pure s') rtn
-    t -> \ (prev, z) -> let !next = prev + length t in (next, z)
+  go n !s !o
+    | n == 0 = \case
+      E -> id
+      t -> \ (!prev, z) ->
+        let !next = prev + length t
+            !i = prev...pred next
+        in  (next, f (Interval o (o + pure s)) i z)
+    | otherwise = \case
+      B _ lbf rbf ltf rtf lbn rbn ltn rtn
+        | r (Interval o (o + pure s))
+        , let !s' = s `div` 2
+              !n' = n - 1
+              go' = go n' s'
+        -> go' o                    lbf . go' (o & _x   +~      s') rbf
+        .  go' (o & _y  +~      s') ltf . go' (o & _xy  +~ pure s') rtf
+        .  go' (o & _z  +~      s') lbn . go' (o & _xz  +~ pure s') rbn
+        .  go' (o & _yz +~ pure s') ltn . go' (o & _xyz +~ pure s') rtn
+      t -> \ (prev, z) -> let !next = prev + length t in (next, z)
 
 
 runDrawable
