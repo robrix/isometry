@@ -20,7 +20,7 @@ data Voxel = Voxel
   { origin :: {-# UNPACK #-} !(V3 (Distance Float))
   , colour :: {-# UNPACK #-} !(UI.Colour Float)
   }
-  deriving (Generic)
+  deriving (Generic, Show)
 
 instance UI.HasColour Voxel
 
