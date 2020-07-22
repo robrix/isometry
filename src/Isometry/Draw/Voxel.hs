@@ -123,10 +123,10 @@ foldN r f n z o = snd (go n s (pure (-s `div` 2)) o (0, z))
       t -> \ (!prev, z) ->
         let !next = prev + length t
             !i = prev...pred next
-        in  (next, f (Interval o (o + pure s)) i z)
+        in  (next, f cube i z)
     | otherwise = \case
       B _ lbf rbf ltf rtf lbn rbn ltn rtn
-        | r (Interval o (o + pure s))
+        | r cube
         , let !s' = s `div` 2
               !n' = n - 1
               go' = go n' s'
@@ -135,6 +135,8 @@ foldN r f n z o = snd (go n s (pure (-s `div` 2)) o (0, z))
         .  go' (o & _z  +~      s') lbn . go' (o & _xz  +~ pure s') rbn
         .  go' (o & _yz +~ pure s') ltn . go' (o & _xyz +~ pure s') rtn
       t -> \ (prev, z) -> let !next = prev + length t in (next, z)
+    where
+    cube = Interval o (o + pure s)
 
 
 runDrawable
