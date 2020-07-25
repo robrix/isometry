@@ -18,7 +18,7 @@
 module Isometry.Draw.Voxel
 ( draw
 , visible
-, foldN
+, foldVisible
 , runDrawable
 , Drawable
 , corners
@@ -88,12 +88,11 @@ draw = UI.using drawable $ do
   origins_ ?= originsU
   colours_ ?= coloursU
 
-  let shouldRecur cube = visible cube t
-      go !i k = k *> do
+  let go !i k = k *> do
         offset_ ?= getI (inf i)
         drawElementsInstanced Triangles indicesI (getI (diameter i))
 
-  bindBuffer indicesB $ foldN shouldRecur go 3 (pure ()) world
+  bindBuffer indicesB $ foldVisible go 3 (pure ()) t world
 
 visible :: Interval V3 (Distance Float) -> Transform V4 Float Distance ClipUnits -> Bool
 visible i t = any (`intersects` (-1...1 :: Interval I (ClipUnits Float))) (liftI (...) (Interval inf' sup'))
@@ -101,16 +100,16 @@ visible i t = any (`intersects` (-1...1 :: Interval I (ClipUnits Float))) (liftI
   !inf' = over (extended 1) (apply t) (inf i)
   !sup' = over (extended 1) (apply t) (sup i)
 
-foldN
+foldVisible
   :: forall s a b
   .  KnownNat (Shape.Size s)
-  => (Interval V3 (Distance Float) -> Bool)
-  -> (Interval I Int -> b -> b)
+  => (Interval I Int -> b -> b)
   -> Int
   -> b
+  -> Transform V4 Float Distance ClipUnits
   -> Octree s a
   -> b
-foldN r f n z o = snd (go n s (pure (-s * 0.5)) o (0, z))
+foldVisible f n z t o = snd (go n s (pure (-s * 0.5)) o (0, z))
   where
   !s = fromIntegral $ Shape.size o
   go :: Int -> Distance Float -> V3 (Distance Float) -> Octree s' a -> (Int, b) -> (Int, b)
@@ -118,7 +117,7 @@ foldN r f n z o = snd (go n s (pure (-s * 0.5)) o (0, z))
     E -> id
     B _ lbf rbf ltf rtf lbn rbn ltn rtn
       | n > 0
-      , r cube
+      , visible cube t
       , let !s' = s * 0.5
             !n' = n - 1
             go' = go n' s'
@@ -126,12 +125,12 @@ foldN r f n z o = snd (go n s (pure (-s * 0.5)) o (0, z))
       .  go' (o & _xz  +~ pure s') rbn .  go' (o & _z  +~      s') lbn
       .  go' (o & _xy  +~ pure s') rtf .  go' (o & _y  +~      s') ltf
       .  go' (o & _x   +~      s') rbf .  go' o                    lbf
-    t | r cube -> \ (!prev, z) ->
-        let !next = prev + length t
+    x | visible cube t -> \ (!prev, z) ->
+        let !next = prev + length x
             !i = prev...next
         -- FIXME: combine calls for adjacent intervals
         in  (next, f i z)
-      | otherwise -> skip t
+      | otherwise -> skip x
     where
     cube = Interval o (o + pure s)
     skip t (prev, z) = let !next = prev + length t in (next, z)
