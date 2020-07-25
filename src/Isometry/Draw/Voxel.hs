@@ -88,7 +88,7 @@ draw = UI.using drawable $ do
   origins_ ?= originsU
   colours_ ?= coloursU
 
-  let shouldRecur cube = visible (realToFrac <$> cube) t
+  let shouldRecur cube = visible cube t
       go !i k = k *> do
         offset_ ?= getI (inf i)
         drawElementsInstanced Triangles indicesI (getI (diameter i))
@@ -104,22 +104,22 @@ visible i t = any (`intersects` (-1...1 :: Interval I (ClipUnits Float))) (liftI
 foldN
   :: forall s a b
   .  KnownNat (Shape.Size s)
-  => (Interval V3 Int -> Bool)
+  => (Interval V3 (Distance Float) -> Bool)
   -> (Interval I Int -> b -> b)
   -> Int
   -> b
   -> Octree s a
   -> b
-foldN r f n z o = snd (go n s (pure (-s `div` 2)) o (0, z))
+foldN r f n z o = snd (go n s (pure (-s / 2)) o (0, z))
   where
-  !s = Shape.size o
-  go :: Int -> Int -> V3 Int -> Octree s' a -> (Int, b) -> (Int, b)
+  !s = fromIntegral $ Shape.size o
+  go :: Int -> Distance Float -> V3 (Distance Float) -> Octree s' a -> (Int, b) -> (Int, b)
   go n !s !o = \case
     E -> id
     B _ lbf rbf ltf rtf lbn rbn ltn rtn
       | n > 0
       , r cube
-      , let !s' = s `div` 2
+      , let !s' = s / 2
             !n' = n - 1
             go' = go n' s'
       -> go' (o & _xyz +~ pure s') rtn .  go' (o & _yz +~ pure s') ltn
