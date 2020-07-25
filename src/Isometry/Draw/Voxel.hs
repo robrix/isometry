@@ -99,7 +99,7 @@ visible i t = any (`intersects` (-1...1 :: Interval I (ClipUnits Float))) (liftI
   where
   !i' = mapInterval (over (extended 1) (apply t)) i
   mk i j
-    | i < j     = i...j
+    | i <= j    = i...j
     | otherwise = j...i
 
 foldVisible
