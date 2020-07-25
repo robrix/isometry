@@ -110,7 +110,7 @@ foldN
   -> b
   -> Octree s a
   -> b
-foldN r f n z o = snd (go n s (pure (-s / 2)) o (0, z))
+foldN r f n z o = snd (go n s (pure (-s * 0.5)) o (0, z))
   where
   !s = fromIntegral $ Shape.size o
   go :: Int -> Distance Float -> V3 (Distance Float) -> Octree s' a -> (Int, b) -> (Int, b)
@@ -119,7 +119,7 @@ foldN r f n z o = snd (go n s (pure (-s / 2)) o (0, z))
     B _ lbf rbf ltf rtf lbn rbn ltn rtn
       | n > 0
       , r cube
-      , let !s' = s / 2
+      , let !s' = s * 0.5
             !n' = n - 1
             go' = go n' s'
       -> go' (o & _xyz +~ pure s') rtn .  go' (o & _yz +~ pure s') ltn
