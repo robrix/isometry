@@ -95,10 +95,9 @@ draw = UI.using drawable $ do
   bindBuffer indicesB $ foldVisible go 3 (pure ()) t world
 
 visible :: Interval V3 (Distance Float) -> Transform V4 Float Distance ClipUnits -> Bool
-visible i t = any (`intersects` (-1...1 :: Interval I (ClipUnits Float))) (liftI (...) (Interval inf' sup'))
+visible i t = any (`intersects` (-1...1 :: Interval I (ClipUnits Float))) (liftI (...) i')
   where
-  !inf' = over (extended 1) (apply t) (inf i)
-  !sup' = over (extended 1) (apply t) (sup i)
+  !i' = mapInterval (over (extended 1) (apply t)) i
 
 foldVisible
   :: forall s a b
