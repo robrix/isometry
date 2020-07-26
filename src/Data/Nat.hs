@@ -13,3 +13,6 @@ data N
 
 class KnownN (n :: N) where
   reifyN :: N
+
+instance KnownN 'Z where
+  reifyN = Z
