@@ -18,6 +18,8 @@ class KnownN (n :: N) where
 
 instance KnownN 'Z where
   reifyN = Z
+  {-# INLINE reifyN #-}
 
 instance KnownN n => KnownN ('S n) where
   reifyN = S (reifyN @n)
+  {-# INLINE reifyN #-}
