@@ -1,6 +1,8 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
 module Data.Nat
 ( N(..)
 , KnownN(..)
@@ -16,3 +18,6 @@ class KnownN (n :: N) where
 
 instance KnownN 'Z where
   reifyN = Z
+
+instance KnownN n => KnownN ('S n) where
+  reifyN = S (reifyN @n)
