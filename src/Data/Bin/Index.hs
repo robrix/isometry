@@ -81,7 +81,7 @@ instance KnownNat (Place i) => FiniteBits (Index i) where
   {-# INLINABLE finiteBitSize #-}
 
 instance Show (Index i) where
-  showsPrec p (Index i) = showsUnaryWith (const (fmap (('0':) . ('b':)) . showIntAtBase 2 intToDigit)) "Index" p i
+  showsPrec p = showsUnaryWith (const (fmap (('0':) . ('b':)) . showIntAtBase 2 intToDigit)) "Index" p . toInt
   {-# INLINABLE showsPrec #-}
 
 il :: Index 'Z
