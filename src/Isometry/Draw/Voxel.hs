@@ -119,7 +119,7 @@ foldVisible f n z t o = snd (go n s (pure (-s * 0.5)) o (0, z))
     E -> id
     B _ lbf rbf ltf rtf lbn rbn ltn rtn
       | n > 0
-      , visible cube t
+      , isVisible
       , let !s' = s * 0.5
             !n' = n - 1
             go' = go n' s'
@@ -127,13 +127,14 @@ foldVisible f n z t o = snd (go n s (pure (-s * 0.5)) o (0, z))
       .  go' (o & _xz  +~ pure s') rbn .  go' (o & _z  +~      s') lbn
       .  go' (o & _xy  +~ pure s') rtf .  go' (o & _y  +~      s') ltf
       .  go' (o & _x   +~      s') rbf .  go' o                    lbf
-    x | visible cube t -> \ (!prev, z) ->
+    x | isVisible -> \ (!prev, z) ->
         let !next = prev + length x
             !i = prev...next
         -- FIXME: combine calls for adjacent intervals
         in  (next, f i z)
       | otherwise -> skip x
     where
+    isVisible = visible cube t
     cube = Interval o (o + pure s)
     skip t (prev, z) = let !next = prev + length t in (next, z)
 
