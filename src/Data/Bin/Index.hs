@@ -3,6 +3,7 @@
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE RoleAnnotations #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE UndecidableInstances #-}
 module Data.Bin.Index
 ( Index
@@ -20,6 +21,7 @@ import Data.Bits
 import Data.Char (intToDigit)
 import Data.Coerce
 import Data.Functor.Classes (showsUnaryWith)
+import Data.Nat
 import Data.Word
 import GHC.TypeLits
 import Numeric (showIntAtBase)
@@ -80,7 +82,7 @@ instance KnownNat (Place i) => FiniteBits (Index i) where
   finiteBitSize = place
   {-# INLINABLE finiteBitSize #-}
 
-instance Show (Index i) where
+instance KnownN i => Show (Index i) where
   showsPrec p = showsUnaryWith (const (fmap (('0':) . ('b':)) . showIntAtBase 2 intToDigit)) "Index" p . toInt
   {-# INLINABLE showsPrec #-}
 
@@ -103,6 +105,9 @@ decompose :: Index ('S i) -> (Bit, Index i)
 decompose (Index i) = (toBit (testBit i 0), Index (shift i (-1)))
 {-# INLINABLE decompose #-}
 
-toInt :: Index i -> Int
-toInt = fromIntegral . getIndex
+toInt :: KnownN i => Index i -> Int
+toInt (i :: Index i) = go (reifyN @i) (getIndex i) 0
+  where
+  go Z     _ j = j
+  go (S n) i j = go n (shift i (-1)) (shift j 1 .|. if testBit i 0 then 1 else 0)
 {-# INLINABLE toInt #-}
