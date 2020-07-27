@@ -62,7 +62,7 @@ runFrame
             let !v = V3 (fromIntegral (toInt x)) (fromIntegral (toInt y)) (fromIntegral (toInt z))
                 !o = fmap (+ offset) v
             in Voxel (coerce o) (UI.Colour (normalize v))))
-          !offset = negate (s * 0.5)
+          !offset = -s * 0.5
           !s = fromIntegral $ Shape.size world
           !factor = 1 / s
           normalize (V3 x y z) = V4 (x * factor) (y * factor) (z * factor) 1
