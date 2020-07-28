@@ -32,6 +32,7 @@ prop_mkScale = property $ do
   let t = mkScale (coerce v1)
   v2 <- forAll $ v4 u
   t `apply` v2 === ext v1 1 * v2
+  inverse t `apply` (ext v1 1 * v2) === v2
 
 
 translation :: MonadGen m => m (Transform V4 Rational U U)
