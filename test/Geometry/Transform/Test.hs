@@ -28,6 +28,9 @@ u = U <$> Gen.int (Range.linear 0 100)
 v :: MonadGen m => m (V Int)
 v = V <$> Gen.int (Range.linear 0 100)
 
+v3 :: MonadGen m => m a -> m (V3 a)
+v3 g = V3 <$> g <*> g <*> g
+
 v4 :: (MonadGen m, Num a) => m a -> m (V4 a)
 v4 g = V4 <$> g <*> g <*> g <*> pure 1
 
