@@ -23,6 +23,9 @@ prop_apply'_identity = property $ do
   identity `apply'` vec === vec
 
 
+translation :: MonadGen m => m (Transform V4 Int U U)
+translation = mkTranslation <$> v3 u
+
 u :: MonadGen m => m (U Int)
 u = U <$> Gen.int (Range.linear 0 100)
 
