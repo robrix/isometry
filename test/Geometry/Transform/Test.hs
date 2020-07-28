@@ -12,6 +12,7 @@ import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
 import           Linear.Exts hiding (identity)
 import           Unit
+import           Unit.Algebra
 
 prop_apply_identity = property $ do
   vec <- forAll (v4 u)
@@ -25,6 +26,9 @@ prop_apply'_identity = property $ do
 
 translation :: MonadGen m => m (Transform V4 Int U U)
 translation = mkTranslation <$> v3 u
+
+scale :: MonadGen m => m (Transform V4 Int U V)
+scale = mkScale <$> v3 (Per <$> int)
 
 int ::  MonadGen m => m Int
 int = Gen.int (Range.linear 0 100)
