@@ -1,6 +1,6 @@
-{-# LANGUAGE ExplicitForAll #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
@@ -10,6 +10,7 @@ module Geometry.Transform
 , mkTranslation
 , mkScale
 , mkRotation
+, inverse
 , apply
 , tmap
 , identity
@@ -57,6 +58,9 @@ mkScale v = Transform (scaled (point (prj <$> v)))
 
 mkRotation :: Num c => Quaternion (I c) -> Transform V4 c a a
 mkRotation q = Transform (L.identity !*! mkTransformation (coerce q) 0)
+
+inverse :: forall c a b . Fractional c => Transform V4 c a b -> Transform V4 c b a
+inverse = coerce (inv44 :: M44 c -> M44 c)
 
 apply :: (Num c, Unit d a, Unit d b, Additive m, Foldable m) => Transform m c a b -> m (a c) -> m (b c)
 apply (Transform m) v = pure <$> (m !* fmap prj v)
