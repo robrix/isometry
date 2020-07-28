@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE RoleAnnotations #-}
@@ -90,12 +91,12 @@ il :: Index 'Z
 il = Index 0
 {-# INLINABLE il #-}
 
-ib :: Bit -> Index s -> Index ('S s)
-ib B0 (Index i) = Index (shift i 1)
-ib B1 (Index i) = Index (shift i 1 .|. 1)
+ib :: forall s . KnownNat (Place s) => Bit -> Index s -> Index ('S s)
+ib B0 i = Index (getIndex i)
+ib B1 i = Index (getIndex i .|. shift 1 (finiteBitSize i))
 {-# INLINABLE ib #-}
 
-i0, i1 :: Index s -> Index ('S s)
+i0, i1 :: KnownNat (Place s) => Index s -> Index ('S s)
 i0 = ib B0
 {-# INLINABLE i0 #-}
 i1 = ib B1
@@ -105,9 +106,6 @@ decompose :: Index ('S i) -> (Bit, Index i)
 decompose (Index i) = (toBit (testBit i 0), Index (shift i (-1)))
 {-# INLINABLE decompose #-}
 
-toInt :: KnownN i => Index i -> Int
-toInt (i :: Index i) = go (reifyN @i) (getIndex i) 0
-  where
-  go Z     _ j = j
-  go (S n) i j = go n (shift i (-1)) (shift j 1 .|. if testBit i 0 then 1 else 0)
+toInt ::Index i -> Int
+toInt = fromIntegral . getIndex
 {-# INLINABLE toInt #-}
