@@ -17,6 +17,7 @@ prop_apply_identity = property $ do
   vec <- forAll (v4 u)
   identity `apply` vec === vec
 
+
 prop_apply'_identity = property $ do
   vec <- forAll (v4 u)
   identity `apply'` vec === vec
