@@ -47,7 +47,7 @@ instance (Num c, Additive m, Applicative m, Traversable m) => Category (Transfor
   id = identity
   Transform a . Transform b = Transform (a !*! b)
 
-identity :: (Applicative t, Traversable t, Num c) => Transform t c v u
+identity :: (Applicative t, Traversable t, Num c) => Transform t c u u
 identity = Transform L.identity
 
 mkTranslation :: (Num c, Unit d u, Applicative m, R4 m, Representable m, Traversable m) => V3 (u c) -> Transform m c u u
