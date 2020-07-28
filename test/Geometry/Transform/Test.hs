@@ -19,11 +19,6 @@ prop_apply_identity = property $ do
   identity `apply` vec === vec
 
 
-prop_apply'_identity = property $ do
-  vec <- forAll (v4 u)
-  identity `apply'` vec === vec
-
-
 prop_translation = property $ do
   v1 <- forAll $ v3 u
   let t = mkTranslation v1

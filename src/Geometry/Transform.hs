@@ -11,7 +11,6 @@ module Geometry.Transform
 , mkScale
 , mkRotation
 , apply
-, apply'
 , tmap
 , identity
 , (>>>)
@@ -61,9 +60,6 @@ mkRotation q = Transform (L.identity !*! mkTransformation (coerce q) 0)
 
 apply :: (Num c, Unit d a, Unit d b, Additive m, Foldable m) => Transform m c a b -> m (a c) -> m (b c)
 apply (Transform m) v = pure <$> (m !* fmap prj v)
-
-apply' :: (Num c, Unit d a, Unit d b, Additive m, Foldable m) => Transform m c a b -> m (b c) -> m (a c)
-apply' (Transform m) v = pure <$> (fmap prj v *! m)
 
 tmap :: Functor m => (c -> c') -> Transform m c a b -> Transform m c' a b
 tmap f = Transform . fmap (fmap f) . getTransform
