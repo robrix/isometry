@@ -13,7 +13,6 @@ import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
 import           Linear.Exts hiding (identity)
 import           Unit
-import           Unit.Algebra
 
 prop_apply_identity = property $ do
   vec <- forAll $ v4 u
@@ -34,12 +33,6 @@ prop_mkScale = property $ do
   t `apply` v2 === ext v1 1 * v2
   inverse t `apply` (ext v1 1 * v2) === v2
 
-
-translation :: MonadGen m => m (Transform V4 Rational U U)
-translation = mkTranslation <$> v3 u
-
-scale :: MonadGen m => m (Transform V4 Rational U V)
-scale = mkScale <$> v3 (Per <$> pos)
 
 coord ::  MonadGen m => m Rational
 coord = Gen.realFrac_ (Range.linearFrac 0 100)
