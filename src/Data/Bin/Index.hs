@@ -93,7 +93,7 @@ il = Index 0
 
 ib :: forall s . KnownNat (Place s) => Bit -> Index s -> Index ('S s)
 ib B0 i = Index (getIndex i)
-ib B1 i = Index (getIndex i .|. shift 1 (finiteBitSize i))
+ib B1 i = Index (setBit (getIndex i) (place i))
 {-# INLINABLE ib #-}
 
 i0, i1 :: KnownNat (Place s) => Index s -> Index ('S s)
