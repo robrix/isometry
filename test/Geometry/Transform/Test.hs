@@ -32,17 +32,17 @@ translation = mkTranslation <$> v3 u
 scale :: MonadGen m => m (Transform V4 Int U V)
 scale = mkScale <$> v3 (Per <$> pos)
 
-int ::  MonadGen m => m Int
-int = Gen.int (Range.linear 0 100)
+coord ::  MonadGen m => m Int
+coord = Gen.int (Range.linear 0 100)
 
 pos ::  MonadGen m => m Int
 pos = Gen.int (Range.linear 1 100)
 
 u :: MonadGen m => m (U Int)
-u = U <$> int
+u = U <$> coord
 
 v :: MonadGen m => m (V Int)
-v = V <$> int
+v = V <$> coord
 
 v3 :: MonadGen m => m a -> m (V3 a)
 v3 g = V3 <$> g <*> g <*> g
