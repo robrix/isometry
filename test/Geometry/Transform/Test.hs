@@ -15,14 +15,14 @@ import           Unit
 import           Unit.Algebra
 
 prop_apply_identity = property $ do
-  vec <- forAll (v4 u)
+  vec <- forAll $ v4 u
   identity `apply` vec === vec
 
 
 prop_translation = property $ do
   v1 <- forAll $ v3 u
   let t = mkTranslation v1
-  v2 <- forAll (v4 u)
+  v2 <- forAll $ v4 u
   t `apply` v2 === ext v1 0 + v2
   inverse t `apply` (ext v1 0 + v2) === v2
 
