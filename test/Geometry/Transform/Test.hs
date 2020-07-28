@@ -57,6 +57,10 @@ newtype V a = V { getV :: a }
   deriving (Eq, Floating, Fractional, Num, Ord, Real, Show)
   deriving (Applicative, Functor, Unit I) via I
 
+newtype W a = W { getW :: a }
+  deriving (Eq, Floating, Fractional, Num, Ord, Real, Show)
+  deriving (Applicative, Functor, Unit I) via I
+
 
 tests :: IO Bool
 tests = checkParallel $$(discover)
