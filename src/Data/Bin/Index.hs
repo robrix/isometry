@@ -101,8 +101,11 @@ i0 = ib B0
 i1 = ib B1
 {-# INLINABLE i1 #-}
 
-decompose :: Index ('S i) -> (Bit, Index i)
-decompose (Index i) = (toBit (testBit i 0), Index (shift i (-1)))
+decompose :: KnownNat (Place i) => Index ('S i) -> (Bit, Index i)
+decompose i = (toBit (testBit (getIndex i) p), i')
+  where
+  p = place i'
+  i' = Index (clearBit (getIndex i) p)
 {-# INLINABLE decompose #-}
 
 toInt ::Index i -> Int
