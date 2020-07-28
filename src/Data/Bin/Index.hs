@@ -49,7 +49,7 @@ instance KnownNat (Place i) => Enum (Index i) where
 instance KnownNat (Place i) => Bits (Index i) where
   Index a .&. Index b = Index (a .&. b)
   {-# INLINABLE (.&.) #-}
-  Index a .|. Index b = Index (a .|. b)
+  (.|.) = coerce ((.|.) :: Word32 -> Word32 -> Word32)
   {-# INLINABLE (.|.) #-}
   Index a `xor` Index b = Index (a `xor` b)
   {-# INLINABLE xor #-}
