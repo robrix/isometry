@@ -17,7 +17,6 @@
 {-# LANGUAGE TypeApplications #-}
 module Isometry.Draw.Voxel
 ( draw
-, visible
 , foldVisible
 , runDrawable
 , Drawable
@@ -32,7 +31,7 @@ import           Control.Effect.Lift
 import           Control.Effect.Profile
 import qualified Control.Effect.Reader.Labelled as Labelled
 import           Control.Effect.Trace
-import           Control.Lens (Lens', over, (&), (+~))
+import           Control.Lens (Lens', (&), (+~))
 import           Data.Bin.Octree (Octree(..), withOctreeLen2)
 import qualified Data.Bin.Shape as Shape
 import           Data.Coerce
@@ -92,12 +91,7 @@ draw = UI.using drawable $ do
         offset_ ?= getI (inf i)
         drawElementsInstanced Triangles indicesI (getI (diameter i))
 
-  bindBuffer indicesB $ foldVisible go 3 (pure ()) t world
-
-visible :: Interval V3 (Distance Float) -> Transform V4 Float Distance ClipUnits -> Bool
-visible i t = i' `intersects` (-1...1)
-  where
-  !i' = uncurryI (\ inf sup -> Interval (min <$> inf <*> sup) (max <$> inf <*> sup)) (mapInterval (over (extended 1) (apply t)) i)
+  bindBuffer indicesB $ foldVisible go 3 (pure ()) (inverse t) world
 
 foldVisible
   :: forall s a b
@@ -105,12 +99,13 @@ foldVisible
   => (Interval I Int -> b -> b)
   -> Int
   -> b
-  -> Transform V4 Float Distance ClipUnits
+  -> Transform V4 Float ClipUnits Distance
   -> Octree s a
   -> b
 foldVisible f n z t o = go n s (pure (-s * 0.5)) o (flip const) 0 z
   where
   !s = fromIntegral $ Shape.size o
+  !clip = uncurryI (\ inf sup -> Interval (min <$> inf <*> sup) (max <$> inf <*> sup)) (mapInterval (unext . apply t) (-1...1))
   go :: Int -> Distance Float -> V3 (Distance Float) -> Octree s' a -> (Int -> b -> c) -> Int -> b -> c
   go n !s !o = \case
     E -> id
@@ -131,7 +126,7 @@ foldVisible f n z t o = go n s (pure (-s * 0.5)) o (flip const) 0 z
         in  k next (f i z)
       | otherwise -> skip t
     where
-    isVisible = visible cube t
+    isVisible = cube `intersects` clip
     cube = Interval o (o + pure s)
     skip t k prev z = let !next = prev + length t in k next z
 
