@@ -24,6 +24,13 @@ prop_apply'_identity = property $ do
   identity `apply'` vec === vec
 
 
+prop_translation = property $ do
+  v1 <- forAll $ v3 u
+  let t = mkTranslation v1
+  v2 <- forAll (v4 u)
+  t `apply` v2 === ext v1 0 + v2
+
+
 translation :: MonadGen m => m (Transform V4 Int U U)
 translation = mkTranslation <$> v3 u
 
