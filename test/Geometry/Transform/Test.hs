@@ -21,11 +21,18 @@ prop_apply_identity = property $ do
 u :: MonadGen m => m (U Int)
 u = U <$> Gen.int (Range.linear 0 100)
 
+v :: MonadGen m => m (V Int)
+v = V <$> Gen.int (Range.linear 0 100)
+
 v4 :: (MonadGen m, Num a) => m a -> m (V4 a)
 v4 g = V4 <$> g <*> g <*> g <*> pure 1
 
 
 newtype U a = U { getU :: a }
+  deriving (Eq, Floating, Fractional, Num, Ord, Real, Show)
+  deriving (Applicative, Functor, Unit I) via I
+
+newtype V a = V { getV :: a }
   deriving (Eq, Floating, Fractional, Num, Ord, Real, Show)
   deriving (Applicative, Functor, Unit I) via I
 
