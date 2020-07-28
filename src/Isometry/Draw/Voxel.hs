@@ -111,10 +111,10 @@ foldVisible
   -> Transform V4 Float Distance ClipUnits
   -> Octree s a
   -> b
-foldVisible f n z t o = snd (go n s (pure (-s * 0.5)) o (0, z))
+foldVisible f n z t o = go n s (pure (-s * 0.5)) o (flip const) 0 z
   where
   !s = fromIntegral $ Shape.size o
-  go :: Int -> Distance Float -> V3 (Distance Float) -> Octree s' a -> (Int, b) -> (Int, b)
+  go :: Int -> Distance Float -> V3 (Distance Float) -> Octree s' a -> (Int -> b -> c) -> Int -> b -> c
   go n !s !o = \case
     E -> id
     B _ lbf rbf ltf rtf lbn rbn ltn rtn
@@ -127,16 +127,16 @@ foldVisible f n z t o = snd (go n s (pure (-s * 0.5)) o (0, z))
       .  go' (o & _xz  +~ pure s') rbn .  go' (o & _z  +~      s') lbn
       .  go' (o & _xy  +~ pure s') rtf .  go' (o & _y  +~      s') ltf
       .  go' (o & _x   +~      s') rbf .  go' o                    lbf
-    t | isVisible -> \ (!prev, z) ->
+    t | isVisible -> \ k !prev z ->
         let !next = prev + length t
             !i = prev...next
         -- FIXME: combine calls for adjacent intervals
-        in  (next, f i z)
+        in  k next (f i z)
       | otherwise -> skip t
     where
     isVisible = visible cube t
     cube = Interval o (o + pure s)
-    skip t (prev, z) = let !next = prev + length t in (next, z)
+    skip t k prev z = let !next = prev + length t in k next z
 
 
 runDrawable
