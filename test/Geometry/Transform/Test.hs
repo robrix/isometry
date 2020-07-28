@@ -28,10 +28,13 @@ translation :: MonadGen m => m (Transform V4 Int U U)
 translation = mkTranslation <$> v3 u
 
 scale :: MonadGen m => m (Transform V4 Int U V)
-scale = mkScale <$> v3 (Per <$> int)
+scale = mkScale <$> v3 (Per <$> pos)
 
 int ::  MonadGen m => m Int
 int = Gen.int (Range.linear 0 100)
+
+pos ::  MonadGen m => m Int
+pos = Gen.int (Range.linear 1 100)
 
 u :: MonadGen m => m (U Int)
 u = U <$> int
