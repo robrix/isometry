@@ -28,7 +28,7 @@ prop_mkTranslation = property $ do
   inverse t `apply` (ext v1 0 + v2) === v2
 
 prop_mkScale = property $ do
-  v1 <- forAll $ v3 u
+  v1 <- forAll $ v3 (U <$> pos)
   let t = mkScale (coerce v1)
   v2 <- forAll $ v4 u
   t `apply` v2 === ext v1 1 * v2
