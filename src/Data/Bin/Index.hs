@@ -51,7 +51,7 @@ instance KnownNat (Place i) => Bits (Index i) where
   {-# INLINABLE (.&.) #-}
   (.|.) = coerce ((.|.) :: Word32 -> Word32 -> Word32)
   {-# INLINABLE (.|.) #-}
-  Index a `xor` Index b = Index (a `xor` b)
+  xor = coerce (xor :: Word32 -> Word32 -> Word32)
   {-# INLINABLE xor #-}
   zeroBits = Index 0
   {-# INLINABLE zeroBits #-}
