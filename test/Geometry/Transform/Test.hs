@@ -32,7 +32,7 @@ v3 :: MonadGen m => m a -> m (V3 a)
 v3 g = V3 <$> g <*> g <*> g
 
 v4 :: (MonadGen m, Num a) => m a -> m (V4 a)
-v4 g = V4 <$> g <*> g <*> g <*> pure 1
+v4 g = (`ext` 1) <$> v3 g
 
 
 newtype U a = U { getU :: a }
