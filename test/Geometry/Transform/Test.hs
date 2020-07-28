@@ -26,22 +26,22 @@ prop_translation = property $ do
   t `apply` v2 === ext v1 0 + v2
 
 
-translation :: MonadGen m => m (Transform V4 Int U U)
+translation :: MonadGen m => m (Transform V4 Rational U U)
 translation = mkTranslation <$> v3 u
 
-scale :: MonadGen m => m (Transform V4 Int U V)
+scale :: MonadGen m => m (Transform V4 Rational U V)
 scale = mkScale <$> v3 (Per <$> pos)
 
-coord ::  MonadGen m => m Int
-coord = Gen.int (Range.linear 0 100)
+coord ::  MonadGen m => m Rational
+coord = Gen.realFrac_ (Range.linearFrac 0 100)
 
-pos ::  MonadGen m => m Int
-pos = Gen.int (Range.linear 1 100)
+pos ::  MonadGen m => m Rational
+pos = Gen.realFrac_ (Range.linearFrac 1 100)
 
-u :: MonadGen m => m (U Int)
+u :: MonadGen m => m (U Rational)
 u = U <$> coord
 
-v :: MonadGen m => m (V Int)
+v :: MonadGen m => m (V Rational)
 v = V <$> coord
 
 v3 :: MonadGen m => m a -> m (V3 a)
