@@ -71,6 +71,8 @@ instance KnownNat (Place i) => Bits (Index i) where
   {-# INLINABLE testBit #-}
   bit p = Index (bit p) .&. maxBound
   {-# INLINABLE bit #-}
+  setBit i p = Index (setBit (getIndex i) p) .&. maxBound
+  {-# INLINABLE setBit #-}
   shift i p = Index (shift (getIndex i) p) .&. maxBound
   {-# INLINABLE shift #-}
   rotate i p =
