@@ -73,6 +73,8 @@ instance KnownNat (Place i) => Bits (Index i) where
   {-# INLINABLE bit #-}
   setBit i p = Index (setBit (getIndex i) p) .&. maxBound
   {-# INLINABLE setBit #-}
+  clearBit = coerce (clearBit :: Word32 -> Int -> Word32)
+  {-# INLINABLE clearBit #-}
   shift i p = Index (shift (getIndex i) p) .&. maxBound
   {-# INLINABLE shift #-}
   rotate i p =
