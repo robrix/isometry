@@ -115,6 +115,6 @@ decompose i = (toBit (testBit (getIndex i) p), i')
   i' = Index (clearBit (getIndex i) p)
 {-# INLINABLE decompose #-}
 
-toInt ::Index i -> Int
+toInt :: Index i -> Int
 toInt = fromIntegral . getIndex
 {-# INLINABLE toInt #-}
