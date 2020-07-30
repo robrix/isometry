@@ -105,7 +105,7 @@ foldVisible
 foldVisible f n z t o = go n s (pure (-s * 0.5)) o (flip const) 0 z
   where
   !s = fromIntegral $ Shape.size o
-  !clip = uncurryI (\ inf sup -> Interval (min <$> inf <*> sup) (max <$> inf <*> sup)) (mapInterval (unext . apply t) (-1...1))
+  !clip = uncurryI (\ inf sup -> Interval (min <$> inf <*> sup) (max <$> inf <*> sup)) (mapInterval (normalizePoint . apply t . Linear.Exts.point) (-1...1))
   go :: Int -> Distance Float -> V3 (Distance Float) -> Octree s' a -> (Int -> b -> c) -> Int -> b -> c
   go n !s !o = \case
     E -> id
