@@ -34,6 +34,7 @@ module Unit.Algebra
 , quadranceU
 , qdU
 , normalizeU
+, recipU
   -- * Combinators
 , (:*:)(..)
 , (:/:)(..)
@@ -170,6 +171,9 @@ u `qdU` v = pure $ fmap prj u `qd` fmap prj v
 
 normalizeU :: (Metric v, Unit d u, Floating a, Epsilon a) => v (u a) -> v (I a)
 normalizeU = fmap I . normalize . fmap prj
+
+recipU :: Fractional a => (u :/: v) a -> (v :/: u) a
+recipU = Per . recip . getPer
 
 
 -- * Combinators
