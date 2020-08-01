@@ -15,6 +15,7 @@ module Linear.Exts
 , cartesian2
 , Ext(..)
 , extended
+, pointed
 , module Linear.Epsilon
 , module Linear.Matrix
 , module Linear.Metric
@@ -142,3 +143,6 @@ instance Ext V3 V4 where
 -- | Subject to the invariant that w=1.
 extended :: Ext v v' => a -> Iso (v a) (v b) (v' a) (v' b)
 extended a = iso (`ext` a) unext
+
+pointed :: (Num a, Fractional b) => Iso (V3 a) (V3 b) (V4 a) (V4 b)
+pointed = iso Linear.V4.point normalizePoint

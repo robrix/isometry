@@ -31,7 +31,7 @@ import           Control.Effect.Lift
 import           Control.Effect.Profile
 import qualified Control.Effect.Reader.Labelled as Labelled
 import           Control.Effect.Trace
-import           Control.Lens (Iso, Lens', iso, over, (&), (+~))
+import           Control.Lens (Lens', over, (&), (+~))
 import           Data.Bin.Octree (Octree(..), withOctreeLen2)
 import qualified Data.Bin.Shape as Shape
 import           Data.Coerce
@@ -92,9 +92,6 @@ draw = UI.using drawable $ do
         drawElementsInstanced Triangles indicesI (getI (diameter i))
 
   bindBuffer indicesB $ foldVisible go 3 (pure ()) (inverse t) world
-
-pointed :: (Num a, Fractional b) => Iso (V3 a) (V3 b) (V4 a) (V4 b)
-pointed = iso Linear.Exts.point normalizePoint
 
 foldVisible
   :: forall s a b
