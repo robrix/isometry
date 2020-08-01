@@ -31,7 +31,7 @@ import           Control.Effect.Lift
 import           Control.Effect.Profile
 import qualified Control.Effect.Reader.Labelled as Labelled
 import           Control.Effect.Trace
-import           Control.Lens (Lens', (&), (+~))
+import           Control.Lens (Iso, Lens', iso, over, (&), (+~))
 import           Data.Bin.Octree (Octree(..), withOctreeLen2)
 import qualified Data.Bin.Shape as Shape
 import           Data.Coerce
@@ -93,6 +93,9 @@ draw = UI.using drawable $ do
 
   bindBuffer indicesB $ foldVisible go 3 (pure ()) (inverse t) world
 
+pointed :: (Num a, Fractional b) => Iso (V3 a) (V3 b) (V4 a) (V4 b)
+pointed = iso Linear.Exts.point normalizePoint
+
 foldVisible
   :: forall s a b
   .  KnownNat (Shape.Size s)
@@ -105,7 +108,7 @@ foldVisible
 foldVisible f n z t o = go n s (pure (-s * 0.5)) o (flip const) 0 z
   where
   !s = fromIntegral $ Shape.size o
-  !clip = uncurryI (\ inf sup -> Interval (min <$> inf <*> sup) (max <$> inf <*> sup)) (mapInterval (normalizePoint . apply t . Linear.Exts.point) (-1...1))
+  !clip = uncurryI (\ inf sup -> Interval (min <$> inf <*> sup) (max <$> inf <*> sup)) (mapInterval (over pointed (apply t)) (-1...1))
   go :: Int -> Distance Float -> V3 (Distance Float) -> Octree s' a -> (Int -> b -> c) -> Int -> b -> c
   go n !s !o = \case
     E -> id
