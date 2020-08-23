@@ -102,7 +102,7 @@ foldVisible
   -> Octree s a
   -> b
   -> b
-foldVisible f n t o z = go n s (pure (-s * 0.5)) o (flip const) 0 z
+foldVisible f n t o = go n s (pure (-s * 0.5)) o (flip const) 0
   where
   !s = fromIntegral $ Shape.size o
   toWorld = over pointed (apply t)
