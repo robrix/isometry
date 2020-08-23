@@ -120,11 +120,11 @@ foldVisible f n z t o = go n s (pure (-s * 0.5)) o (flip const) 0 z
       .  go' (o & _xz  +~ pure s') rbn .  go' (o & _z  +~      s') lbn
       .  go' (o & _xy  +~ pure s') rtf .  go' (o & _y  +~      s') ltf
       .  go' (o & _x   +~      s') rbf .  go' o                    lbf
-    t | isVisible -> \ k !prev z ->
+    t | isVisible -> \ k !prev ->
         let !next = prev + length t
             !i = prev...next
         -- FIXME: combine calls for adjacent intervals
-        in  k next (f i z)
+        in  k next . f i
       | otherwise -> skip t
     where
     -- FIXME: break this down into tests by plane
