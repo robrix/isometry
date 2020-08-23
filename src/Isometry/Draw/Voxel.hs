@@ -128,7 +128,7 @@ foldVisible f n t o = go n s (pure (-s * 0.5)) o (flip const) 0
       | otherwise -> skip t
     where
     -- FIXME: break this down into tests by plane
-    isVisible = cube `intersects` clip
+    !isVisible = cube `intersects` clip
     !cube = Interval o (o + pure s)
     skip t k prev = let !next = prev + length t in k next
 
