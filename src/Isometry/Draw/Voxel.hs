@@ -107,7 +107,7 @@ foldVisible f n t o = go n s (pure (-s * 0.5)) o (flip const) 0
   !s = fromIntegral $ Shape.size o
   toWorld = over pointed (apply t)
   !clip = uncurryI (\ inf sup -> Interval (min <$> inf <*> sup) (max <$> inf <*> sup)) (mapInterval toWorld (-1...1))
-  go :: Int -> Distance Float -> V3 (Distance Float) -> Octree s' a -> (Int -> b -> c) -> Int -> b -> c
+  go :: Int -> Distance Float -> V3 (Distance Float) -> Octree s' a -> (Int -> b -> c) -> (Int -> b -> c)
   go n !s !o = \case
     E -> id
     B _ lbf rbf ltf rtf lbn rbn ltn rtn
