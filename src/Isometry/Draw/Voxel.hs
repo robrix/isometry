@@ -108,14 +108,13 @@ foldVisible f n t o = go n s (pure (-s * 0.5)) o (flip const) 0
   toWorld = over pointed (apply t)
   !clip = uncurryI (\ inf sup -> Interval (min <$> inf <*> sup) (max <$> inf <*> sup)) (mapInterval toWorld (-1...1))
   go :: Int -> Distance Float -> V3 (Distance Float) -> Octree s' a -> (Int -> b -> c) -> (Int -> b -> c)
-  go n !s !o = \case
+  go !n !s !o = \case
     E -> id
     B _ lbf rbf ltf rtf lbn rbn ltn rtn
       | n > 0
       , isVisible
       , let !s' = s * 0.5
-            !n' = n - 1
-            go' = go n' s'
+            go' = go (n - 1) s'
       -> go' (o & _xyz +~ pure s') rtn .  go' (o & _yz +~ pure s') ltn
       .  go' (o & _xz  +~ pure s') rbn .  go' (o & _z  +~      s') lbn
       .  go' (o & _xy  +~ pure s') rtf .  go' (o & _y  +~      s') ltf
