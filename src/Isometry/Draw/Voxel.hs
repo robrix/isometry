@@ -91,18 +91,18 @@ draw = UI.using drawable $ do
         offset_ ?= getI (inf i)
         drawElementsInstanced Triangles indicesI (getI (diameter i))
 
-  bindBuffer indicesB $ foldVisible go 3 (pure ()) (inverse t) world
+  bindBuffer indicesB $ foldVisible go 3 (inverse t) world (pure ())
 
 foldVisible
   :: forall s a b
   .  KnownNat (Shape.Size s)
   => (Interval I Int -> b -> b)
   -> Int
-  -> b
   -> Transform V4 Float ClipUnits Distance
   -> Octree s a
   -> b
-foldVisible f n z t o = go n s (pure (-s * 0.5)) o (flip const) 0 z
+  -> b
+foldVisible f n t o z = go n s (pure (-s * 0.5)) o (flip const) 0 z
   where
   !s = fromIntegral $ Shape.size o
   toWorld = over pointed (apply t)
