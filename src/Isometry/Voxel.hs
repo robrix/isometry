@@ -15,6 +15,7 @@ import           Linear.V3
 import qualified UI.Colour as UI
 
 -- FIXME: indicate which sides are present
+-- FIXME: allow half-height and -width positions
 
 data Voxel = Voxel
   { origin :: {-# UNPACK #-} !(V3 (Distance Float))
