@@ -127,7 +127,7 @@ foldVisible f n t o = go n s (pure (-s * 0.5)) o (flip const) 0
       | otherwise -> skip t
     where
     -- FIXME: test only the min & max vertices for each plane
-    !isVisible = not (any (\ p -> all (\ c -> signedDistance p p c >= 0) corners) planes)
+    !isVisible = not (any (\ p -> all (\ c -> signedDistance p p c > 0) corners) planes)
     corner x = [x, x + s]
     corners = V3 <$> corner (o^._x) <*> corner (o^._y) <*> corner (o^._z)
     planes :: [V3 (Distance Float)] -- these are also the midpoints of the planes
