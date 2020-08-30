@@ -31,7 +31,7 @@ import           Control.Effect.Lift
 import           Control.Effect.Profile
 import qualified Control.Effect.Reader.Labelled as Labelled
 import           Control.Effect.Trace
-import           Control.Lens (Lens', over, (&), (+~))
+import           Control.Lens (Lens', over, (&), (+~), (^.))
 import           Data.Bin.Octree (Octree(..), withOctreeLen2)
 import qualified Data.Bin.Shape as Shape
 import           Data.Coerce
@@ -40,6 +40,7 @@ import           Data.Functor.Interval hiding (transform)
 import           Data.Generics.Product.Fields
 import           Data.Word
 import           Foreign.Storable.Lift
+import           Geometry.Plane
 import           Geometry.Transform
 import           GHC.Generics
 import           GHC.Stack
@@ -106,7 +107,6 @@ foldVisible f n t o = go n s (pure (-s * 0.5)) o (flip const) 0
   where
   !s = fromIntegral $ Shape.size o
   toWorld = over pointed (apply t)
-  !clip = uncurryI (\ inf sup -> Interval (min <$> inf <*> sup) (max <$> inf <*> sup)) (mapInterval toWorld (-1...1))
   go :: Int -> Distance Float -> V3 (Distance Float) -> Octree s' a -> (Int -> b -> c) -> (Int -> b -> c)
   go !n !s !o = \case
     E -> id
@@ -126,9 +126,12 @@ foldVisible f n t o = go n s (pure (-s * 0.5)) o (flip const) 0
         in  k next . f i
       | otherwise -> skip t
     where
-    -- FIXME: break this down into tests by plane
-    !isVisible = cube `intersects` clip
-    !cube = Interval o (o + pure s)
+    -- FIXME: test only the min & max vertices for each plane
+    !isVisible = not (any (\ p -> all (\ c -> signedDistance p p c >= 0) corners) planes)
+    corner x = [x, x + s]
+    corners = V3 <$> corner (o^._x) <*> corner (o^._y) <*> corner (o^._z)
+    planes :: [V3 (Distance Float)] -- these are also the midpoints of the planes
+    !planes = [ toWorld v | u <- [ unit _x, unit _y, unit _z ], v <- [u, negate u] ]
     skip t k prev = let !next = prev + length t in k next
 
 
