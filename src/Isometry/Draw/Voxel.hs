@@ -107,6 +107,8 @@ foldVisible f n t o = go n s (pure (-s * 0.5)) o (flip const) 0
   where
   !s = fromIntegral $ Shape.size o
   toWorld = over pointed (apply t)
+  planes :: [V3 (Distance Float)] -- these are also the midpoints of the planes
+  !planes = [ toWorld v | u <- [ unit _x, unit _y, unit _z ], v <- [u, negate u] ]
   go :: Int -> Distance Float -> V3 (Distance Float) -> Octree s' a -> (Int -> b -> c) -> (Int -> b -> c)
   go !n !s !o = \case
     E -> id
@@ -130,8 +132,6 @@ foldVisible f n t o = go n s (pure (-s * 0.5)) o (flip const) 0
     !isVisible = not (any (\ p -> all ((> 0) . signedDistance p p) corners) planes)
     corner x = [x, x + s]
     corners = V3 <$> corner (o^._x) <*> corner (o^._y) <*> corner (o^._z)
-    planes :: [V3 (Distance Float)] -- these are also the midpoints of the planes
-    !planes = [ toWorld v | u <- [ unit _x, unit _y, unit _z ], v <- [u, negate u] ]
     skip t k prev = let !next = prev + length t in k next
 
 
