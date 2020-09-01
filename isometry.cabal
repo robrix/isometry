@@ -194,6 +194,7 @@ test-suite test
   main-is: Test.hs
   other-modules:
     Data.IntervalSet.Test
+    Geometry.Plane.Test
     Geometry.Transform.Test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
