@@ -1,3 +1,4 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeApplications #-}
 module Geometry.Plane.Test
@@ -19,7 +20,7 @@ prop_signedDistance_identity = property $ do
 prop_signedDistance_unit = property $ do
   v <- forAll $ v2 coord
   n <- signorm <$> forAll (v2 (nonZero coord))
-  roundToPlaces 5 (signedDistance v n (v + n)) === 1
+  Near (signedDistance v n (v + n)) === 1
 
 
 coord :: MonadGen m => m Double
@@ -40,3 +41,10 @@ roundToPlaces :: RealFrac a => Int -> a -> a
 roundToPlaces p x = fromInteger (round (x * p')) / p'
   where
   p' = 10 ^ p
+
+
+newtype Near a = Near a
+  deriving (Num, Show)
+
+instance RealFrac a => Eq (Near a) where
+  Near a == Near b = roundToPlaces 5 a == roundToPlaces 5 b
