@@ -56,4 +56,4 @@ withView !angle m = do
 transformToWindowSize :: V2 (Window.Coords Int) -> Transform V4 Double Window.Coords ClipUnits
 transformToWindowSize size
   -- NB: we *always* use 2/size, rather than ratio/size, because clip space always extends from -1...1, i.e. it always has diameter 2. this is true irrespective of the DPI ratio.
-  = mkScale (pure 1 & _xy .~ ClipUnits 2 ./^ (fmap fromIntegral <$> size) & _z .~ -1/100000)
+  = mkScale (pure 1 & _xy .~ ClipUnits 2 ./^ (fmap fromIntegral <$> size) & _z .~ -1/1000)
