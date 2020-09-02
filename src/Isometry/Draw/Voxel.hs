@@ -108,7 +108,7 @@ foldVisible f n t o = go n s (pure (-s * 0.5)) o (flip const) 0
   !s = fromIntegral $ Shape.size o
   toWorld = over pointed (apply t)
   planes :: [V3 (Distance Float)] -- these are also the midpoints of the planes
-  !planes = [ toWorld v | u <- [ unit _x, unit _y, unit _z ], v <- [u, negate u] ]
+  !planes = [ w / 2 | u <- [ unit _x, unit _y, unit _z ], let v = toWorld u, w <- [v, negate v] ]
   go :: Int -> Distance Float -> V3 (Distance Float) -> Octree s' a -> (Int -> b -> c) -> (Int -> b -> c)
   go !n !s !o = \case
     E -> id
