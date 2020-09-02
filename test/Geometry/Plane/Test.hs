@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeApplications #-}
 module Geometry.Plane.Test
 ( tests
 ) where
@@ -7,6 +8,7 @@ import           Geometry.Plane
 import           Hedgehog
 import qualified Hedgehog.Gen as Gen
 import qualified Hedgehog.Range as Range
+import           Linear.Metric
 import           Linear.V2
 
 prop_signedDistance_identity = property $ do
@@ -14,8 +16,13 @@ prop_signedDistance_identity = property $ do
   n <- forAll $ v2 (nonZero coord)
   signedDistance v n v === 0
 
+prop_signedDistance_unit = property $ do
+  v <- forAll $ v2 coord
+  n <- signorm <$> forAll (v2 (nonZero coord))
+  roundToPlaces 5 (signedDistance v n (v + n)) === 1
 
-coord :: MonadGen m => m Rational
+
+coord :: MonadGen m => m Double
 coord = Gen.realFrac_ (Range.linearFracFrom 0 (-100) 100)
 
 nonZero :: (MonadGen m, Num a, Eq a) => m a -> m a
@@ -27,3 +34,9 @@ v2 g = V2 <$> g <*> g
 
 tests :: IO Bool
 tests = checkParallel $$(discover)
+
+
+roundToPlaces :: RealFrac a => Int -> a -> a
+roundToPlaces p x = fromInteger (round (x * p')) / p'
+  where
+  p' = 10 ^ p
