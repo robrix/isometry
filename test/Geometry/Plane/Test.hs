@@ -17,6 +17,11 @@ prop_signedDistance_identity = property $ do
   n <- forAll $ v2 (nonZero coord)
   signedDistance v n v === 0
 
+prop_signedDistance_orthogonal = property $ do
+  v <- forAll $ v2 coord
+  n <- forAll $ v2 (nonZero coord)
+  Near (signedDistance v n (v + perp n)) === 0
+
 prop_signedDistance_unit = property $ do
   v <- forAll $ v2 coord
   n <- signorm <$> forAll (v2 (nonZero coord))
