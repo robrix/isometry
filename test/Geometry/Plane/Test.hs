@@ -16,7 +16,7 @@ prop_signedDistance_identity = property $ do
 
 
 coord :: MonadGen m => m Rational
-coord = Gen.realFrac_ (Range.linearFrac (-100) 100)
+coord = Gen.realFrac_ (Range.linearFracFrom 0 (-100) 100)
 
 nonZero :: (MonadGen m, Num a, Eq a) => m a -> m a
 nonZero = Gen.filterT (/= 0)
