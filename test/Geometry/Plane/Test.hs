@@ -11,7 +11,7 @@ import           Linear.V2
 
 prop_signedDistance_identity = property $ do
   v <- forAll $ v2 coord
-  n <- forAll (v2 (nonZero coord))
+  n <- forAll $ v2 (nonZero coord)
   signedDistance v n v === 0
 
 
