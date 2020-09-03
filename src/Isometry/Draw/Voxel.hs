@@ -131,6 +131,7 @@ foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (flip const) 0
       | otherwise -> skip t
     where
     -- FIXME: test only the min & max vertices for each plane
+    -- FIXME: share tests for boxes sharing boundaries
     !isVisible = not (any (\ p -> all (outside p) corners) planes)
     outside (_, p, n) c = signedDistance p n c > 0
     corner x = [x, x + s]
