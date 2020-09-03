@@ -31,7 +31,7 @@ import           Control.Effect.Lift
 import           Control.Effect.Profile
 import qualified Control.Effect.Reader.Labelled as Labelled
 import           Control.Effect.Trace
-import           Control.Lens (Lens', over, (&), (+~), (^.))
+import           Control.Lens (Lens', (&), (+~), (^.))
 import           Data.Bin.Octree (Octree(..), withOctreeLen2)
 import qualified Data.Bin.Shape as Shape
 import           Data.Coerce
@@ -50,7 +50,7 @@ import           GL.Buffer as Buffer
 import           GL.Effect.Check
 import           GL.Object
 import           GL.Program
-import           GL.Shader.DSL as D hiding (get, (.*.), (./.), (^.), _x, _xy, _xyz, _xz, _y, _yz, _z)
+import           GL.Shader.DSL as D hiding (get, (.*.), (./.), (^.), _w, _x, _xy, _xyz, _xz, _y, _yz, _z)
 import qualified GL.Shader.DSL as D
 import           GL.Texture
 import           GL.TextureUnit
@@ -103,12 +103,11 @@ foldVisible
   -> Octree s a
   -> b
   -> b
-foldVisible f n t o = go n s (pure (-s * 0.5)) o (flip const) 0
+foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (flip const) 0
   where
   !s = fromIntegral $ Shape.size o
-  toWorld = over pointed (apply t)
-  planes :: [(V3 (Distance Float), V3 (Distance Float))]
-  !planes = [ w | u <- basis, let { v = toWorld u ; n = signorm v }, w <- [ (v, n), (-v, -n)] ]
+  planes :: [(String, V3 (Distance Float), V3 (Distance Float))]
+  !planes = let w = t'^.column _w in [ p | (c, b) <- zip "xyz" [ _x, _y, _z ], let { v = coerce (normalizePoint (t'^.column b + w)) ; n = signorm v }, p <- [ (['+', c], v, n), (['-', c], -v, -n)] ]
   go :: Int -> Distance Float -> V3 (Distance Float) -> Octree s' a -> (Int -> b -> c) -> (Int -> b -> c)
   go !n !s !o = \case
     E -> id
