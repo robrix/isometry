@@ -107,7 +107,10 @@ foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (flip const) 0
   where
   !s = fromIntegral $ Shape.size o
   planes :: [(String, V3 (Distance Float), V3 (Distance Float))]
-  !planes = let w = t'^.column _w in [ p | (c, b) <- zip "xyz" [ _x, _y, _z ], let { v = coerce (normalizePoint (t'^.column b + w)) ; n = signorm v }, p <- [ (['+', c], v, n), (['-', c], -v, -n)] ]
+  !planes = let w = t'^.column _w in do
+    (c, b) <- zip "xyz" [ _x, _y, _z ]
+    let { v = coerce (normalizePoint (t'^.column b + w)) ; n = signorm v }
+    [ (['+', c], v, n), (['-', c], -v, -n) ]
   go :: Int -> Distance Float -> V3 (Distance Float) -> Octree s' a -> (Int -> b -> c) -> (Int -> b -> c)
   go !n !s !o = \case
     E -> id
