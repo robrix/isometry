@@ -106,13 +106,13 @@ foldVisible
 foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (flip const) 0
   where
   !s = fromIntegral $ Shape.size o
-  planes :: [(String, V3 (Distance Float), V3 (Distance Float))]
+  planes :: [(V3 (Distance Float), V3 (Distance Float))]
   !planes = do
-    (c, b) <- zip "xyz" [ _x, _y, _z ]
+    b <- [ _x, _y, _z ]
     let w = t'^.column _w
         v = coerce (normalizePoint (t'^.column b + w))
         n = signorm v
-    [ (['+', c], v, n), (['-', c], -v, -n) ]
+    [ (v, n), (-v, -n) ]
   go :: Int -> Distance Float -> V3 (Distance Float) -> Octree s' a -> (Int -> b -> c) -> (Int -> b -> c)
   go !n !s !o = \case
     E -> id
@@ -135,7 +135,7 @@ foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (flip const) 0
     -- FIXME: test only the min & max vertices for each plane
     -- FIXME: share tests for boxes sharing boundaries
     !isVisible = not (any (\ p -> all (outside p) corners) planes)
-    outside (_, p, n) c = signedDistance p n c > 0
+    outside (p, n) c = signedDistance p n c > 0
     corner x = [x, x + s]
     corners = V3 <$> corner (o^._x) <*> corner (o^._y) <*> corner (o^._z)
     skip t k prev = let !next = prev + length t in k next
