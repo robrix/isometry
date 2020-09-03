@@ -154,7 +154,7 @@ withOctreeLen2 o (prj :: a -> (b, c)) with = allocaArray len $ \ !pb -> allocaAr
         pokeElemOff pb (I# n#) b
         pokeElemOff pc (I# n#) c
         k (n# +# 1#)
-      go (B _ lbf rbf ltf rtf lbn rbn ltn rtn) = go lbf . go rbf . go ltf . go rtf . go lbn . go rbn . go ltn . go rtn
+      go (B _ lbf rbf ltf rtf lbn rbn ltn rtn) = go rtn . go ltn . go rbn . go lbn . go rtf . go ltf . go rbf . go lbf
   sendIO $ go o (\ _ -> pure ()) 0#
   with len pb pc
   where
