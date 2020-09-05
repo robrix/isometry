@@ -126,8 +126,7 @@ foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (\ i -> if isEmpty
       .  go' (o & _xy  +~ pure s') rtf .  go' (o & _y  +~      s') ltf
       .  go' (o & _x   +~      s') rbf .  go' o                    lbf
     t -> \ k !prev ->
-        let !end = getI (sup prev)
-            !next = end + length t
+        let !next = getI (sup prev) + length t
             !i | isVisible = getI (inf prev)...next
                | otherwise = pure next
         in if isVisible || isEmpty prev then
