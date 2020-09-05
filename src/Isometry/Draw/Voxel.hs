@@ -129,7 +129,7 @@ foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (\ i -> if isEmpty
     t -> \ k !prev ->
       let !next = sup prev + I (length t)
           !i | isVisible = Interval (inf prev) next
-              | otherwise = point next
+             | otherwise = point next
       in if isVisible || isEmpty prev then
         k i
       else
