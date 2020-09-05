@@ -128,10 +128,9 @@ foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (flip const) 0
     t -> \ k !prev ->
         let !end = getI (sup prev)
             !next = end + length t
-            !i = end...next
         -- FIXME: combine calls for adjacent intervals
         in  if isVisible then
-          k i . f i
+          let !i = end...next in k i . f i
         else
           k (pure next)
     where
