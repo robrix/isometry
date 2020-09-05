@@ -125,13 +125,15 @@ foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (flip const) 0
       .  go' (o & _xz  +~ pure s') rbn .  go' (o & _z  +~      s') lbn
       .  go' (o & _xy  +~ pure s') rtf .  go' (o & _y  +~      s') ltf
       .  go' (o & _x   +~      s') rbf .  go' o                    lbf
-    t | isVisible -> \ k !prev ->
+    t -> \ k !prev ->
         let !end = getI (sup prev)
             !next = end + length t
             !i = end...next
         -- FIXME: combine calls for adjacent intervals
-        in  k i . f i
-      | otherwise -> \ k !prev -> let !next = getI (sup prev) + length t in k (pure next)
+        in  if isVisible then
+          k i . f i
+        else
+          k (pure next)
     where
     -- FIXME: test only the min & max vertices for each plane
     -- FIXME: share tests for boxes sharing boundaries
