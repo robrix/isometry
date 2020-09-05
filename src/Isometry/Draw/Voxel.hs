@@ -88,9 +88,10 @@ draw = UI.using drawable $ do
   origins_ ?= originsU
   colours_ ?= coloursU
 
-  let go !i k = k *> do
+  let go !i k = do
         offset_ ?= getI (inf i)
         drawElementsInstanced Triangles indicesI (getI (diameter i))
+        k
 
   bindBuffer indicesB $ foldVisible go 3 (inverse t) world (pure ())
 
