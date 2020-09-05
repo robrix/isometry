@@ -104,7 +104,7 @@ foldVisible
   -> Octree s a
   -> b
   -> b
-foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (\ i -> if isEmpty i then id else f i) 0
+foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (\ i -> if diameter i == 0 then id else f i) 0
   where
   !s = fromIntegral $ Shape.size o
   planes :: [(V3 (Distance Float), V3 (Distance Float))]
@@ -130,7 +130,7 @@ foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (\ i -> if isEmpty
       let !end = sup prev + I (length t)
           !i | isVisible = Interval (inf prev) end
              | otherwise = point end
-      in if isVisible || isEmpty prev then
+      in if isVisible || diameter prev == 0 then
         k i
       else
         f prev . k i
