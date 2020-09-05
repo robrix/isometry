@@ -139,10 +139,7 @@ foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (flip const) 0
     outside (p, n) c = signedDistance p n c > 0
     corner x = [x, x + s]
     corners = V3 <$> corner (o^._x) <*> corner (o^._y) <*> corner (o^._z)
-    skip t k prev
-      = let !end = getI (sup prev)
-            !next = end + length t
-        in  k (pure next)
+    skip t k prev = let !next = getI (sup prev) + length t in k (pure next)
 
 
 runDrawable
