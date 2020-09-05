@@ -131,7 +131,7 @@ foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (flip const) 0
             !i = end...next
         -- FIXME: combine calls for adjacent intervals
         in  k i . f i
-      | otherwise -> skip t
+      | otherwise -> \ k !prev -> let !next = getI (sup prev) + length t in k (pure next)
     where
     -- FIXME: test only the min & max vertices for each plane
     -- FIXME: share tests for boxes sharing boundaries
@@ -139,7 +139,6 @@ foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (flip const) 0
     outside (p, n) c = signedDistance p n c > 0
     corner x = [x, x + s]
     corners = V3 <$> corner (o^._x) <*> corner (o^._y) <*> corner (o^._z)
-    skip t k prev = let !next = getI (sup prev) + length t in k (pure next)
 
 
 runDrawable
