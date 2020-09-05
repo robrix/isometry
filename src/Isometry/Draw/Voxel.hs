@@ -103,7 +103,7 @@ foldVisible
   -> Octree s a
   -> b
   -> b
-foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (flip const) 0
+foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (\ i -> if isEmpty i then id else f i) 0
   where
   !s = fromIntegral $ Shape.size o
   planes :: [(V3 (Distance Float), V3 (Distance Float))]
@@ -113,7 +113,7 @@ foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (flip const) 0
         v = coerce (normalizePoint (t'^.column b + w))
         n = signorm v
     [ (v, n), (-v, -n) ]
-  go :: Int -> Distance Float -> V3 (Distance Float) -> Octree s' a -> (Interval I Int -> b -> c) -> (Interval I Int -> b -> c)
+  go :: Int -> Distance Float -> V3 (Distance Float) -> Octree s' a -> (Interval I Int -> b -> b) -> (Interval I Int -> b -> b)
   go !n !s !o = \case
     E -> id
     B _ lbf rbf ltf rtf lbn rbn ltn rtn
@@ -128,13 +128,12 @@ foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (flip const) 0
     t -> \ k !prev ->
         let !end = getI (sup prev)
             !next = end + length t
-            !i | isVisible = end...next
+            !i | isVisible = getI (inf prev)...next
                | otherwise = pure next
-        -- FIXME: combine calls for adjacent intervals
-        in  if isVisible then
-          k i . f i
-        else
+        in if isVisible || isEmpty prev then
           k i
+        else
+          f prev . k i
     where
     -- FIXME: test only the min & max vertices for each plane
     -- FIXME: share tests for boxes sharing boundaries
