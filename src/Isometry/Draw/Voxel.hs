@@ -142,7 +142,7 @@ foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (flip const) 0
     skip t k prev
       = let !end = getI (sup prev)
             !next = end + length t
-        in  k (end...next)
+        in  k (pure next)
 
 
 runDrawable
