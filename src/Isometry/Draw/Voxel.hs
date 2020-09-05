@@ -113,7 +113,7 @@ foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (flip const) 0
         v = coerce (normalizePoint (t'^.column b + w))
         n = signorm v
     [ (v, n), (-v, -n) ]
-  go :: Int -> Distance Float -> V3 (Distance Float) -> Octree s' a -> (Int -> b -> c) -> (Int -> b -> c)
+  go :: Int -> Distance Float -> V3 (Distance Float) -> Octree s' a -> (Interval I Int -> b -> c) -> (Interval I Int -> b -> c)
   go !n !s !o = \case
     E -> id
     B _ lbf rbf ltf rtf lbn rbn ltn rtn
@@ -126,10 +126,11 @@ foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (flip const) 0
       .  go' (o & _xy  +~ pure s') rtf .  go' (o & _y  +~      s') ltf
       .  go' (o & _x   +~      s') rbf .  go' o                    lbf
     t | isVisible -> \ k !prev ->
-        let !next = prev + length t
-            !i = prev...next
+        let !end = getI (sup prev)
+            !next = end + length t
+            !i = end...next
         -- FIXME: combine calls for adjacent intervals
-        in  k next . f i
+        in  k i . f i
       | otherwise -> skip t
     where
     -- FIXME: test only the min & max vertices for each plane
@@ -138,7 +139,10 @@ foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (flip const) 0
     outside (p, n) c = signedDistance p n c > 0
     corner x = [x, x + s]
     corners = V3 <$> corner (o^._x) <*> corner (o^._y) <*> corner (o^._z)
-    skip t k prev = let !next = prev + length t in k next
+    skip t k prev
+      = let !end = getI (sup prev)
+            !next = end + length t
+        in  k (end...next)
 
 
 runDrawable
