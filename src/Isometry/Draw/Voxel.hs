@@ -132,7 +132,7 @@ foldVisible f n (Transform t') o = go n s (pure (-s * 0.5)) o (flip const) 0
         in  if isVisible then
           let !i = end...next in k i . f i
         else
-          k (pure next)
+          let !i = pure next  in k i
     where
     -- FIXME: test only the min & max vertices for each plane
     -- FIXME: share tests for boxes sharing boundaries
