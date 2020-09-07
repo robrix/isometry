@@ -1,7 +1,7 @@
 module Isometry.Language
 ( Coords(..)
 , Time(..)
-, Lam(..)
+, Expr(..)
 ) where
 
 import Linear.V3
@@ -13,7 +13,7 @@ class Coords expr where
 class Time expr where
   time :: expr Double
 
-class Lam expr where
+class Expr expr where
   lam  :: (expr a -> expr b) -> expr (a -> b)
   ($$) :: expr (a -> b) -> (expr a -> expr b)
   infixl 9 $$
