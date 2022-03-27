@@ -21,7 +21,6 @@ import qualified Control.Carrier.State.STM.TVar as TVar
 import           Control.Effect.Lens.Exts as Lens
 import           Control.Effect.Lift
 import           Control.Effect.Thread
-import           Control.Effect.Time.System as System
 import           Control.Effect.Trace
 import           Control.Exception.Lift
 import           Control.Lens ((^.))
@@ -77,8 +76,9 @@ game
   :: ( Has Check sig m
      , Has (Lift IO) sig m
      , Has Profile sig m
+     , Has (Reader Epoch) sig m
      , HasLabelled Thread (Thread id) sig m
-     , Has (System.Time Instant) sig m
+     , Has (Isometry.Time.Time Instant) sig m
      , Has Trace sig m
      )
   => m ()

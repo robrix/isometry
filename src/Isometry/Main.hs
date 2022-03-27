@@ -13,6 +13,7 @@ module Isometry.Main
 import           Control.Algebra
 import qualified Control.Carrier.Profile.Identity as NoProfile
 import qualified Control.Carrier.Profile.Tree as Profile
+import           Control.Carrier.Reader
 import           Control.Carrier.Thread.IO
 import           Control.Carrier.Time.System
 import qualified Control.Carrier.Trace.Ignoring as NoTrace
@@ -24,16 +25,19 @@ import           Control.Monad.Fix
 import           Control.Monad.IO.Class
 import           Data.Flag
 import           Data.Kind (Constraint, Type)
-import qualified GL.Carrier.Check.Identity as NoCheck
 import qualified GL.Carrier.Check.IO as Check
+import qualified GL.Carrier.Check.Identity as NoCheck
 import           GL.Effect.Check
 import qualified Isometry.CLI as CLI
 import           Isometry.Game
+import           Isometry.Time
 
 main :: IO ()
 main = do
   options <- CLI.execParser CLI.argumentsParser
-  runThread (runTime (runCheck (CLI.check options) (runProfile (CLI.profile options) (runTrace (CLI.trace options) game))))
+  runThread (runTime (do
+    epoch <- now
+    runReader (Epoch epoch) (runCheck (CLI.check options) (runProfile (CLI.profile options) (runTrace (CLI.trace options) game)))))
 
 runProfile
   :: ( Has (Lift IO) sig m

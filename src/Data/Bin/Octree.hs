@@ -28,7 +28,6 @@ import Foreign.Marshal.Array.Lift
 import Foreign.Ptr
 import Foreign.Storable
 import GHC.Exts
-import GHC.TypeLits
 import Linear.V3
 
 data Octree s a where
@@ -57,8 +56,8 @@ instance Foldable (Octree s) where
     where
     go :: b -> Octree s' a -> b
     go z = \case
-      E   -> z
-      L a -> f a z
+      E                                   -> z
+      L a                                 -> f a z
       B _ lbf rbf ltf rtf lbn rbn ltn rtn -> go (go (go (go (go (go (go (go z rtn) ltn) rbn) lbn) rtf) ltf) rbf) lbf
   {-# INLINE foldr #-}
 
@@ -77,7 +76,7 @@ instance FoldableWithIndex (V3 (Index 'Z)) (Octree 'Z) where
     L   a -> f (pure il) a
   {-# INLINE ifoldMap #-}
 
-instance (FoldableWithIndex (V3 (Index s)) (Octree s), KnownNat (Place s)) => FoldableWithIndex (V3 (Index ('S s))) (Octree ('S s)) where
+instance (FoldableWithIndex (V3 (Index s)) (Octree s), Place s) => FoldableWithIndex (V3 (Index ('S s))) (Octree ('S s)) where
   ifoldMap f = \case
     E     -> mempty
     B _ lbf rbf ltf rtf lbn rbn ltn rtn
@@ -96,7 +95,7 @@ instance SparseUnfoldableWithIndex (V3 Bit) (V3 (Index 'Z)) (Octree 'Z) where
   iunfoldSparse _ leaf = L (leaf (pure il))
   {-# INLINE iunfoldSparse #-}
 
-instance (SparseUnfoldableWithIndex (V3 Bit) (V3 (Index s)) (Octree s), KnownNat (Place s)) => SparseUnfoldableWithIndex (V3 Bit) (V3 (Index ('S s))) (Octree ('S s)) where
+instance (SparseUnfoldableWithIndex (V3 Bit) (V3 (Index s)) (Octree s), Place s) => SparseUnfoldableWithIndex (V3 Bit) (V3 (Index ('S s))) (Octree ('S s)) where
   iunfoldSparseM branch leaf = b
     <$> go (V3 B0 B0 B0) <*> go (V3 B1 B0 B0)
     <*> go (V3 B0 B1 B0) <*> go (V3 B1 B1 B0)

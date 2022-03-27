@@ -175,6 +175,7 @@ library
     , stm ^>= 2.5
     , terminal-size
     , text
+    , time
     , transformers ^>= 0.5
     , vector ^>= 0.12
 

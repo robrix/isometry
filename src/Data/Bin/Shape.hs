@@ -56,14 +56,23 @@ size :: forall s t a . KnownNat (Size s) => t s a -> Int
 size _ = fromIntegral (natVal (Proxy @(Size s)))
 
 
-type family Place (b :: N) :: Nat where
-  Place 'Z     = 0
-  Place ('S s) = 1 + Place s
+class Place (s :: N) where
+  place :: i s -> Int
 
--- | Produce the place of the bit for a given shape; equivalently, the power of two that the shape represents.
---
--- @
--- size i = 2^place i
--- @
-place :: forall s i . KnownNat (Place s) => i s -> Int
-place _ = fromIntegral (natVal (Proxy @(Place s)))
+instance Place 'Z where
+  place _ = 0
+
+instance Place n => Place ('S n) where
+  place _ = 1 + place (Proxy @n)
+
+-- type family Place (b :: N) :: Nat where
+--   Place 'Z     = 0
+--   Place ('S s) = 1 + Place s
+
+-- -- | Produce the place of the bit for a given shape; equivalently, the power of two that the shape represents.
+-- --
+-- -- @
+-- -- size i = 2^place i
+-- -- @
+-- place :: forall s i . KnownNat (Place s) => i s -> Int
+-- place _ = fromIntegral (natVal (Proxy @(Place s)))

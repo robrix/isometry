@@ -44,10 +44,14 @@ instance Foldable (Bintree s) where
 deriving instance Functor     (Bintree s)
 deriving instance Traversable (Bintree s)
 
-instance FoldableWithIndex (Index s) (Bintree s) where
+instance FoldableWithIndex (Index 'Z) (Bintree 'Z) where
   ifoldMap f = \case
     E     -> mempty
     L   a -> f il a
+
+instance (FoldableWithIndex (Index s) (Bintree s), Place s) => FoldableWithIndex (Index ('S s)) (Bintree ('S s)) where
+  ifoldMap f = \case
+    E     -> mempty
     B _ l r
       -> go B0 l <> go B1 r
       where
@@ -61,7 +65,7 @@ instance SparseUnfoldableWithIndex Bit (Index 'Z) (Bintree 'Z) where
   iunfoldSparse _ leaf = L (leaf il)
   {-# INLINABLE iunfoldSparse #-}
 
-instance SparseUnfoldableWithIndex Bit (Index s) (Bintree s) => SparseUnfoldableWithIndex Bit (Index ('S s)) (Bintree ('S s)) where
+instance (SparseUnfoldableWithIndex Bit (Index s) (Bintree s), Place s) => SparseUnfoldableWithIndex Bit (Index ('S s)) (Bintree ('S s)) where
   iunfoldSparseM branch leaf = b <$> go B0 <*> go B1
     where
     go i = branch i >>= \ b -> if b then iunfoldSparseM branch (leaf . ib i) else pure E
@@ -81,8 +85,8 @@ instance Applicative (Bintree 'Z) where
 instance Applicative (Bintree s) => Applicative (Bintree ('S s)) where
   pure a = b (pure a) (pure a)
 
-  E     <*> _     = E
-  _     <*> E     = E
+  E     <*> _             = E
+  _     <*> E             = E
   B _ f1 f2 <*> B _ a1 a2 = b (f1 <*> a1) (f2 <*> a2)
 
 b :: Bintree s a -> Bintree s a -> Bintree ('S s) a

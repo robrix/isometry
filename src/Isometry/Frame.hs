@@ -15,7 +15,6 @@ import           Control.Effect.Labelled
 import           Control.Effect.Lens (use)
 import           Control.Effect.Lift
 import           Control.Effect.Profile
-import           Control.Effect.Time.System
 import           Control.Effect.Trace
 import           Data.Bin.Index (toInt)
 import           Data.Bin.Shape as Shape
@@ -79,6 +78,7 @@ frame
      , Has (Lift IO) sig m
      , Has Profile sig m
      , Has (Reader Axis.Drawable) sig m
+     , Has (Reader Epoch) sig m
      , Has (Reader Voxel.Drawable) sig m
     --  , Has (Reader UI) sig m
      , Has (Reader Window.Window) sig m
