@@ -97,10 +97,7 @@ import           Data.Functor.C
 import           Data.Functor.I
 import           Data.Functor.K
 import           Data.Kind (Type)
-import           Data.Text.Prettyprint.Doc hiding (dot)
-import           Data.Text.Prettyprint.Doc.Render.String
 import           Foreign.Storable (Storable)
-import           Geometry.Transform (Transform)
 import           GHC.Generics hiding ((:.:))
 import qualified GL.Primitive as P
 import qualified GL.Shader as Shader
@@ -108,6 +105,7 @@ import           GL.Shader.Vars
 import           GL.TextureUnit
 import qualified GL.Type as GL
 import qualified GL.Uniform as GL
+import           Geometry.Transform (Transform)
 import           Linear.Conjugate
 import           Linear.Epsilon
 import           Linear.Matrix (M22, M33, M44)
@@ -117,6 +115,8 @@ import           Linear.V3 (V3(..))
 import           Linear.V4 (V4(..))
 import           Linear.Vector
 import           Prelude hiding (break)
+import           Prettyprinter hiding (dot)
+import           Prettyprinter.Render.String
 import           System.Random (Random)
 import           UI.Colour (Colour(..))
 import           Unit
