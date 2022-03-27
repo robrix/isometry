@@ -52,7 +52,7 @@ poll :: Has (Lift IO) sig m => m (Maybe Event)
 poll = sendIO pollEvent
 
 input :: Has (Lift IO) sig m => (Event -> m ()) -> m ()
-input h = go where
+input h = sendIO pumpEvents >> go where
   go = poll >>= maybe (pure ()) (const go <=< h)
 
 size :: (Num a, Has (Lift IO) sig m, Has (Reader Window) sig m) => m (V2 (Coords a))
