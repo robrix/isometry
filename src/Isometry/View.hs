@@ -14,8 +14,8 @@ import Control.Carrier.Reader
 import Control.Effect.Lift
 import Control.Lens ((&), (.~))
 import Data.Functor.I
-import Geometry.Transform
 import GL.Shader.DSL (ClipUnits(..))
+import Geometry.Transform
 import Isometry.World
 import Linear.Exts
 import UI.Window as Window
