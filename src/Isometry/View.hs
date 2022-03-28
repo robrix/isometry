@@ -46,8 +46,7 @@ withView !angle m = do
         <<< mkScale (pure scale)
         <<< mkTranslation (negated focus)
         <<< mkRotation
-            ( axisAngle (unit _x) (pi/4)
-            * axisAngle (unit _y) angle)
+            ( axisAngle (unit _y) angle)
         <<< mkScale (pure zoom)
 
   runReader View{ transform } m
